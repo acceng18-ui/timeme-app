@@ -337,12 +337,41 @@ body {
 
             <!-- סטטוס חוזה -->
             <div style="background:#F5F9FF;border:1.5px solid #B5D4F4;border-radius:12px;padding:14px;margin-bottom:14px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
                 <div>
                   <div style="font-size:14px;font-weight:700;color:#042C53;" id="pd-contract-status">בודק חוזה...</div>
                   <div style="font-size:11px;color:#185FA5;margin-top:3px;" id="pd-contract-info"></div>
                 </div>
                 <button class="btn-add" onclick="goCreateContract()" id="pd-contract-btn" style="padding:7px 16px;font-size:12px;">+ צור חוזה</button>
+              </div>
+              <!-- תקפות חוזה -->
+              <div id="pd-contract-dates" style="display:none;border-top:1px solid #E6F1FB;padding-top:10px;">
+                <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+                  <div class="info-row-pd">
+                    <span class="info-lbl">📅 תחילת שכירות</span>
+                    <span id="pd-cstart" class="info-val-pd" style="color:#0F6E56;"></span>
+                  </div>
+                  <div class="info-row-pd">
+                    <span class="info-lbl">📅 סיום שכירות</span>
+                    <span id="pd-cend" class="info-val-pd" style="color:#E24B4A;"></span>
+                  </div>
+                  <div class="info-row-pd">
+                    <span class="info-lbl">⏳ ימים לסיום</span>
+                    <span id="pd-cdays" class="info-val-pd"></span>
+                  </div>
+                  <div class="info-row-pd">
+                    <span class="info-lbl">💰 שכ"ד חודשי</span>
+                    <span id="pd-crent" class="info-val-pd" style="color:#185FA5;"></span>
+                  </div>
+                  <div class="info-row-pd" id="pd-option-row" style="display:none;">
+                    <span class="info-lbl">🔄 אופציה עד</span>
+                    <span id="pd-coption" class="info-val-pd" style="color:#8A6000;"></span>
+                  </div>
+                  <div class="info-row-pd">
+                    <span class="info-lbl">📊 סטטוס</span>
+                    <span id="pd-cstatus-badge" class="info-val-pd"></span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -648,13 +677,35 @@ body {
           <div class="form-section-title">📄 החוזה שלי</div>
           <div id="t-no-contract" style="text-align:center;padding:16px;color:#888;font-size:12px;">אין חוזה פעיל</div>
           <div id="t-contract-details" style="display:none;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-              <div class="info-row-pd"><span class="info-lbl">תחילת שכירות</span><span id="t-cstart" class="info-val-pd"></span></div>
-              <div class="info-row-pd"><span class="info-lbl">סיום שכירות</span><span id="t-cend" class="info-val-pd"></span></div>
-              <div class="info-row-pd"><span class="info-lbl">שכ"ד חודשי</span><span id="t-crent" class="info-val-pd"></span></div>
-              <div class="info-row-pd"><span class="info-lbl">ימים לסיום</span><span id="t-cdays" class="info-val-pd"></span></div>
+            <!-- סטטוס חוזה -->
+            <div id="t-contract-status-bar" style="border-radius:10px;padding:10px 14px;margin-bottom:12px;text-align:center;">
+              <div style="font-size:16px;font-weight:700;" id="t-contract-status-text"></div>
+              <div style="font-size:12px;margin-top:3px;" id="t-contract-status-sub"></div>
             </div>
-            <div id="t-contract-file" style="display:none;">
+            <!-- תאריכים -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+              <div class="info-row-pd">
+                <span class="info-lbl">📅 תחילת שכירות</span>
+                <span id="t-cstart" class="info-val-pd" style="color:#0F6E56;"></span>
+              </div>
+              <div class="info-row-pd">
+                <span class="info-lbl">📅 סיום שכירות</span>
+                <span id="t-cend" class="info-val-pd" style="color:#E24B4A;"></span>
+              </div>
+              <div class="info-row-pd">
+                <span class="info-lbl">💰 שכ"ד חודשי</span>
+                <span id="t-crent" class="info-val-pd" style="color:#185FA5;"></span>
+              </div>
+              <div class="info-row-pd">
+                <span class="info-lbl">⏳ ימים לסיום</span>
+                <span id="t-cdays" class="info-val-pd"></span>
+              </div>
+              <div class="info-row-pd" id="t-option-row" style="display:none;">
+                <span class="info-lbl">🔄 אופציה עד</span>
+                <span id="t-coption" class="info-val-pd" style="color:#8A6000;"></span>
+              </div>
+            </div>
+            <div id="t-contract-file" style="display:none;margin-top:8px;">
               <a id="t-contract-link" href="#" target="_blank">
                 <button class="btn-add" style="padding:7px 16px;font-size:12px;">📄 צפה בחוזה</button>
               </a>
@@ -1204,11 +1255,46 @@ async function loadPropertyDetail(id) {
   // check contract
   const{data:contracts}=await sb.from('contracts').select('*').eq('property_id',id).order('created_at',{ascending:false});
   document.getElementById('existing-contract-file').style.display='none';
+  document.getElementById('pd-contract-dates').style.display='none';
   if(contracts&&contracts.length>0){
     const c=contracts[0];
-    document.getElementById('pd-contract-status').textContent='✅ חוזה פעיל';
-    document.getElementById('pd-contract-info').textContent='מתאריך '+c.start_date+' עד '+c.end_date+' | שכ"ד: '+Number(c.monthly_rent).toLocaleString('he-IL')+' ₪';
-    document.getElementById('pd-contract-btn').textContent='חדש חוזה';
+    const today=new Date();
+    const endDate=new Date(c.end_date);
+    const startDate=new Date(c.start_date);
+    const daysLeft=Math.ceil((endDate-today)/(1000*60*60*24));
+    const isActive=today>=startDate&&today<=endDate;
+    const isExpired=today>endDate;
+
+    document.getElementById('pd-contract-status').textContent=isExpired?'❌ חוזה פג':isActive?'✅ חוזה פעיל':'⏳ חוזה עתידי';
+    document.getElementById('pd-contract-info').textContent='שכ"ד: '+Number(c.monthly_rent).toLocaleString('he-IL')+' ₪ | '+daysLeft+' ימים לסיום';
+    document.getElementById('pd-contract-btn').textContent='+ חדש חוזה';
+
+    // הצג תאריכים
+    document.getElementById('pd-contract-dates').style.display='block';
+    document.getElementById('pd-cstart').textContent=c.start_date?fmtDate(c.start_date):'—';
+    document.getElementById('pd-cend').textContent=c.end_date?fmtDate(c.end_date):'—';
+    document.getElementById('pd-crent').textContent=c.monthly_rent?Number(c.monthly_rent).toLocaleString('he-IL')+' ₪':'—';
+    
+    // ימים לסיום עם צבע
+    const daysEl=document.getElementById('pd-cdays');
+    daysEl.textContent=daysLeft>0?daysLeft+' יום':'פג תוקף';
+    daysEl.style.color=daysLeft<=30?'#E24B4A':daysLeft<=90?'#8A6000':'#0F6E56';
+
+    // אופציה
+    const contractData=c.contract_data?JSON.parse(c.contract_data):null;
+    if(contractData&&contractData.cd&&contractData.cd.optionEnd){
+      document.getElementById('pd-option-row').style.display='block';
+      document.getElementById('pd-coption').textContent=fmtDate(contractData.cd.optionEnd);
+    } else if(contractData&&contractData.optionEnd){
+      document.getElementById('pd-option-row').style.display='block';
+      document.getElementById('pd-coption').textContent=fmtDate(contractData.optionEnd);
+    }
+
+    // סטטוס
+    const badge=document.getElementById('pd-cstatus-badge');
+    badge.textContent=isExpired?'פג תוקף':isActive?'פעיל':'עתידי';
+    badge.style.color=isExpired?'#E24B4A':isActive?'#0F6E56':'#185FA5';
+
     if(c.contract_file_url){
       showExistingFile(c.contract_file_url, c.contract_file_name||'קובץ חוזה');
     }
@@ -1711,11 +1797,48 @@ async function loadTenantDashboard(user) {
     const c=contracts[0];
     document.getElementById('t-no-contract').style.display='none';
     document.getElementById('t-contract-details').style.display='block';
+    const today=new Date();
+    const cEnd=new Date(c.end_date);
+    const cStart=new Date(c.start_date);
+    const daysLeft=Math.ceil((cEnd-today)/(1000*60*60*24));
+    const isActive=today>=cStart&&today<=cEnd;
+    const isExpired=today>cEnd;
+
+    // סטטוס בר
+    const statusBar=document.getElementById('t-contract-status-bar');
+    const statusText=document.getElementById('t-contract-status-text');
+    const statusSub=document.getElementById('t-contract-status-sub');
+    if(isExpired){
+      statusBar.style.cssText='border-radius:10px;padding:10px 14px;margin-bottom:12px;text-align:center;background:#FCE4EC;border:1px solid #F48FB1;';
+      statusText.style.color='#880E4F';
+      statusText.textContent='❌ החוזה פג תוקף';
+      statusSub.textContent='פג לפני '+Math.abs(daysLeft)+' ימים';
+    } else if(daysLeft<=60){
+      statusBar.style.cssText='border-radius:10px;padding:10px 14px;margin-bottom:12px;text-align:center;background:#FFF3E0;border:1px solid #FFB74D;';
+      statusText.style.color='#8A6000';
+      statusText.textContent='⚠️ החוזה מסתיים בקרוב';
+      statusSub.textContent='נותרו '+daysLeft+' ימים בלבד';
+    } else {
+      statusBar.style.cssText='border-radius:10px;padding:10px 14px;margin-bottom:12px;text-align:center;background:#E1F5EE;border:1px solid #5DCAA5;';
+      statusText.style.color='#0F6E56';
+      statusText.textContent='✅ החוזה פעיל';
+      statusSub.textContent='נותרו '+daysLeft+' ימים עד סיום השכירות';
+    }
+
     document.getElementById('t-cstart').textContent=c.start_date?fmtDate(c.start_date):'—';
     document.getElementById('t-cend').textContent=c.end_date?fmtDate(c.end_date):'—';
     document.getElementById('t-crent').textContent=c.monthly_rent?Number(c.monthly_rent).toLocaleString('he-IL')+' ₪':'—';
-    const daysLeft=c.end_date?Math.ceil((new Date(c.end_date)-new Date())/(1000*60*60*24)):0;
-    document.getElementById('t-cdays').textContent=daysLeft>0?daysLeft+' יום':'הסתיים';
+    const daysEl=document.getElementById('t-cdays');
+    daysEl.textContent=daysLeft>0?daysLeft+' יום':'פג תוקף';
+    daysEl.style.color=daysLeft<=30?'#E24B4A':daysLeft<=90?'#8A6000':'#0F6E56';
+
+    // אופציה
+    const contractData=c.contract_data?JSON.parse(c.contract_data):null;
+    if(contractData&&contractData.cd&&contractData.cd.optionEnd){
+      document.getElementById('t-option-row').style.display='block';
+      document.getElementById('t-coption').textContent=fmtDate(contractData.cd.optionEnd);
+    }
+
     if(c.contract_file_url){
       document.getElementById('t-contract-file').style.display='block';
       document.getElementById('t-contract-link').href=c.contract_file_url;
