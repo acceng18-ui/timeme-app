@@ -162,13 +162,29 @@ body {
     <div class="role-tabs">
       <div class="role-tab active" onclick="setRole('owner',this)"><span class="tab-icon">🏠</span>בעל נכס</div>
       <div class="role-tab" onclick="setRole('tenant',this)"><span class="tab-icon">🔑</span>שוכר</div>
-      <div class="role-tab" onclick="setRole('agent',this)"><span class="tab-icon">🤝</span>מתווך</div>
+      <div class="role-tab" onclick="setRole('organization',this)"><span class="tab-icon">🏢</span>ארגון/חברה</div>
     </div>
     <div class="role-desc" id="role-desc">ניהול נכסים, חוזים והכנסות</div>
   </div>
   <div class="fg" id="name-field" style="display:none;">
     <label>שם מלא</label>
     <input type="text" id="full-name" placeholder="ישראל ישראלי" />
+  </div>
+
+  <!-- שדות ארגון -->
+  <div id="org-fields" style="display:none;">
+    <div class="fg">
+      <label>שם החברה/ארגון *</label>
+      <input type="text" id="org-name" placeholder="חברת ABC בע&quot;מ" />
+    </div>
+    <div class="fg">
+      <label>ח.פ / מספר עמותה</label>
+      <input type="text" id="org-number" placeholder="516244274" />
+    </div>
+    <div class="fg">
+      <label>שם איש קשר *</label>
+      <input type="text" id="org-contact" placeholder="ישראל ישראלי" />
+    </div>
   </div>
   <div class="fg">
     <label>כתובת מייל</label>
@@ -212,6 +228,7 @@ body {
     <button class="nav-tab" id="nav-contract" onclick="showPage('add-contract',this)">📋 טופס הכנת חוזה</button>
     <button class="nav-tab" id="nav-admin" onclick="showPage('admin',this);loadAdminUsers();" style="display:none;">👥 משתמשים</button>
     <button class="nav-tab" id="nav-tenant" onclick="showPage('tenant',this)" style="display:none;">🔑 הנכס שלי</button>
+    <button class="nav-tab" id="nav-org" onclick="showPage('org',this)" style="display:none;">🏢 הארגון שלי</button>
   </div>
   <div class="dash-body">
 
@@ -649,6 +666,52 @@ body {
       <button onclick="loadAdminUsers()" style="margin-top:10px;padding:8px 16px;background:#E6F1FB;color:#185FA5;border:1px solid #B5D4F4;border-radius:8px;cursor:pointer;font-size:12px;display:block;">🔄 רענן רשימה</button>
     </div>
 
+    <!-- דשבורד ארגון -->
+    <div class="page" id="page-org">
+      <div class="page-title">🏢 ניהול הארגון</div>
+      <div class="page-sub" id="org-name-display"></div>
+
+      <!-- פרטי ארגון -->
+      <div class="form-card" style="margin-bottom:12px;" id="org-details-card">
+        <div class="form-section-title">🏢 פרטי הארגון</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+          <div class="info-row-pd"><span class="info-lbl">שם חברה</span><span id="org-detail-name" class="info-val-pd"></span></div>
+          <div class="info-row-pd"><span class="info-lbl">ח.פ</span><span id="org-detail-number" class="info-val-pd"></span></div>
+          <div class="info-row-pd"><span class="info-lbl">איש קשר</span><span id="org-detail-contact" class="info-val-pd"></span></div>
+          <div class="info-row-pd"><span class="info-lbl">מייל</span><span id="org-detail-email" class="info-val-pd"></span></div>
+        </div>
+
+        <!-- נציגים -->
+        <div class="form-section-title" style="margin-top:8px;">👥 נציגי הארגון</div>
+        <div id="org-members-list" style="margin-bottom:12px;"></div>
+
+        <!-- הוספת נציג -->
+        <div style="background:#F5F9FF;border:1.5px dashed #B5D4F4;border-radius:10px;padding:12px;">
+          <div style="font-size:12px;font-weight:700;color:#042C53;margin-bottom:10px;">+ הוסף נציג</div>
+          <div class="form-row-2">
+            <div class="fg"><label>מייל הנציג</label><input id="member-email" placeholder="employee@company.com" type="email" /></div>
+            <div class="fg"><label>תפקיד</label>
+              <select id="member-role">
+                <option value="נציג">נציג</option>
+                <option value="מנהל">מנהל</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-main" style="width:auto;padding:9px 20px;" onclick="addOrgMember()" id="add-member-btn">+ הוסף נציג</button>
+          <div class="msg" id="org-msg"></div>
+        </div>
+      </div>
+
+      <!-- נכסי הארגון -->
+      <div class="form-card">
+        <div class="form-section-title">🏠 נכסי הארגון</div>
+        <div id="org-props-list">
+          <div style="text-align:center;padding:16px;color:#888;font-size:12px;">טוען נכסים...</div>
+        </div>
+        <button class="btn-add" style="margin-top:12px;" onclick="showPage('add-property',document.getElementById('nav-add'))">+ הוסף נכס לארגון</button>
+      </div>
+    </div>
+
     <!-- דשבורד שוכר -->
     <div class="page" id="page-tenant">
       <div class="page-title">🔑 הנכס שלי</div>
@@ -1002,7 +1065,7 @@ let role = 'owner';
 const roleDescs = {
   owner:'ניהול נכסים, חוזים והכנסות',
   tenant:'פרטי שכירות, שיקים ומסמכים',
-  agent:'נכסים פנויים לשיווק – מנוי 200 ₪/חודש'
+  organization:'ניהול נכסים ארגוניים עם מספר נציגים'
 };
 
 function setRole(r,el) {
@@ -1010,6 +1073,8 @@ function setRole(r,el) {
   document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('role-desc').textContent=roleDescs[r];
+  // הצג שדות ארגון רק אם נבחר ארגון
+  document.getElementById('org-fields').style.display=r==='organization'?'block':'none';
 }
 function setMode(m,el) {
   mode=m;
@@ -1061,10 +1126,39 @@ async function handleAuth() {
         const{data:invite}=await sb.from('tenant_properties')
           .select('*').eq('invited_email',email).eq('status','מוזמן').limit(1);
         const finalRole=invite&&invite.length>0?'tenant':role;
-        await sb.from('users').insert({id:data.user.id,email,full_name:fullName||email.split('@')[0],role:finalRole});
+        
+        // אם ארגון — צור רשומת ארגון
+        let orgId=null;
+        if(role==='organization'){
+          const orgName=document.getElementById('org-name').value.trim();
+          const orgNumber=document.getElementById('org-number').value.trim();
+          const orgContact=document.getElementById('org-contact').value.trim();
+          if(orgName){
+            const{data:org}=await sb.from('organizations').insert({
+              name:orgName, company_number:orgNumber,
+              contact_name:orgContact||fullName, email
+            }).select().single();
+            if(org) orgId=org.id;
+          }
+        }
+
+        await sb.from('users').insert({
+          id:data.user.id, email,
+          full_name:fullName||document.getElementById('org-contact').value.trim()||email.split('@')[0],
+          role:finalRole==='tenant'?'tenant':role,
+          organization_id:orgId
+        });
+
         // עדכן סטטוס ההזמנה
         if(invite&&invite.length>0){
           await sb.from('tenant_properties').update({tenant_id:data.user.id,status:'פעיל'}).eq('id',invite[0].id);
+        }
+
+        // הוסף כמנהל ארגון
+        if(orgId){
+          await sb.from('organization_members').insert({
+            organization_id:orgId, user_id:data.user.id, role:'מנהל'
+          });
         }
       }
       showMsg('auth-msg','success','✓ נרשמת בהצלחה! כעת התחבר.');
@@ -1099,6 +1193,12 @@ async function enterDashboard(user) {
     document.getElementById('nav-tenant').style.display='block';
     showPage('tenant',document.getElementById('nav-tenant'));
     loadTenantDashboard(user);
+  }
+  // ארגון — הצג טאב ארגון
+  if(profile?.role==='organization'){
+    document.getElementById('nav-org').style.display='block';
+    document.getElementById('nav-add').style.display='block';
+    document.getElementById('nav-props').style.display='block';
   }
   document.getElementById('dash-uname').textContent=name;
   document.getElementById('dash-avatar').textContent=name.charAt(0);
@@ -1324,6 +1424,7 @@ function showPdTab(id, el) {
   if(id==='insurance'&&currentProp) loadInsurance(currentProp.id);
   if(id==='expenses'&&currentProp) loadExpenses(currentProp.id);
   if(id==='admin') loadAdminUsers();
+  if(id==='org') loadOrgDashboard(currentUser);
 }
 
 document.addEventListener('change', function(e) {
@@ -1825,6 +1926,84 @@ async function stopImpersonate() {
 
   showPage('admin', document.getElementById('nav-admin'));
   loadAdminUsers();
+}
+
+// ── ORGANIZATION ─────────────────────────────────
+async function loadOrgDashboard(user) {
+  const{data:profile}=await sb.from('users').select('*').eq('id',user.id).single();
+  if(!profile?.organization_id) return;
+
+  const{data:org}=await sb.from('organizations').select('*').eq('id',profile.organization_id).single();
+  if(!org) return;
+
+  document.getElementById('org-name-display').textContent=org.name;
+  document.getElementById('org-detail-name').textContent=org.name||'—';
+  document.getElementById('org-detail-number').textContent=org.company_number||'—';
+  document.getElementById('org-detail-contact').textContent=org.contact_name||'—';
+  document.getElementById('org-detail-email').textContent=org.email||'—';
+
+  // טען נציגים
+  const{data:members}=await sb.from('organization_members')
+    .select('*,users(full_name,email,role)').eq('organization_id',org.id);
+
+  const membersList=document.getElementById('org-members-list');
+  if(members&&members.length>0){
+    membersList.innerHTML=members.map(m=>`
+      <div style="background:white;border:1px solid #B5D4F4;border-radius:8px;padding:8px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#042C53;">${m.users?.full_name||'—'}</div>
+          <div style="font-size:11px;color:#888;">${m.users?.email||'—'}</div>
+        </div>
+        <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:${m.role==='מנהל'?'#FFF3E0':'#E6F1FB'};color:${m.role==='מנהל'?'#8A6000':'#185FA5'};font-weight:700;">${m.role}</span>
+      </div>
+    `).join('');
+  } else {
+    membersList.innerHTML='<div style="font-size:12px;color:#888;padding:8px;">אין נציגים עדיין</div>';
+  }
+
+  // טען נכסי ארגון
+  const{data:props}=await sb.from('properties').select('*').eq('organization_id',org.id);
+  const propsList=document.getElementById('org-props-list');
+  if(props&&props.length>0){
+    propsList.innerHTML=props.map(p=>`
+      <div style="background:#F5F9FF;border:1px solid #E6F1FB;border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#042C53;">${ICONS[p.type]||'🏠'} ${p.address}${p.unit?' '+p.unit:''}</div>
+          <div style="font-size:11px;color:#888;">${p.type||''} ${p.floor?'| קומה '+p.floor:''}</div>
+        </div>
+        <span class="badge ${p.status==='מושכר'?'badge-rented':p.status==='בשיפוץ'?'badge-renov':'badge-vacant'}">${p.status}</span>
+      </div>
+    `).join('');
+  } else {
+    propsList.innerHTML='<div style="font-size:12px;color:#888;text-align:center;padding:16px;">אין נכסים — הוסף נכס ראשון</div>';
+  }
+}
+
+async function addOrgMember() {
+  const email=document.getElementById('member-email').value.trim();
+  const memberRole=document.getElementById('member-role').value;
+  if(!email){showMsg('org-msg','error','נא למלא מייל');return;}
+
+  const{data:profile}=await sb.from('users').select('organization_id').eq('id',currentUser.id).single();
+  if(!profile?.organization_id){showMsg('org-msg','error','לא נמצא ארגון');return;}
+
+  // מצא משתמש לפי מייל
+  const{data:targetUser}=await sb.from('users').select('id').eq('email',email).single();
+  if(!targetUser){showMsg('org-msg','error','משתמש לא נמצא — הוא צריך להירשם קודם');return;}
+
+  const{error}=await sb.from('organization_members').insert({
+    organization_id:profile.organization_id,
+    user_id:targetUser.id,
+    role:memberRole
+  });
+
+  // עדכן את ה-organization_id של המשתמש
+  await sb.from('users').update({organization_id:profile.organization_id}).eq('id',targetUser.id);
+
+  if(error){showMsg('org-msg','error','שגיאה: '+error.message);return;}
+  showMsg('org-msg','success','✓ הנציג נוסף בהצלחה!');
+  document.getElementById('member-email').value='';
+  loadOrgDashboard(currentUser);
 }
 
 // ── TENANT DASHBOARD ─────────────────────────────
