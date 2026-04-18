@@ -200,6 +200,20 @@ body {
   <button class="btn-main" id="auth-btn" onclick="handleAuth()">כניסה למערכת</button>
   <div class="msg" id="auth-msg"></div>
   <div class="switch-mode" id="switch-link" onclick="toggleMode()">אין לך חשבון? הירשם עכשיו</div>
+  <div class="switch-mode" id="forgot-link" onclick="showForgot()" style="color:#888;font-size:11px;margin-top:6px;">שכחתי סיסמה</div>
+
+  <!-- טופס איפוס סיסמה -->
+  <div id="forgot-form" style="display:none;margin-top:14px;border-top:1px solid #E6F1FB;padding-top:14px;">
+    <div style="font-size:13px;font-weight:700;color:#042C53;margin-bottom:8px;">🔐 איפוס סיסמה</div>
+    <div style="font-size:12px;color:#185FA5;margin-bottom:12px;">הכנס את המייל שלך ונשלח לך קישור לאיפוס</div>
+    <div class="fg">
+      <label>כתובת מייל</label>
+      <input type="email" id="forgot-email" placeholder="you@example.com" />
+    </div>
+    <button class="btn-main" onclick="sendResetEmail()" id="reset-btn">📧 שלח קישור איפוס</button>
+    <div class="msg" id="reset-msg"></div>
+    <div class="switch-mode" onclick="hideForgot()" style="margin-top:10px;font-size:11px;">← חזור לכניסה</div>
+  </div>
 </div>
 
 <!-- DASHBOARD -->
@@ -1124,6 +1138,44 @@ const roleDescs = {
   tenant:'פרטי שכירות, שיקים ומסמכים',
   organization:'ניהול נכסים ארגוניים עם מספר נציגים'
 };
+
+function showForgot() {
+  document.getElementById('forgot-form').style.display='block';
+  document.getElementById('forgot-link').style.display='none';
+  document.getElementById('forgot-email').value=document.getElementById('email').value||'';
+  showMsg('reset-msg','','');
+}
+function hideForgot() {
+  document.getElementById('forgot-form').style.display='none';
+  document.getElementById('forgot-link').style.display='block';
+}
+async function sendResetEmail() {
+  const email=document.getElementById('forgot-email').value.trim();
+  if(!email){showMsg('reset-msg','error','נא למלא מייל');return;}
+  const btn=document.getElementById('reset-btn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span> שולח...';
+  const{error}=await sb.auth.resetPasswordForEmail(email,{
+    redirectTo: window.location.href
+  });
+  btn.disabled=false;
+  btn.innerHTML='📧 שלח קישור איפוס';
+  if(error){showMsg('reset-msg','error','שגיאה: '+error.message);return;}
+  showMsg('reset-msg','success','✓ קישור איפוס נשלח למייל שלך!');
+}
+
+// בדוק אם יש קישור איפוס בURL
+async function checkPasswordReset() {
+  const hash=window.location.hash;
+  if(hash.includes('type=recovery')){
+    const newPass=prompt('הכנס סיסמה חדשה (לפחות 6 תווים):');
+    if(newPass&&newPass.length>=6){
+      const{error}=await sb.auth.updateUser({password:newPass});
+      if(error){alert('שגיאה: '+error.message);}
+      else{alert('✓ הסיסמה עודכנה בהצלחה! כעת התחבר.');}
+    }
+  }
+}
 
 function setRole(r,el) {
   role=r;
@@ -2755,6 +2807,9 @@ async function deleteContractFile() {
   }
   document.getElementById('existing-contract-file').style.display='none';
 }
+
+// בדוק איפוס סיסמה בטעינה
+checkPasswordReset();
 
 sb.auth.getSession().then(({data:{session}})=>{
   if(session){currentUser=session.user;enterDashboard(session.user);}
