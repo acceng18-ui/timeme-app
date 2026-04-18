@@ -888,9 +888,15 @@ body {
             <label>סוג נכס *</label>
             <select id="p-type">
               <option value="דירה">🏠 דירה</option>
+              <option value="דירת גן">🌿 דירת גן</option>
+              <option value="פנטהאוס">👑 פנטהאוס</option>
+              <option value="וילה">🏡 וילה</option>
+              <option value="קוטג">🏘️ קוטג'</option>
               <option value="חנות">🏪 חנות</option>
               <option value="משרד">🏢 משרד</option>
               <option value="מחסן">📦 מחסן</option>
+              <option value="קרקע">🌍 קרקע</option>
+              <option value="משק">🌾 משק</option>
             </select>
           </div>
           <div class="fg">
@@ -1139,7 +1145,7 @@ const sb = supabase.createClient(SURL, SKEY, {
     detectSessionInUrl: false
   }
 });
-const ICONS = {'דירה':'🏠','חנות':'🏪','משרד':'🏢','מחסן':'📦'};
+const ICONS = {'דירה':'🏠','דירת גן':'🌿','פנטהאוס':'👑','וילה':'🏡','קוטג':'🏘️','חנות':'🏪','משרד':'🏢','מחסן':'📦','קרקע':'🌍','משק':'🌾'};
 let currentUser = null;
 let mode = 'login';
 let role = 'owner';
