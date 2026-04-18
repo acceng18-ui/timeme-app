@@ -657,6 +657,12 @@ body {
       </div>
 
       <!-- רשימת משתמשים -->
+      <!-- נכסים ממתינים לאימות -->
+      <div id="verify-section" style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:#042C53;margin-bottom:10px;">🔐 נכסים ממתינים לאימות בעלות</div>
+        <div id="verify-list"></div>
+      </div>
+
       <div id="admin-loading" style="text-align:center;padding:20px;color:#185FA5;font-size:13px;">
         <span style="border:2px solid #B5D4F4;border-top-color:#185FA5;border-radius:50%;width:20px;height:20px;display:inline-block;animation:spin 0.7s linear infinite;vertical-align:middle;margin-left:8px;"></span>
         טוען משתמשים...
@@ -882,7 +888,19 @@ body {
         </div>
         <div class="fg"><label>חניה</label><input id="p-parking" placeholder="חניה 46 – מכפיל" /></div>
 
-        <div class="form-section-title" style="margin-top:18px;">👤 פרטי בעל הנכס (המשכיר)</div>
+        <div class="form-section-title" style="margin-top:18px;">🔐 אימות בעלות</div>
+        <div style="background:#FFF3E0;border:1.5px solid #FFB74D;border-radius:12px;padding:14px;margin-bottom:14px;">
+          <div style="font-size:12px;color:#8A6000;margin-bottom:10px;">
+            📋 העלה שטר מכר או נסח טאבו לאימות הבעלות על הנכס.<br>
+            הנכס יסומן <strong>🟢 מאומת</strong> לאחר בדיקת המסמך.
+          </div>
+          <div class="fg">
+            <label>מסמך בעלות (PDF / תמונה)</label>
+            <input type="file" id="p-verify-doc" accept=".pdf,.jpg,.jpeg,.png" style="background:white;padding:8px;" />
+          </div>
+        </div>
+
+        <div class="form-section-title" style="margin-top:4px;">👤 פרטי בעל הנכס (המשכיר)</div>
 
         <div class="form-row-2">
           <div class="fg"><label>שם מלא *</label><input id="o-name" placeholder="ישראל ישראלי" /></div>
@@ -1254,6 +1272,14 @@ async function loadProperties() {
         <div class="prop-name">${fullAddr}</div>
         ${p.floor?`<div class="prop-detail" style="color:#185FA5;">קומה ${p.floor}${p.parking?' | 🚗 '+p.parking:''}</div>`:''}
         ${ownerLine?`<div class="prop-detail" style="color:#888;">👤 ${ownerLine}</div>`:''}
+        <div style="margin-top:4px;">
+          ${p.verification_status==='מאומת'?
+            '<span style="font-size:10px;background:#E1F5EE;color:#0F6E56;padding:2px 8px;border-radius:10px;font-weight:700;">🟢 בעלות מאומתת</span>':
+            p.verification_status==='ממתין לאימות'?
+            '<span style="font-size:10px;background:#FFF3E0;color:#8A6000;padding:2px 8px;border-radius:10px;font-weight:700;">🟡 ממתין לאימות</span>':
+            '<span style="font-size:10px;background:#FCE4EC;color:#880E4F;padding:2px 8px;border-radius:10px;font-weight:700;">🔴 בעלות לא אומתה</span>'
+          }
+        </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
         <span class="badge ${p.status==='מושכר'?'badge-rented':p.status==='בשיפוץ'?'badge-renov':'badge-vacant'}">${p.status}</span>
@@ -1289,7 +1315,29 @@ async function saveProperty() {
   const btn=document.getElementById('save-btn');
   btn.disabled=true;
   btn.innerHTML='<span class="spinner"></span> שומר...';
-  const{error}=await sb.from('properties').insert({owner_id:currentUser.id,address,type,status,unit,floor,parking,owner_name:oName,owner_id_type:oIdType,owner_id_num:oId,owner_phone:oPhone,owner_email:oEmail,owner_address:oAddress,notes});
+  // העלאת מסמך אימות
+  let verifyUrl=null, verifyName=null, verifyStatus='לא הוגש';
+  const verifyFile=document.getElementById('p-verify-doc').files[0];
+  if(verifyFile){
+    const ext=verifyFile.name.split('.').pop();
+    const fileName='verify_'+Date.now()+'.'+ext;
+    const{data:vData,error:vErr}=await sb.storage.from('contracts').upload(fileName,verifyFile,{upsert:true});
+    if(!vErr){
+      const{data:vUrl}=sb.storage.from('contracts').getPublicUrl(fileName);
+      verifyUrl=vUrl.publicUrl;
+      verifyName=verifyFile.name;
+      verifyStatus='ממתין לאימות';
+    }
+  }
+
+  const{error}=await sb.from('properties').insert({
+    owner_id:currentUser.id,address,type,status,unit,floor,parking,
+    owner_name:oName,owner_id_type:oIdType,owner_id_num:oId,
+    owner_phone:oPhone,owner_email:oEmail,owner_address:oAddress,notes,
+    verification_status:verifyStatus,
+    verification_doc_url:verifyUrl,
+    verification_doc_name:verifyName
+  });
   btn.disabled=false;
   btn.innerHTML='💾 שמור נכס';
   if(error){showMsg('prop-msg','error','שגיאה: '+error.message);return;}
@@ -1423,7 +1471,7 @@ function showPdTab(id, el) {
   if(id==='checks') loadPayments();
   if(id==='insurance'&&currentProp) loadInsurance(currentProp.id);
   if(id==='expenses'&&currentProp) loadExpenses(currentProp.id);
-  if(id==='admin') loadAdminUsers();
+  if(id==='admin') { loadAdminUsers(); loadPendingVerifications(); }
   if(id==='org') loadOrgDashboard(currentUser);
 }
 
@@ -1926,6 +1974,57 @@ async function stopImpersonate() {
 
   showPage('admin', document.getElementById('nav-admin'));
   loadAdminUsers();
+}
+
+// ── VERIFICATION ─────────────────────────────────
+async function loadPendingVerifications() {
+  const{data}=await sb.from('properties')
+    .select('*').eq('verification_status','ממתין לאימות')
+    .order('created_at',{ascending:false});
+
+  const list=document.getElementById('verify-list');
+  if(!data||data.length===0){
+    list.innerHTML='<div style="background:#E1F5EE;border:1px solid #5DCAA5;border-radius:10px;padding:12px;text-align:center;font-size:12px;color:#0F6E56;">✅ אין נכסים ממתינים לאימות</div>';
+    return;
+  }
+
+  list.innerHTML=data.map(p=>`
+    <div style="background:#FFF3E0;border:1.5px solid #FFB74D;border-radius:12px;padding:14px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#042C53;">${p.address}${p.unit?' '+p.unit:''}</div>
+          <div style="font-size:11px;color:#888;">בעלים: ${p.owner_name||'—'} | ${p.owner_id_type||'ת.ז'}: ${p.owner_id_num||'—'}</div>
+        </div>
+        <span style="font-size:11px;background:#FFF3E0;color:#8A6000;padding:3px 10px;border-radius:20px;border:1px solid #FFB74D;font-weight:700;">🟡 ממתין לאימות</span>
+      </div>
+      ${p.verification_doc_url?`
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <a href="${p.verification_doc_url}" target="_blank">
+            <button style="background:#E6F1FB;color:#185FA5;border:1px solid #B5D4F4;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;">📄 צפה במסמך — ${p.verification_doc_name||'מסמך'}</button>
+          </a>
+        </div>
+      `:'<div style="font-size:11px;color:#E24B4A;margin-bottom:10px;">⚠️ לא הועלה מסמך</div>'}
+      <div style="display:flex;gap:8px;">
+        <button onclick="verifyProperty('${p.id}','מאומת')" style="background:#1D9E75;color:white;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;">✅ אמת בעלות</button>
+        <button onclick="verifyProperty('${p.id}','נדחה')" style="background:#E24B4A;color:white;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;">❌ דחה</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function verifyProperty(propId, status) {
+  const msg=status==='מאומת'?'לאמת את בעלות הנכס?':'לדחות את מסמך הבעלות?';
+  if(!confirm(msg))return;
+
+  const{error}=await sb.from('properties').update({
+    verification_status:status,
+    verified_at:new Date().toISOString(),
+    verified_by:currentUser.id
+  }).eq('id',propId);
+
+  if(error){alert('שגיאה: '+error.message);return;}
+  loadPendingVerifications();
+  loadProperties();
 }
 
 // ── ORGANIZATION ─────────────────────────────────
