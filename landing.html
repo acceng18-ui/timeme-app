@@ -72,6 +72,17 @@ body { font-family: Arial, Helvetica, sans-serif; direction: rtl; background: #F
 .prop-card {
   background: white; border: 1.5px solid #B5D4F4; border-radius: 16px;
   overflow: hidden; transition: box-shadow 0.2s, border-color 0.2s;
+  box-shadow: 0 2px 12px rgba(4,44,83,0.1);
+}
+@media (max-width: 600px) {
+  .props-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 22px; }
+  .hero-stats { gap: 20px; }
+  .filter-bar { padding: 10px 14px; }
+  .main { padding: 14px; }
+  .card-address { font-size: 14px; }
+  .card-actions { flex-direction: column; }
+  .btn-photos, .btn-offer { width: 100%; }
 }
 .prop-card:hover { box-shadow: 0 4px 20px rgba(24,95,165,0.15); border-color: #185FA5; }
 
@@ -426,8 +437,8 @@ function renderCards(props, inquiries) {
         <div class="card-marketing">${p.marketing_notes||'נכס מטופח ומוכן לאכלוס'}</div>
         <div style="margin-bottom:8px;">
           ${p.verification_status==='מאומת'?
-            '<span style="font-size:11px;background:#E1F5EE;color:#0F6E56;padding:3px 10px;border-radius:20px;font-weight:700;">🟢 בעלות מאומתת</span>':
-            '<span style="font-size:11px;background:#FCE4EC;color:#880E4F;padding:3px 10px;border-radius:20px;font-weight:700;">🔴 בעלות לא אומתה</span>'
+            '<span style="font-size:11px;background:#E1F5EE;color:#0F6E56;padding:3px 10px;border-radius:20px;font-weight:700;">🟢 אומת</span>':
+            '<span style="font-size:11px;background:#FCE4EC;color:#880E4F;padding:3px 10px;border-radius:20px;font-weight:700;">🔴 לא אומת</span>'
           }
         </div>
         ${inqCount>0?`<div class="inquiry-count"><div class="inq-dot"></div>${inqCount} פניות התקבלו</div>`:''}
