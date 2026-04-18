@@ -429,6 +429,34 @@ body {
               <div id="verify-docs-links" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"></div>
             </div>
 
+            <!-- העלאת חוזה שכירות -->
+            <div style="background:#E6F1FB;border:1.5px dashed #185FA5;border-radius:12px;padding:16px;margin-bottom:14px;">
+              <div class="form-section-title" style="margin-bottom:8px;border-right-color:#185FA5;">📄 העלאת חוזה שכירות</div>
+              <p style="font-size:12px;color:#185FA5;margin-bottom:12px;">העלה קובץ PDF או Word של חוזה השכירות — יישמר במערכת לצפייה בכל עת</p>
+              <div class="fg">
+                <label>בחר קובץ (PDF / Word)</label>
+                <input type="file" id="contract-file" accept=".pdf,.doc,.docx" style="background:white;padding:8px;" />
+              </div>
+              <button class="btn-main" style="width:auto;padding:9px 20px;" onclick="uploadContractFile()" id="upload-contract-btn">📤 העלה חוזה</button>
+              <div class="msg" id="upload-contract-msg"></div>
+            </div>
+
+            <!-- קובץ חוזה קיים -->
+            <div id="existing-contract-file" style="display:none;background:#E1F5EE;border:1px solid #5DCAA5;border-radius:12px;padding:14px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:#0F6E56;">📄 קובץ חוזה מועלה</div>
+                  <div style="font-size:11px;color:#1D9E75;margin-top:2px;" id="contract-file-name"></div>
+                </div>
+                <div style="display:flex;gap:8px;">
+                  <a id="contract-file-link" href="#" target="_blank">
+                    <button class="btn-add" style="padding:7px 14px;font-size:12px;">👁️ צפה</button>
+                  </a>
+                  <button onclick="deleteContractFile()" style="background:#FCE4EC;color:#880E4F;border:1px solid #F48FB1;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;">🗑️ מחק</button>
+                </div>
+              </div>
+            </div>
+
           </div>
 
           <!-- TAB: תשלומים -->
