@@ -420,6 +420,12 @@ function renderCards(props, inquiries) {
         <div class="card-id">📍 תעודת זהות נכס: ${fullAddr}</div>
         ${features.length>0?`<div class="card-features">${features.map(f=>`<span class="feat-tag">${f}</span>`).join('')}</div>`:''}
         <div class="card-marketing">${p.marketing_notes||'נכס מטופח ומוכן לאכלוס'}</div>
+        <div style="margin-bottom:8px;">
+          ${p.verification_status==='מאומת'?
+            '<span style="font-size:11px;background:#E1F5EE;color:#0F6E56;padding:3px 10px;border-radius:20px;font-weight:700;">🟢 בעלות מאומתת</span>':
+            '<span style="font-size:11px;background:#FCE4EC;color:#880E4F;padding:3px 10px;border-radius:20px;font-weight:700;">🔴 בעלות לא אומתה</span>'
+          }
+        </div>
         ${inqCount>0?`<div class="inquiry-count"><div class="inq-dot"></div>${inqCount} פניות התקבלו</div>`:''}
         <div class="card-actions">
           <button class="btn-photos" onclick="openModal('${p.id}','${fullAddr.replace(/'/g,"\\'")}',0,true)">📸 בקש תמונות</button>
