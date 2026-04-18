@@ -401,32 +401,32 @@ body {
               </div>
             </div>
 
-            <!-- העלאת קובץ חוזה -->
-            <div style="background:#F5F9FF;border:1.5px dashed #B5D4F4;border-radius:12px;padding:16px;margin-bottom:14px;">
-              <div class="form-section-title" style="margin-bottom:12px;">📎 העלאת חוזה מעורך דין</div>
-              <p style="font-size:12px;color:#185FA5;margin-bottom:12px;">העלה קובץ PDF או Word של החוזה — יישמר במערכת לצפייה בכל עת</p>
+            <!-- אימות בעלות -->
+            <div style="background:#FFF3E0;border:1.5px dashed #FFB74D;border-radius:12px;padding:16px;margin-bottom:14px;">
+              <div class="form-section-title" style="margin-bottom:8px;border-right-color:#FF8F00;">🔐 אימות בעלות על הנכס</div>
+              <p style="font-size:12px;color:#8A6000;margin-bottom:14px;">העלה מסמך בעלות וצילום ת.ז לאימות — הנכס יסומן 🟡 עד לאישור המערכת</p>
+
+              <!-- קובץ בעלות -->
               <div class="fg">
-                <label>בחר קובץ (PDF / Word)</label>
-                <input type="file" id="contract-file" accept=".pdf,.doc,.docx" style="background:white;padding:8px;" />
+                <label>📄 מסמך בעלות (שטר מכר / נסח טאבו)</label>
+                <input type="file" id="ownership-doc" accept=".pdf,.jpg,.jpeg,.png" style="background:white;padding:8px;" />
               </div>
-              <button class="btn-main" style="width:auto;padding:9px 20px;" onclick="uploadContractFile()" id="upload-contract-btn">📤 העלה קובץ</button>
-              <div class="msg" id="upload-contract-msg"></div>
+
+              <!-- צילום ת.ז -->
+              <div class="fg">
+                <label>🪪 צילום ת.ז של הבעלים</label>
+                <input type="file" id="id-doc" accept=".jpg,.jpeg,.png,.pdf" style="background:white;padding:8px;" />
+              </div>
+
+              <button class="btn-main" style="width:auto;padding:9px 20px;background:linear-gradient(135deg,#FF8F00,#FFB74D);" onclick="uploadOwnershipDocs()" id="upload-ownership-btn">📤 העלה מסמכים לאימות</button>
+              <div class="msg" id="upload-ownership-msg"></div>
             </div>
 
-            <!-- קובץ קיים -->
-            <div id="existing-contract-file" style="display:none;background:#E1F5EE;border:1px solid #5DCAA5;border-radius:12px;padding:14px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-                <div>
-                  <div style="font-size:13px;font-weight:700;color:#0F6E56;">📄 קובץ חוזה מועלה</div>
-                  <div style="font-size:11px;color:#1D9E75;margin-top:2px;" id="contract-file-name"></div>
-                </div>
-                <div style="display:flex;gap:8px;">
-                  <a id="contract-file-link" href="#" target="_blank">
-                    <button class="btn-add" style="padding:7px 14px;font-size:12px;">👁️ צפה</button>
-                  </a>
-                  <button onclick="deleteContractFile()" style="background:#FCE4EC;color:#880E4F;border:1px solid #F48FB1;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;">🗑️ מחק</button>
-                </div>
-              </div>
+            <!-- סטטוס אימות -->
+            <div id="verify-status-display" style="display:none;border-radius:12px;padding:14px;margin-bottom:14px;">
+              <div style="font-size:13px;font-weight:700;" id="verify-status-text"></div>
+              <div style="font-size:11px;margin-top:4px;" id="verify-status-sub"></div>
+              <div id="verify-docs-links" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"></div>
             </div>
 
           </div>
