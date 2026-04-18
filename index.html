@@ -878,6 +878,17 @@ body {
             </select>
           </div>
         </div>
+
+        <!-- סוג יחס לנכס — מוצג רק לארגון -->
+        <div class="fg" id="ownership-type-row" style="display:none;">
+          <label>סוג יחס הארגון לנכס *</label>
+          <select id="p-ownership-type">
+            <option value="בעלות להשכרה">💰 הארגון בעלים ומשכיר לאחרים</option>
+            <option value="בעלות לשימוש עצמי">🏢 הארגון בעלים ומשתמש בנכס</option>
+            <option value="שכירות לשימוש עצמי">🔑 הארגון שוכר נכס לשימושו</option>
+          </select>
+          <div id="ownership-type-desc" style="font-size:11px;color:#185FA5;margin-top:6px;padding:6px 10px;background:#E6F1FB;border-radius:6px;"></div>
+        </div>
         <div class="form-row-2">
           <div class="fg">
             <label>רחוב ומספר *</label>
@@ -1249,6 +1260,26 @@ async function enterDashboard(user) {
   document.getElementById('dash-uname').textContent=name;
   document.getElementById('dash-avatar').textContent=name.charAt(0);
   currentUser=user;
+  if(profile?.role==='organization'){
+    const row=document.getElementById('ownership-type-row');
+    if(row) row.style.display='block';
+    setTimeout(()=>{
+      const sel=document.getElementById('p-ownership-type');
+      if(sel){
+        const updateDesc=()=>{
+          const descs={
+            'בעלות להשכרה':'הנכס בבעלות הארגון ומושכר לגורם חיצוני',
+            'בעלות לשימוש עצמי':'הנכס בבעלות הארגון ומשמש את עובדיו',
+            'שכירות לשימוש עצמי':'הארגון שוכר נכס מגורם חיצוני'
+          };
+          const desc=document.getElementById('ownership-type-desc');
+          if(desc) desc.textContent=descs[sel.value]||'';
+        };
+        sel.addEventListener('change',updateDesc);
+        updateDesc();
+      }
+    },500);
+  }
   loadProperties();
 }
 
@@ -1358,13 +1389,17 @@ async function saveProperty() {
     }
   }
 
+  const ownershipEl=document.getElementById('p-ownership-type');
+  const ownershipType=ownershipEl?ownershipEl.value:null;
+
   const{error}=await sb.from('properties').insert({
     owner_id:currentUser.id,address,type,status,unit,floor,parking,
     owner_name:oName,owner_id_type:oIdType,owner_id_num:oId,
     owner_phone:oPhone,owner_email:oEmail,owner_address:oAddress,notes,
     verification_status:verifyStatus,
     verification_doc_url:verifyUrl,
-    verification_doc_name:verifyName
+    verification_doc_name:verifyName,
+    ownership_type:ownershipType
   });
   btn.disabled=false;
   btn.innerHTML='💾 שמור נכס';
