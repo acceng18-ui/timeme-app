@@ -910,20 +910,36 @@ body {
           <div class="msg" id="tp-msg"></div>
         </div>
 
-        <!-- פרסום נכס -->
+        <!-- פרסום נכס עצמאי -->
         <div class="form-card" id="tenant-listing-card">
-          <div class="form-section-title">📢 פרסום הנכס לשוכר אחר</div>
-          <p style="font-size:12px;color:#185FA5;margin-bottom:12px;">רוצה לעזוב לפני הזמן? פרסם את הנכס ומצא שוכר שיחליף אותך</p>
+          <div class="form-section-title">📢 פרסם את הנכס שלך</div>
+          <p style="font-size:12px;color:#185FA5;margin-bottom:12px;">רוצה לעזוב? פרסם את הנכס ומצא שוכר שיחליף אותך — גם אם בעל הנכס לא רשום במערכת</p>
+
+          <!-- סטטוס פרסום קיים -->
           <div id="listing-status-display" style="display:none;border-radius:10px;padding:10px 14px;margin-bottom:12px;">
             <div style="font-size:13px;font-weight:700;" id="listing-status-text"></div>
           </div>
+
           <div id="listing-form">
+            <!-- כתובת הנכס -->
+            <div class="fg">
+              <label>כתובת הנכס *</label>
+              <input id="tl-address" placeholder="רוטשילד 22, תל אביב, דירה 4" oninput="checkAddressExists()" />
+              <div id="address-check-result" style="font-size:11px;margin-top:4px;"></div>
+            </div>
+
+            <!-- התראה על בעל נכס קיים -->
+            <div id="owner-found-alert" style="display:none;background:#FFF3E0;border:1.5px solid #FFB74D;border-radius:10px;padding:12px;margin-bottom:12px;">
+              <div style="font-size:12px;font-weight:700;color:#8A6000;margin-bottom:8px;">🏠 נמצא בעל נכס לכתובת זו במערכת!</div>
+              <div style="font-size:11px;color:#8A6000;margin-bottom:10px;">לאחר פרסום תישלח בקשת קישור לבעל הנכס לאישור</div>
+            </div>
+
             <div class="form-row-2">
-              <div class="fg"><label>תאריך פינוי מבוקש</label><input id="tl-vacate" type="date" /></div>
+              <div class="fg"><label>תאריך פינוי מבוקש *</label><input id="tl-vacate" type="date" /></div>
               <div class="fg"><label>שכ"ד (₪/חודש)</label><input id="tl-rent" type="number" placeholder="8250" /></div>
             </div>
             <div class="fg"><label>הערות לשוכר הבא</label><textarea id="tl-notes" placeholder="פרטים על הנכס, השכנים, הסביבה..." rows="2"></textarea></div>
-            <button class="btn-main" style="width:auto;padding:9px 20px;background:#1D9E75;" onclick="publishTenantListing()" id="publish-listing-btn">📢 פרסם נכס</button>
+            <button class="btn-main" style="width:auto;padding:9px 20px;background:#534AB7;" onclick="publishTenantListing()" id="publish-listing-btn">📢 פרסם נכס</button>
             <div class="msg" id="tl-msg"></div>
           </div>
         </div>
@@ -2470,38 +2486,74 @@ async function loadTenantProfile() {
   }
 }
 
+let _foundPropertyId=null;
+
+async function checkAddressExists() {
+  const addr=document.getElementById('tl-address').value.trim();
+  const result=document.getElementById('address-check-result');
+  const alert=document.getElementById('owner-found-alert');
+  _foundPropertyId=null;
+
+  if(addr.length<5){result.textContent='';alert.style.display='none';return;}
+
+  const{data:props}=await sb.from('properties').select('id,owner_id,address,unit').ilike('address','%'+addr+'%');
+  if(props&&props.length>0){
+    const p=props[0];
+    _foundPropertyId=p.id;
+    if(p.owner_id){
+      result.style.color='#8A6000';
+      result.textContent='✓ נכס נמצא במערכת — יישלח לאישור בעל הנכס';
+      alert.style.display='block';
+    } else {
+      result.style.color='#0F6E56';
+      result.textContent='✓ נכס נמצא במערכת';
+      alert.style.display='none';
+    }
+  } else {
+    result.style.color='#185FA5';
+    result.textContent='ℹ️ כתובת לא קיימת במערכת — יפורסם כנכס חדש';
+    alert.style.display='none';
+  }
+}
+
 async function publishTenantListing() {
   if(!currentUser)return;
+  const address=document.getElementById('tl-address').value.trim();
   const vacate=document.getElementById('tl-vacate').value;
   const rent=document.getElementById('tl-rent').value;
   const notes=document.getElementById('tl-notes').value.trim();
 
+  if(!address){showMsg('tl-msg','error','נא למלא כתובת');return;}
   if(!vacate){showMsg('tl-msg','error','נא למלא תאריך פינוי');return;}
 
   const btn=document.getElementById('publish-listing-btn');
   btn.disabled=true;
   btn.innerHTML='<span class="spinner"></span> מפרסם...';
 
-  // מצא את הנכס של השוכר
-  const{data:tenantProp}=await sb.from('tenant_properties')
-    .select('*').eq('tenant_id',currentUser.id).eq('status','פעיל').single();
+  let propId=_foundPropertyId;
+  let hasOwner=false;
+  let status='פורסם ללא בעל נכס';
 
-  if(!tenantProp){showMsg('tl-msg','error','לא נמצא נכס מקושר');btn.disabled=false;btn.innerHTML='📢 פרסם נכס';return;}
-
-  // בדוק אם יש בעל נכס במערכת
-  const{data:prop}=await sb.from('properties').select('owner_id').eq('id',tenantProp.property_id).single();
-  const hasOwner=prop?.owner_id?true:false;
-  const status=hasOwner?'ממתין לאישור':'פורסם ללא בעל נכס';
-
-  const{data:contract}=await sb.from('contracts').select('id').eq('property_id',tenantProp.property_id).single();
+  if(propId){
+    const{data:prop}=await sb.from('properties').select('owner_id').eq('id',propId).single();
+    hasOwner=prop?.owner_id?true:false;
+    status=hasOwner?'ממתין לאישור':'פורסם ללא בעל נכס';
+  } else {
+    // צור נכס חדש בסיסי
+    const{data:newProp}=await sb.from('properties').insert({
+      address,status:'מושכר',type:'דירה',
+      owner_id:null
+    }).select().single();
+    if(newProp) propId=newProp.id;
+  }
 
   const{error}=await sb.from('tenant_listings').insert({
     tenant_id:currentUser.id,
-    property_id:tenantProp.property_id,
-    contract_id:contract?.id||null,
+    property_id:propId,
     vacate_date:vacate,
     monthly_rent:parseFloat(rent)||null,
-    notes,status
+    notes,status,
+    owner_approved:!hasOwner
   });
 
   btn.disabled=false;
@@ -2512,6 +2564,7 @@ async function publishTenantListing() {
   const statusEl=document.getElementById('listing-status-display');
   const statusText=document.getElementById('listing-status-text');
   statusEl.style.display='block';
+  document.getElementById('listing-form').style.display='none';
 
   if(hasOwner){
     statusEl.style.cssText='display:block;background:#FFF3E0;border:1px solid #FFB74D;border-radius:10px;padding:10px 14px;margin-bottom:12px;';
