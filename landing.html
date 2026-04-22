@@ -427,6 +427,31 @@ async function loadProperties() {
   }
   allProps=allData;
 
+  // טען פרסומי שוכרים מאושרים
+  const{data:tenantListings}=await sb.from('tenant_listings')
+    .select('*').in('status',['פורסם ללא בעל נכס','מאושר']);
+
+  let tenantProps=[];
+  if(tenantListings&&tenantListings.length>0){
+    const tPropIds=tenantListings.map(l=>l.property_id);
+    const{data:tProps}=await sb.from('properties').select('*').in('id',tPropIds);
+    if(tProps){
+      tenantProps=tProps.map(p=>{
+        const listing=tenantListings.find(l=>l.property_id===p.id);
+        return {...p, _tenantListing:true, _vacateDate:listing?.vacate_date, _listingNotes:listing?.notes};
+      });
+    }
+  }
+
+  const allData=[...(vacantProps||[]), ...soonProps, ...tenantProps];
+
+  if(allData.length===0){
+    document.getElementById('empty').style.display='block';
+    updateStats([],[]);
+    return;
+  }
+  allProps=allData;
+
   const{data:inquiries}=await sb.from('property_inquiries').select('property_id');
   renderCards(allData, inquiries||[]);
   updateStats(vacantProps||[], inquiries||[]);
@@ -474,14 +499,16 @@ function renderCards(props, inquiries) {
     }
 
     return `<div class="prop-card">
-      <div class="card-header" style="${p._endingSoon?'background:linear-gradient(135deg,#1a4a2e,#1D9E75);':''}">
+      <div class="card-header" style="${p._endingSoon?'background:linear-gradient(135deg,#1a4a2e,#1D9E75);':p._tenantListing?'background:linear-gradient(135deg,#2C1A4A,#534AB7);':''}">
         <div class="card-type-badge">${ICONS[p.type]||'🏠'} ${p.type||'נכס'}</div>
         ${p._endingSoon?
           `<div class="card-price-badge" style="background:#FF8F00;">🔜 מתפנה בקרוב</div>`:
+          p._tenantListing?
+          `<div class="card-price-badge" style="background:#534AB7;">🔑 פרסום שוכר</div>`:
           '<div class="card-price-badge">פנוי</div>'
         }
         <div class="card-address">${fullAddr}</div>
-        <div class="card-sub">${p._endingSoon?`עומד להתפנות בעוד ${daysLeft} ימים`:(p.air_direction||'')+' '+(p.condition?'| '+p.condition:'')}</div>
+        <div class="card-sub">${p._endingSoon?`עומד להתפנות בעוד ${daysLeft} ימים`:p._tenantListing?`פינוי מבוקש: ${p._vacateDate?fmtDate(p._vacateDate):'—'}`:(p.air_direction||'')+' '+(p.condition?'| '+p.condition:'')}</div>
       </div>
       <div class="card-body">
         <div class="card-id">📍 תעודת זהות נכס: ${fullAddr}</div>
