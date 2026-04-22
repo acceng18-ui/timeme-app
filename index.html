@@ -309,6 +309,17 @@ body {
               <div class="info-row-pd" style="grid-column:1/-1;"><span class="info-lbl">כתובת</span><span id="pd-oaddress" class="info-val-pd"></span></div>
             </div>
 
+            <!-- אישור פרסום שוכר -->
+            <div id="tenant-listing-approval" style="display:none;margin-top:14px;">
+              <div class="form-section-title" style="background:#EEEDFE;border-right-color:#534AB7;">🔑 בקשת פרסום מהשוכר</div>
+              <div id="tenant-listing-details" style="background:#F5F4FF;border:1px solid #C5C2F0;border-radius:10px;padding:12px;margin-bottom:10px;font-size:12px;"></div>
+              <div style="display:flex;gap:8px;">
+                <button onclick="approveTenantListing(true)" style="background:#1D9E75;color:white;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;">✅ אשר פרסום</button>
+                <button onclick="approveTenantListing(false)" style="background:#E24B4A;color:white;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;">❌ דחה</button>
+              </div>
+              <div class="msg" id="listing-approval-msg"></div>
+            </div>
+
             <!-- הזמנת שוכר -->
             <div style="margin-top:14px;">
               <div class="form-section-title" style="background:#E8F5E9;border-right-color:#1D9E75;">🔑 הזמנת שוכר</div>
@@ -864,11 +875,57 @@ body {
         </div>
 
         <!-- פנייה לבעל נכס -->
-        <div class="form-card">
+        <div class="form-card" style="margin-bottom:12px;">
           <div class="form-section-title">📨 פנייה לבעל הנכס</div>
           <div class="fg"><textarea id="t-message" placeholder="כתוב כאן את פנייתך..." rows="3"></textarea></div>
           <button class="btn-main" style="width:auto;padding:9px 20px;" onclick="sendTenantMessage()">📨 שלח פנייה</button>
           <div class="msg" id="t-msg"></div>
+        </div>
+
+        <!-- כרטיס שוכר -->
+        <div class="form-card" style="margin-bottom:12px;">
+          <div class="form-section-title">👤 הכרטיס שלי</div>
+          <p style="font-size:12px;color:#185FA5;margin-bottom:12px;">מלא את הפרטים שלך — בעלי נכסים יוכלו לראות אותך כשתגיש הצעה</p>
+          <div class="form-row-2">
+            <div class="fg"><label>שם מלא</label><input id="tp-name" placeholder="ישראל ישראלי" /></div>
+            <div class="fg"><label>גיל</label><input id="tp-age" type="number" placeholder="30" /></div>
+          </div>
+          <div class="form-row-2">
+            <div class="fg"><label>מקצוע</label><input id="tp-occupation" placeholder="מהנדס תוכנה" /></div>
+            <div class="fg"><label>מספר דיירים</label><input id="tp-people" type="number" placeholder="2" value="1" /></div>
+          </div>
+          <div class="form-row-2">
+            <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
+              <input type="checkbox" id="tp-pets" style="width:16px;height:16px;" />
+              <label for="tp-pets" style="font-size:12px;cursor:pointer;">🐾 בעל חיות</label>
+            </div>
+            <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
+              <input type="checkbox" id="tp-smoking" style="width:16px;height:16px;" />
+              <label for="tp-smoking" style="font-size:12px;cursor:pointer;">🚬 מעשן</label>
+            </div>
+          </div>
+          <div class="fg"><label>הכנסה חודשית משוערת (₪)</label><input id="tp-income" type="number" placeholder="15000" /></div>
+          <div class="fg"><label>קצת עלי</label><textarea id="tp-about" placeholder="ספר קצת על עצמך..." rows="2"></textarea></div>
+          <button class="btn-main" style="width:auto;padding:9px 20px;" onclick="saveTenantProfile()" id="save-profile-btn">💾 שמור כרטיס</button>
+          <div class="msg" id="tp-msg"></div>
+        </div>
+
+        <!-- פרסום נכס -->
+        <div class="form-card" id="tenant-listing-card">
+          <div class="form-section-title">📢 פרסום הנכס לשוכר אחר</div>
+          <p style="font-size:12px;color:#185FA5;margin-bottom:12px;">רוצה לעזוב לפני הזמן? פרסם את הנכס ומצא שוכר שיחליף אותך</p>
+          <div id="listing-status-display" style="display:none;border-radius:10px;padding:10px 14px;margin-bottom:12px;">
+            <div style="font-size:13px;font-weight:700;" id="listing-status-text"></div>
+          </div>
+          <div id="listing-form">
+            <div class="form-row-2">
+              <div class="fg"><label>תאריך פינוי מבוקש</label><input id="tl-vacate" type="date" /></div>
+              <div class="fg"><label>שכ"ד (₪/חודש)</label><input id="tl-rent" type="number" placeholder="8250" /></div>
+            </div>
+            <div class="fg"><label>הערות לשוכר הבא</label><textarea id="tl-notes" placeholder="פרטים על הנכס, השכנים, הסביבה..." rows="2"></textarea></div>
+            <button class="btn-main" style="width:auto;padding:9px 20px;background:#1D9E75;" onclick="publishTenantListing()" id="publish-listing-btn">📢 פרסם נכס</button>
+            <div class="msg" id="tl-msg"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1604,6 +1661,7 @@ async function loadPropertyDetail(id) {
 
   // load tenant invites
   loadTenantInvites(id);
+  checkTenantListingApproval(id);
   // show info tab
   showPdTab('info', document.querySelector('.pd-tab'));
 }
@@ -2270,6 +2328,7 @@ async function loadTenantDashboard(user) {
   if(!tp){document.getElementById('tenant-no-prop').style.display='block';return;}
 
   document.getElementById('tenant-content').style.display='block';
+  loadTenantProfile();
 
   // טען פרטי נכס
   const{data:prop}=await sb.from('properties').select('*').eq('id',tp.property_id).single();
@@ -2359,6 +2418,114 @@ async function loadTenantDashboard(user) {
   }
 }
 
+async function saveTenantProfile() {
+  const name=document.getElementById('tp-name').value.trim();
+  const age=parseInt(document.getElementById('tp-age').value)||null;
+  const occupation=document.getElementById('tp-occupation').value.trim();
+  const people=parseInt(document.getElementById('tp-people').value)||1;
+  const pets=document.getElementById('tp-pets').checked;
+  const smoking=document.getElementById('tp-smoking').checked;
+  const income=parseFloat(document.getElementById('tp-income').value)||null;
+  const about=document.getElementById('tp-about').value.trim();
+
+  const btn=document.getElementById('save-profile-btn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span> שומר...';
+
+  // בדוק אם כבר יש פרופיל
+  const{data:existing}=await sb.from('tenant_profiles').select('id').eq('tenant_id',currentUser.id).single();
+
+  let error;
+  if(existing){
+    ({error}=await sb.from('tenant_profiles').update({
+      full_name:name,age,occupation,num_people:people,
+      has_pets:pets,smoking,monthly_income:income,about_me:about
+    }).eq('tenant_id',currentUser.id));
+  } else {
+    ({error}=await sb.from('tenant_profiles').insert({
+      tenant_id:currentUser.id,
+      full_name:name,age,occupation,num_people:people,
+      has_pets:pets,smoking,monthly_income:income,about_me:about
+    }));
+  }
+
+  btn.disabled=false;
+  btn.innerHTML='💾 שמור כרטיס';
+
+  if(error){showMsg('tp-msg','error','שגיאה: '+error.message);return;}
+  showMsg('tp-msg','success','✓ הכרטיס נשמר בהצלחה!');
+}
+
+async function loadTenantProfile() {
+  const{data}=await sb.from('tenant_profiles').select('*').eq('tenant_id',currentUser.id).single();
+  if(data){
+    document.getElementById('tp-name').value=data.full_name||'';
+    document.getElementById('tp-age').value=data.age||'';
+    document.getElementById('tp-occupation').value=data.occupation||'';
+    document.getElementById('tp-people').value=data.num_people||1;
+    document.getElementById('tp-pets').checked=data.has_pets||false;
+    document.getElementById('tp-smoking').checked=data.smoking||false;
+    document.getElementById('tp-income').value=data.monthly_income||'';
+    document.getElementById('tp-about').value=data.about_me||'';
+  }
+}
+
+async function publishTenantListing() {
+  if(!currentUser)return;
+  const vacate=document.getElementById('tl-vacate').value;
+  const rent=document.getElementById('tl-rent').value;
+  const notes=document.getElementById('tl-notes').value.trim();
+
+  if(!vacate){showMsg('tl-msg','error','נא למלא תאריך פינוי');return;}
+
+  const btn=document.getElementById('publish-listing-btn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span> מפרסם...';
+
+  // מצא את הנכס של השוכר
+  const{data:tenantProp}=await sb.from('tenant_properties')
+    .select('*').eq('tenant_id',currentUser.id).eq('status','פעיל').single();
+
+  if(!tenantProp){showMsg('tl-msg','error','לא נמצא נכס מקושר');btn.disabled=false;btn.innerHTML='📢 פרסם נכס';return;}
+
+  // בדוק אם יש בעל נכס במערכת
+  const{data:prop}=await sb.from('properties').select('owner_id').eq('id',tenantProp.property_id).single();
+  const hasOwner=prop?.owner_id?true:false;
+  const status=hasOwner?'ממתין לאישור':'פורסם ללא בעל נכס';
+
+  const{data:contract}=await sb.from('contracts').select('id').eq('property_id',tenantProp.property_id).single();
+
+  const{error}=await sb.from('tenant_listings').insert({
+    tenant_id:currentUser.id,
+    property_id:tenantProp.property_id,
+    contract_id:contract?.id||null,
+    vacate_date:vacate,
+    monthly_rent:parseFloat(rent)||null,
+    notes,status
+  });
+
+  btn.disabled=false;
+  btn.innerHTML='📢 פרסם נכס';
+
+  if(error){showMsg('tl-msg','error','שגיאה: '+error.message);return;}
+
+  const statusEl=document.getElementById('listing-status-display');
+  const statusText=document.getElementById('listing-status-text');
+  statusEl.style.display='block';
+
+  if(hasOwner){
+    statusEl.style.cssText='display:block;background:#FFF3E0;border:1px solid #FFB74D;border-radius:10px;padding:10px 14px;margin-bottom:12px;';
+    statusText.style.color='#8A6000';
+    statusText.textContent='🟡 הפרסום נשלח לאישור בעל הנכס';
+    showMsg('tl-msg','success','✓ הבקשה נשלחה לבעל הנכס לאישור!');
+  } else {
+    statusEl.style.cssText='display:block;background:#E1F5EE;border:1px solid #5DCAA5;border-radius:10px;padding:10px 14px;margin-bottom:12px;';
+    statusText.style.color='#0F6E56';
+    statusText.textContent='🟢 הנכס פורסם בלוח!';
+    showMsg('tl-msg','success','✓ הנכס פורסם בדף הפומבי!');
+  }
+}
+
 async function sendTenantMessage() {
   const msg=document.getElementById('t-message').value.trim();
   if(!msg){showMsg('t-msg','error','נא לכתוב הודעה');return;}
@@ -2368,6 +2535,36 @@ async function sendTenantMessage() {
 }
 
 // ── TENANT INVITE ────────────────────────────────
+async function checkTenantListingApproval(propId) {
+  const{data:listings}=await sb.from('tenant_listings')
+    .select('*').eq('property_id',propId).eq('status','ממתין לאישור').limit(1);
+
+  const card=document.getElementById('tenant-listing-approval');
+  if(listings&&listings.length>0){
+    const l=listings[0];
+    card.style.display='block';
+    document.getElementById('tenant-listing-details').innerHTML=
+      `<div><strong>תאריך פינוי:</strong> ${l.vacate_date?fmtDate(l.vacate_date):'—'}</div>
+       <div><strong>שכ"ד:</strong> ${l.monthly_rent?Number(l.monthly_rent).toLocaleString('he-IL')+' ₪':'—'}</div>
+       ${l.notes?`<div><strong>הערות:</strong> ${l.notes}</div>`:''}`;
+    card.dataset.listingId=l.id;
+  } else {
+    card.style.display='none';
+  }
+}
+
+async function approveTenantListing(approve) {
+  const card=document.getElementById('tenant-listing-approval');
+  const listingId=card.dataset.listingId;
+  if(!listingId)return;
+
+  const status=approve?'מאושר':'נדחה';
+  const{error}=await sb.from('tenant_listings').update({status,owner_approved:approve}).eq('id',listingId);
+  if(error){showMsg('listing-approval-msg','error','שגיאה');return;}
+  showMsg('listing-approval-msg','success',approve?'✓ הפרסום אושר!':'✓ הפרסום נדחה');
+  setTimeout(()=>checkTenantListingApproval(currentProp.id),1000);
+}
+
 async function loadTenantInvites(propId) {
   const{data}=await sb.from('tenant_properties').select('*').eq('property_id',propId);
   const list=document.getElementById('tenant-invited-list');
