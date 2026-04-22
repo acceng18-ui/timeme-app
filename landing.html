@@ -387,19 +387,32 @@ async function loadProperties() {
   const todayStr=today.toISOString().split('T')[0];
   const in90Str=in90.toISOString().split('T')[0];
 
-  const{data:contracts}=await sb.from('contracts').select('property_id,end_date,option_date')
-    .gte('end_date',todayStr).lte('end_date',in90Str);
+  // טען חוזים פעילים עם תאריכי סיום
+  const{data:allContracts}=await sb.from('contracts').select('property_id,end_date,option_date,has_option')
+    .eq('status','פעיל');
 
-  // מצא נכסים שהחוזה שלהם מסתיים בקרוב
+  // מצא נכסים שהתאריך האמיתי שלהם (אופציה או סיום) הוא תוך 90 יום
   let soonProps=[];
-  if(contracts&&contracts.length>0){
-    const propIds=contracts.map(c=>c.property_id);
-    const{data:rentedProps}=await sb.from('properties').select('*').in('id',propIds).eq('status','מושכר');
-    if(rentedProps){
-      soonProps=rentedProps.map(p=>{
-        const contract=contracts.find(c=>c.property_id===p.id);
-        return {...p, _endingSoon:true, _endDate:contract?.end_date, _optionDate:contract?.option_date};
-      });
+  if(allContracts&&allContracts.length>0){
+    const relevantContracts=allContracts.filter(c=>{
+      // אם יש אופציה פעילה — בדוק תאריך האופציה
+      const checkDate=c.option_date&&c.has_option==='כן'?c.option_date:c.end_date;
+      if(!checkDate) return false;
+      const days=Math.ceil((new Date(checkDate)-today)/(1000*60*60*24));
+      return days>=0&&days<=90;
+    });
+
+    if(relevantContracts.length>0){
+      const propIds=relevantContracts.map(c=>c.property_id);
+      const{data:rentedProps}=await sb.from('properties').select('*').in('id',propIds).eq('status','מושכר');
+      if(rentedProps){
+        soonProps=rentedProps.map(p=>{
+          const contract=relevantContracts.find(c=>c.property_id===p.id);
+          const realEndDate=contract?.option_date&&contract?.has_option==='כן'?contract.option_date:contract?.end_date;
+          const daysLeft=Math.ceil((new Date(realEndDate)-today)/(1000*60*60*24));
+          return {...p, _endingSoon:true, _endDate:realEndDate, _daysLeft:daysLeft};
+        });
+      }
     }
   }
 
@@ -457,7 +470,7 @@ function renderCards(props, inquiries) {
     // חשב ימים לסיום חוזה
     let daysLeft=null;
     if(p._endingSoon&&p._endDate){
-      daysLeft=Math.ceil((new Date(p._endDate)-new Date())/(1000*60*60*24));
+      daysLeft=p._daysLeft||Math.ceil((new Date(p._endDate)-new Date())/(1000*60*60*24));
     }
 
     return `<div class="prop-card">
