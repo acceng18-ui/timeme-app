@@ -377,28 +377,52 @@ let allProps = [];
 function fmtNum(n) { return Number(n).toLocaleString('he-IL'); }
 
 async function loadProperties() {
-  const{data,error}=await sb.from('properties').select('*').eq('status','פנוי').order('created_at',{ascending:false});
+  // טען נכסים פנויים
+  const{data:vacantProps}=await sb.from('properties').select('*').eq('status','פנוי').order('created_at',{ascending:false});
+  
+  // טען נכסים מושכרים עם חוזה שמסתיים תוך 90 יום
+  const today=new Date();
+  const in90=new Date();
+  in90.setDate(in90.getDate()+90);
+  const todayStr=today.toISOString().split('T')[0];
+  const in90Str=in90.toISOString().split('T')[0];
+
+  const{data:contracts}=await sb.from('contracts').select('property_id,end_date,option_date')
+    .gte('end_date',todayStr).lte('end_date',in90Str);
+
+  // מצא נכסים שהחוזה שלהם מסתיים בקרוב
+  let soonProps=[];
+  if(contracts&&contracts.length>0){
+    const propIds=contracts.map(c=>c.property_id);
+    const{data:rentedProps}=await sb.from('properties').select('*').in('id',propIds).eq('status','מושכר');
+    if(rentedProps){
+      soonProps=rentedProps.map(p=>{
+        const contract=contracts.find(c=>c.property_id===p.id);
+        return {...p, _endingSoon:true, _endDate:contract?.end_date, _optionDate:contract?.option_date};
+      });
+    }
+  }
+
   document.getElementById('loading').style.display='none';
-  if(error||!data||data.length===0){
+  
+  const allData=[...(vacantProps||[]), ...soonProps];
+  
+  if(allData.length===0){
     document.getElementById('empty').style.display='block';
-    updateStats([],[],[]);
+    updateStats([],[]);
     return;
   }
-  allProps=data;
+  allProps=allData;
 
-  // Load inquiry counts
   const{data:inquiries}=await sb.from('property_inquiries').select('property_id');
-
-  renderCards(data, inquiries||[]);
-  updateStats(data, inquiries||[]);
+  renderCards(allData, inquiries||[]);
+  updateStats(vacantProps||[], inquiries||[]);
 }
 
 function updateStats(props, inquiries) {
   document.getElementById('stat-vacant').textContent=props.length;
-  const cities=new Set(props.map(p=>p.address?.split(',')[1]?.trim()).filter(Boolean));
+  const cities=new Set(allProps.map(p=>p.address?.split(',')[1]?.trim()).filter(Boolean));
   document.getElementById('stat-cities').textContent=cities.size;
-  // This week inquiries
-  const weekAgo=new Date(); weekAgo.setDate(weekAgo.getDate()-7);
   document.getElementById('stat-inquiries').textContent=inquiries.length;
 }
 
@@ -430,12 +454,21 @@ function renderCards(props, inquiries) {
     if(p.type&&p.unit) addrParts.push(p.type+' '+p.unit);
     const fullAddr=addrParts.join(', ');
 
+    // חשב ימים לסיום חוזה
+    let daysLeft=null;
+    if(p._endingSoon&&p._endDate){
+      daysLeft=Math.ceil((new Date(p._endDate)-new Date())/(1000*60*60*24));
+    }
+
     return `<div class="prop-card">
-      <div class="card-header">
+      <div class="card-header" style="${p._endingSoon?'background:linear-gradient(135deg,#1a4a2e,#1D9E75);':''}">
         <div class="card-type-badge">${ICONS[p.type]||'🏠'} ${p.type||'נכס'}</div>
-        ${p.marketing_notes?`<div class="card-price-badge">פנוי</div>`:'<div class="card-price-badge">פנוי</div>'}
+        ${p._endingSoon?
+          `<div class="card-price-badge" style="background:#FF8F00;">🔜 מתפנה בקרוב</div>`:
+          '<div class="card-price-badge">פנוי</div>'
+        }
         <div class="card-address">${fullAddr}</div>
-        <div class="card-sub">${p.air_direction||''} ${p.condition?'| '+p.condition:''}</div>
+        <div class="card-sub">${p._endingSoon?`עומד להתפנות בעוד ${daysLeft} ימים`:(p.air_direction||'')+' '+(p.condition?'| '+p.condition:'')}</div>
       </div>
       <div class="card-body">
         <div class="card-id">📍 תעודת זהות נכס: ${fullAddr}</div>
