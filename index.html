@@ -783,17 +783,84 @@ body {
 
     <!-- דשבורד שוכר -->
     <div class="page" id="page-tenant">
-      <div class="page-title">🔑 הנכס שלי</div>
-      <div class="page-sub" id="tenant-prop-addr"></div>
 
-      <!-- כרטיס נכס -->
-      <div id="tenant-no-prop" style="display:none;">
-        <div class="empty-state">
-          <div class="empty-icon">🏠</div>
-          <div class="empty-title">לא נמצא נכס מקושר</div>
-          <div class="empty-text">פנה לבעל הנכס לקישור חשבונך</div>
+      <!-- שוכר מקושר — ירוק -->
+      <div id="tenant-linked-header" style="display:none;background:#E1F5EE;border:1.5px solid #5DCAA5;border-radius:12px;padding:12px 16px;margin-bottom:14px;display:none;align-items:center;gap:10px;">
+        <div style="font-size:22px;">🟢</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#0F6E56;">שוכר מקושר לנכס</div>
+          <div style="font-size:11px;color:#1D9E75;" id="tenant-prop-addr"></div>
         </div>
       </div>
+
+      <!-- שוכר לא מקושר — כתום -->
+      <div id="tenant-unlinked-header" style="display:none;background:#FFF3E0;border:1.5px solid #FFB74D;border-radius:12px;padding:12px 16px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:22px;">🟠</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#8A6000;">שוכר עצמאי</div>
+            <div style="font-size:11px;color:#FF8F00;">מלא את הכרטיס האישי ופרסם נכס</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- כרטיס אישי — תמיד מוצג -->
+      <div class="form-card" style="margin-bottom:12px;">
+        <div class="form-section-title">👤 הכרטיס שלי</div>
+        <p style="font-size:12px;color:#185FA5;margin-bottom:12px;">פרטים שיוצגו לבעלי נכסים כשתגיש הצעה</p>
+        <div class="form-row-2">
+          <div class="fg"><label>שם מלא</label><input id="tp-name" placeholder="ישראל ישראלי" /></div>
+          <div class="fg"><label>גיל</label><input id="tp-age" type="number" placeholder="30" /></div>
+        </div>
+        <div class="form-row-2">
+          <div class="fg"><label>מקצוע</label><input id="tp-occupation" placeholder="מהנדס תוכנה" /></div>
+          <div class="fg"><label>מספר דיירים</label><input id="tp-people" type="number" placeholder="2" value="1" /></div>
+        </div>
+        <div class="form-row-2">
+          <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
+            <input type="checkbox" id="tp-pets" style="width:16px;height:16px;" />
+            <label for="tp-pets" style="font-size:12px;cursor:pointer;">🐾 בעל חיות</label>
+          </div>
+          <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
+            <input type="checkbox" id="tp-smoking" style="width:16px;height:16px;" />
+            <label for="tp-smoking" style="font-size:12px;cursor:pointer;">🚬 מעשן</label>
+          </div>
+        </div>
+        <div class="fg"><label>הכנסה חודשית משוערת (₪)</label><input id="tp-income" type="number" placeholder="15000" /></div>
+        <div class="fg"><label>קצת עלי</label><textarea id="tp-about" placeholder="ספר קצת על עצמך..." rows="2"></textarea></div>
+        <button class="btn-main" style="width:auto;padding:9px 20px;" onclick="saveTenantProfile()" id="save-profile-btn">💾 שמור כרטיס</button>
+        <div class="msg" id="tp-msg"></div>
+      </div>
+
+      <!-- שוכר לא מקושר — פרסום נכס -->
+      <div id="tenant-unlinked-content" style="display:none;">
+        <div class="form-card" style="margin-bottom:12px;">
+          <div class="form-section-title" style="border-right-color:#FF8F00;">📢 פרסם את הנכס שלך</div>
+          <p style="font-size:12px;color:#185FA5;margin-bottom:12px;">גר בנכס שבעל הנכס לא רשום? פרסם ומצא שוכר שיחליף אותך</p>
+          <div class="fg">
+            <label>כתובת הנכס *</label>
+            <input id="tl-address" placeholder="רוטשילד 22, תל אביב, דירה 4" oninput="checkAddressExists()" />
+            <div id="address-check-result" style="font-size:11px;margin-top:4px;"></div>
+          </div>
+          <div id="owner-found-alert" style="display:none;background:#FFF3E0;border:1.5px solid #FFB74D;border-radius:10px;padding:12px;margin-bottom:12px;">
+            <div style="font-size:12px;font-weight:700;color:#8A6000;margin-bottom:4px;">🏠 נמצא בעל נכס לכתובת זו!</div>
+            <div style="font-size:11px;color:#8A6000;">לאחר פרסום תישלח בקשת קישור לאישורו</div>
+          </div>
+          <div class="form-row-2">
+            <div class="fg"><label>תאריך פינוי *</label><input id="tl-vacate" type="date" /></div>
+            <div class="fg"><label>שכ"ד (₪/חודש)</label><input id="tl-rent" type="number" placeholder="8250" /></div>
+          </div>
+          <div class="fg"><label>הערות לשוכר הבא</label><textarea id="tl-notes" placeholder="פרטים על הנכס, השכנים..." rows="2"></textarea></div>
+          <div id="listing-status-display" style="display:none;border-radius:10px;padding:10px 14px;margin-bottom:10px;">
+            <div style="font-size:13px;font-weight:700;" id="listing-status-text"></div>
+          </div>
+          <button class="btn-main" style="width:auto;padding:9px 20px;background:#FF8F00;" onclick="publishTenantListing()" id="publish-listing-btn">📢 פרסם נכס</button>
+          <div class="msg" id="tl-msg"></div>
+        </div>
+      </div>
+
+      <!-- שוכר מקושר — תוכן -->
+      <div id="tenant-content" style="display:none;">
 
       <div id="tenant-content" style="display:none;">
         <!-- פרטי נכס -->
@@ -2326,23 +2393,28 @@ async function addOrgMember() {
 
 // ── TENANT DASHBOARD ─────────────────────────────
 async function loadTenantDashboard(user) {
+  // טען פרופיל
+  loadTenantProfile();
+
   // מצא את הנכס המקושר לשוכר
   const{data:tenantProp}=await sb.from('tenant_properties')
     .select('*').eq('tenant_id',user.id).eq('status','פעיל').limit(1);
 
-  if(!tenantProp||tenantProp.length===0){
-    // נסה לפי מייל
-    const{data:byEmail}=await sb.from('tenant_properties')
-      .select('*').eq('invited_email',user.email).limit(1);
-    if(!byEmail||byEmail.length===0){
-      document.getElementById('tenant-no-prop').style.display='block';
-      return;
-    }
+  const tp=tenantProp&&tenantProp.length>0?tenantProp[0]:null;
+
+  if(!tp){
+    // שוכר לא מקושר — כתום
+    document.getElementById('tenant-unlinked-header').style.display='block';
+    document.getElementById('tenant-unlinked-content').style.display='block';
+    document.getElementById('tenant-linked-header').style.display='none';
+    document.getElementById('tenant-content').style.display='none';
+    return;
   }
 
-  const tp=tenantProp?tenantProp[0]:null;
-  if(!tp){document.getElementById('tenant-no-prop').style.display='block';return;}
-
+  // שוכר מקושר — ירוק
+  document.getElementById('tenant-linked-header').style.display='flex';
+  document.getElementById('tenant-unlinked-header').style.display='none';
+  document.getElementById('tenant-unlinked-content').style.display='none';
   document.getElementById('tenant-content').style.display='block';
   loadTenantProfile();
 
