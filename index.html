@@ -1410,7 +1410,8 @@ async function loadProperties() {
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
         <span class="badge ${p.status==='מושכר'?'badge-rented':p.status==='בשיפוץ'?'badge-renov':'badge-vacant'}">${p.status}</span>
-        <div style="display:flex;gap:4px;">
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          ${p.verification_status==='ממתין לאימות'?`<button onclick="event.stopPropagation();quickVerify('${p.id}')" style="background:#1D9E75;color:white;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;">✅ אמת</button>`:''}
           <button class="btn-del" onclick="event.stopPropagation();deleteProperty('${p.id}')" title="מחק נכס">🗑️</button>
           <span style="font-size:11px;color:#185FA5;align-self:center;">פתח ←</span>
         </div>
@@ -1477,6 +1478,19 @@ async function saveProperty() {
   document.getElementById('o-id-type').value='ת.ז';
   showMsg('prop-msg','success','✓ הנכס נשמר בהצלחה!');
   setTimeout(()=>showPage('properties',document.getElementById('nav-props')),1200);
+}
+
+async function quickVerify(propId) {
+  if(!confirm('לאמת את בעלות הנכס?'))return;
+  const{error}=await sb.from('properties').update({
+    verification_status:'מאומת',
+    verified_at:new Date().toISOString(),
+    verified_by:currentUser.id
+  }).eq('id',propId);
+  if(error){alert('שגיאה: '+error.message);return;}
+  loadProperties();
+  // עדכן גם בדף הניהול
+  if(document.getElementById('verify-list')) loadPendingVerifications();
 }
 
 async function deleteProperty(id) {
