@@ -1411,7 +1411,7 @@ async function loadProperties() {
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
         <span class="badge ${p.status==='מושכר'?'badge-rented':p.status==='בשיפוץ'?'badge-renov':'badge-vacant'}">${p.status}</span>
         <div style="display:flex;gap:4px;flex-wrap:wrap;">
-          ${p.verification_status==='ממתין לאימות'?`<button onclick="event.stopPropagation();quickVerify('${p.id}')" style="background:#1D9E75;color:white;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;">✅ אמת</button>`:''}
+          ${p.verification_status!=='מאומת'?`<button onclick="event.stopPropagation();quickVerify('${p.id}')" style="background:#1D9E75;color:white;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;">✅ אמת</button>`:'<span style="font-size:10px;color:#0F6E56;font-weight:700;">🟢 אומת</span>'}
           <button class="btn-del" onclick="event.stopPropagation();deleteProperty('${p.id}')" title="מחק נכס">🗑️</button>
           <span style="font-size:11px;color:#185FA5;align-self:center;">פתח ←</span>
         </div>
