@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.0.5 | timeme.co.il -->
+<!-- TIME.ME v1.0.6 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -77,9 +77,9 @@ body {
 .nav-bar { background: white; border-bottom: 1.5px solid #B5D4F4; padding: 0 16px; display: flex; gap: 0; overflow-x: auto; }
 .nav-tab { padding: 11px 16px; font-size: 13px; cursor: pointer; color: #185FA5; border-bottom: 2.5px solid transparent; margin-bottom: -1.5px; background: none; border-top: none; border-right: none; border-left: none; font-family: Arial, sans-serif; white-space: nowrap; }
 .nav-tab.active { color: #042C53; border-bottom-color: #185FA5; font-weight: 700; }
-.dash-body { padding: 18px 20px; }
-.page { display: none; }
-.page.active { display: block; }
+.dash-body { padding: 18px 20px; overflow-y: auto; min-height: calc(100vh - 120px); }
+.page { display: none; width: 100%; }
+.page.active { display: block; width: 100%; min-height: 200px; }
 .page-title { font-size: 18px; font-weight: 700; color: #042C53; margin-bottom: 4px; }
 .page-sub { font-size: 12px; color: #185FA5; margin-bottom: 18px; }
 .prop-card { background: white; border: 1.5px solid #B5D4F4; border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 13px; margin-bottom: 10px; transition: border-color 0.15s; box-shadow: 0 2px 8px rgba(4,44,83,0.08); }
