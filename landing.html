@@ -263,6 +263,11 @@ body { font-family: Arial, Helvetica, sans-serif; direction: rtl; background: #F
 
 <!-- FILTER BAR -->
 <div class="filter-bar">
+  <select id="filter-listing" onchange="applyFilters()" style="min-width:100px;">
+    <option value="">השכרה ומכירה</option>
+    <option value="להשכרה">🔑 להשכרה</option>
+    <option value="למכירה">🏷️ למכירה</option>
+  </select>
   <select id="filter-type" onchange="applyFilters()">
     <option value="">כל הסוגים</option>
     <option value="דירה">🏠 דירה</option>
@@ -377,8 +382,8 @@ let allProps = [];
 function fmtNum(n) { return Number(n).toLocaleString('he-IL'); }
 
 async function loadProperties() {
-  // טען נכסים פנויים
-  const{data:vacantProps}=await sb.from('properties').select('*').eq('status','פנוי').order('created_at',{ascending:false});
+  // טען נכסים פנויים + למכירה
+  const{data:vacantProps}=await sb.from('properties').select('*').or('status.eq.פנוי,for_sale.eq.true').order('created_at',{ascending:false});
   
   // טען נכסים מושכרים עם חוזה שמסתיים תוך 90 יום
   const today=new Date();
@@ -501,14 +506,16 @@ function renderCards(props, inquiries) {
     return `<div class="prop-card">
       <div class="card-header" style="${p._endingSoon?'background:linear-gradient(135deg,#1a4a2e,#1D9E75);':p._tenantListing?'background:linear-gradient(135deg,#2C1A4A,#534AB7);':''}">
         <div class="card-type-badge">${ICONS[p.type]||'🏠'} ${p.type||'נכס'}</div>
-        ${p._endingSoon?
+        ${p.for_sale?
+          `<div class="card-price-badge" style="background:#E24B4A;">🏷️ למכירה</div>`:
+          p._endingSoon?
           `<div class="card-price-badge" style="background:#FF8F00;">🔜 מתפנה בקרוב</div>`:
           p._tenantListing?
           `<div class="card-price-badge" style="background:#534AB7;">🔑 פרסום שוכר</div>`:
           '<div class="card-price-badge">פנוי</div>'
         }
         <div class="card-address">${fullAddr}</div>
-        <div class="card-sub">${p._endingSoon?`עומד להתפנות בעוד ${daysLeft} ימים`:p._tenantListing?`פינוי מבוקש: ${p._vacateDate?fmtDate(p._vacateDate):'—'}`:(p.air_direction||'')+' '+(p.condition?'| '+p.condition:'')}</div>
+        <div class="card-sub">${p.for_sale?`מחיר מבוקש: ${p.sale_price?fmtNum(p.sale_price)+' ₪':'לפי הצעה'}`:p._endingSoon?`עומד להתפנות בעוד ${daysLeft} ימים`:p._tenantListing?`פינוי מבוקש: ${p._vacateDate?fmtDate(p._vacateDate):'—'}`:(p.air_direction||'')+' '+(p.condition?'| '+p.condition:'')}</div>
       </div>
       <div class="card-body">
         <div class="card-id">📍 תעודת זהות נכס: ${fullAddr}</div>
