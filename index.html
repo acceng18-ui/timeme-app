@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.0.7 | timeme.co.il -->
+<!-- TIME.ME v1.0.8 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -409,6 +409,7 @@ body {
                   <div style="font-size:11px;color:#185FA5;margin-top:3px;" id="pd-contract-info"></div>
                 </div>
                 <button class="btn-add" onclick="goCreateContract()" id="pd-contract-btn" style="padding:7px 16px;font-size:12px;">+ צור חוזה</button>
+                <button id="pd-sale-btn" onclick="toggleForSale()" style="padding:7px 16px;font-size:12px;border:none;border-radius:8px;cursor:pointer;font-family:Arial;display:none;">🏷️ פרסם למכירה</button>
               </div>
               <!-- תקפות חוזה -->
               <div id="pd-contract-dates" style="display:none;border-top:1px solid #E6F1FB;padding-top:10px;">
@@ -1743,6 +1744,26 @@ async function loadPropertyDetail(id) {
   const{data:contracts}=await sb.from('contracts').select('*').eq('property_id',id).order('created_at',{ascending:false});
   document.getElementById('existing-contract-file').style.display='none';
   document.getElementById('pd-contract-dates').style.display='none';
+
+  // הצג כפתור מכירה רק לנכסים מאומתים
+  const saleBtn=document.getElementById('pd-sale-btn');
+  if(saleBtn){
+    if(p.verification_status==='מאומת'){
+      saleBtn.style.display='block';
+      if(p.for_sale){
+        saleBtn.style.background='#E24B4A';
+        saleBtn.style.color='white';
+        saleBtn.textContent='❌ הסר ממכירה';
+      } else {
+        saleBtn.style.background='#FFF3E0';
+        saleBtn.style.color='#8A6000';
+        saleBtn.style.border='1px solid #FFB74D';
+        saleBtn.textContent='🏷️ פרסם למכירה';
+      }
+    } else {
+      saleBtn.style.display='none';
+    }
+  }
   if(contracts&&contracts.length>0){
     const c=contracts[0];
     const today=new Date();
@@ -2305,6 +2326,33 @@ async function stopImpersonate() {
 
   showPage('admin', document.getElementById('nav-admin'));
   loadAdminUsers();
+}
+
+// ── FOR SALE ─────────────────────────────────────
+async function toggleForSale() {
+  if(!currentProp)return;
+  const p=currentProp;
+
+  if(p.for_sale){
+    // הסר ממכירה
+    if(!confirm('האם להסיר את הנכס מהפרסום למכירה?'))return;
+    await sb.from('properties').update({for_sale:false,sale_price:null,listing_type:'להשכרה'}).eq('id',p.id);
+    currentProp.for_sale=false;
+    loadPropertyDetail(p.id);
+  } else {
+    // פרסם למכירה — בקש מחיר
+    const price=prompt('הכנס מחיר מבוקש למכירה (₪):');
+    if(!price||isNaN(price))return;
+    await sb.from('properties').update({
+      for_sale:true,
+      sale_price:parseFloat(price),
+      listing_type:'למכירה'
+    }).eq('id',p.id);
+    currentProp.for_sale=true;
+    currentProp.sale_price=parseFloat(price);
+    alert('✅ הנכס פורסם למכירה בלוח!');
+    loadPropertyDetail(p.id);
+  }
 }
 
 // ── VERIFICATION ─────────────────────────────────
