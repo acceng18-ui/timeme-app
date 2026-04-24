@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.1.4 | timeme.co.il -->
+<!-- TIME.ME v1.1.5 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -1110,9 +1110,15 @@ body {
             <datalist id="streets-list"></datalist>
             <div id="street-loading" style="font-size:11px;color:#185FA5;display:none;">🔍 מחפש רחובות...</div>
           </div>
+        </div>
+        <div class="form-row-2">
           <div class="fg">
             <label>מספר בית *</label>
             <input id="p-street-num" placeholder="77" type="number" min="1" />
+          </div>
+          <div class="fg">
+            <label>מספר יחידה / דירה</label>
+            <input id="p-unit" placeholder="17" />
           </div>
         </div>
         <input type="hidden" id="p-address" />
@@ -1167,8 +1173,8 @@ body {
           <div id="ownership-type-desc" style="font-size:11px;color:#185FA5;margin-top:6px;padding:6px 10px;background:#E6F1FB;border-radius:6px;"></div>
         </div>
         <div class="form-row-2">
-          <div class="fg"><label>מספר יחידה</label><input id="p-unit" placeholder="17" /></div>
           <div class="fg"><label>קומה</label><input id="p-floor" placeholder="4" /></div>
+          <div class="fg"><label>חניה</label><input id="p-parking" placeholder="חניה 46" /></div>
         </div>
         <div class="fg"><label>חניה</label><input id="p-parking" placeholder="חניה 46 – מכפיל" /></div>
 
