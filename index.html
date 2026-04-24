@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.0.9 | timeme.co.il -->
+<!-- TIME.ME v1.1.0 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -2989,9 +2989,9 @@ async function loadAdminUsers() {
 
   document.getElementById('admin-loading').style.display='none';
 
-  const ROLE_LABELS={'owner':'🏠 בעל נכס','tenant':'🔑 שוכר','agent':'🤝 מתווך','admin':'⚙️ מנהל'};
-  const ROLE_COLORS={'owner':'#E6F1FB','tenant':'#E1F5EE','agent':'#EEEDFE','admin':'#FFF3E0'};
-  const ROLE_TC={'owner':'#185FA5','tenant':'#0F6E56','agent':'#534AB7','admin':'#8A6000'};
+  const ROLE_LABELS={'owner':'🏠 בעל נכס','tenant':'🔑 שוכר','agent':'🤝 מתווך','organization':'🏢 ארגון','admin':'⚙️ מנהל'};
+  const ROLE_COLORS={'owner':'#E6F1FB','tenant':'#E1F5EE','agent':'#EEEDFE','organization':'#EEEDFE','admin':'#FFF3E0'};
+  const ROLE_TC={'owner':'#185FA5','tenant':'#0F6E56','agent':'#534AB7','organization':'#534AB7','admin':'#8A6000'};
 
   const list=document.getElementById('admin-list');
   list.innerHTML=users.map(u=>{
