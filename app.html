@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.1.2 | timeme.co.il -->
+<!-- TIME.ME v1.1.4 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -1068,67 +1068,51 @@ body {
         <div class="form-row-2">
           <div class="fg">
             <label>עיר / ישוב *</label>
-            <select id="p-city">
-              <option value="">בחר עיר...</option>
-              <option>תל אביב-יפו</option>
-              <option>ירושלים</option>
-              <option>חיפה</option>
-              <option>ראשון לציון</option>
-              <option>פתח תקווה</option>
-              <option>אשדוד</option>
-              <option>נתניה</option>
-              <option>באר שבע</option>
-              <option>בני ברק</option>
-              <option>רמת גן</option>
-              <option>הרצליה</option>
-              <option>רעננה</option>
-              <option>כפר סבא</option>
-              <option>מודיעין-מכבים-רעות</option>
-              <option>רחובות</option>
-              <option>בת ים</option>
-              <option>חולון</option>
-              <option>אשקלון</option>
-              <option>עפולה</option>
-              <option>נצרת</option>
-              <option>טבריה</option>
-              <option>צפת</option>
-              <option>עכו</option>
-              <option>חדרה</option>
-              <option>כרמיאל</option>
-              <option>ראש העין</option>
-              <option>לוד</option>
-              <option>רמלה</option>
-              <option>אילת</option>
-              <option>יבנה</option>
-              <option>גבעתיים</option>
-              <option>הוד השרון</option>
-              <option>קריית גת</option>
-              <option>אור יהודה</option>
-              <option>זכרון יעקב</option>
-              <option>קיסריה</option>
-              <option>מזכרת בתיה</option>
-              <option>גדרה</option>
-              <option>יהוד</option>
-              <option>אלעד</option>
-              <option>טירת כרמל</option>
-              <option>נהריה</option>
-              <option>קריית ביאליק</option>
-              <option>קריית ים</option>
-              <option>קריית מוצקין</option>
-              <option>קריית אתא</option>
-              <option>שוהם</option>
-              <option>גן יבנה</option>
-              <option>פרדס חנה-כרכור</option>
-              <option>בית שמש</option>
-              <option>ביתר עילית</option>
-              <option>מעלה אדומים</option>
-              <option>אריאל</option>
+            <input id="p-city" list="cities-list" placeholder="הקלד שם עיר..." autocomplete="off" onchange="filterStreets()" />
+            <datalist id="cities-list">
+              <option>אבו גוש</option><option>אבו סנאן</option><option>אור יהודה</option>
+              <option>אור עקיבא</option><option>אורנית</option><option>אילת</option>
+              <option>אלעד</option><option>אריאל</option><option>אשדוד</option>
+              <option>אשקלון</option><option>באקה אל-גרביה</option><option>באר שבע</option>
+              <option>באר יעקב</option><option>בית דגן</option><option>בית שאן</option>
+              <option>בית שמש</option><option>ביתר עילית</option><option>בני ברק</option>
+              <option>בני עי"ש</option><option>בת ים</option><option>גבעת שמואל</option>
+              <option>גבעתיים</option><option>גדרה</option><option>גן יבנה</option>
+              <option>דימונה</option><option>הוד השרון</option><option>הרצליה</option>
+              <option>זכרון יעקב</option><option>חדרה</option><option>חולון</option>
+              <option>חיפה</option><option>טבריה</option><option>טירה</option>
+              <option>טירת כרמל</option><option>טמרה</option><option>יבנה</option>
+              <option>יהוד-מונוסון</option><option>ירושלים</option><option>כפר יונה</option>
+              <option>כפר סבא</option><option>כפר קאסם</option><option>כרמיאל</option>
+              <option>לוד</option><option>מגדל העמק</option><option>מודיעין עילית</option>
+              <option>מודיעין-מכבים-רעות</option><option>מעלה אדומים</option>
+              <option>מעלות-תרשיחא</option><option>מזכרת בתיה</option>
+              <option>נהריה</option><option>נס ציונה</option><option>נצרת</option>
+              <option>נצרת עילית</option><option>נתיבות</option><option>נתניה</option>
+              <option>עכו</option><option>עפולה</option><option>ערד</option>
+              <option>פרדס חנה-כרכור</option><option>פתח תקווה</option>
+              <option>צפת</option><option>קלנסווה</option><option>קיסריה</option>
+              <option>קריית אונו</option><option>קריית אתא</option>
+              <option>קריית ביאליק</option><option>קריית גת</option>
+              <option>קריית ים</option><option>קריית מוצקין</option>
+              <option>קריית מלאכי</option><option>קריית שמונה</option>
+              <option>ראש העין</option><option>ראש פינה</option>
+              <option>ראשון לציון</option><option>רחובות</option>
+              <option>רמלה</option><option>רמת גן</option><option>רמת השרון</option>
+              <option>רעננה</option><option>שדרות</option><option>שוהם</option>
+              <option>תל אביב-יפו</option><option>תל מונד</option>
               <option>אחר</option>
-            </select>
+            </datalist>
           </div>
           <div class="fg">
-            <label>רחוב ומספר *</label>
-            <input id="p-street" placeholder="סוקולוב 77" />
+            <label>רחוב *</label>
+            <input id="p-street-name" list="streets-list" placeholder="הקלד שם רחוב..." autocomplete="off" oninput="filterStreets()" />
+            <datalist id="streets-list"></datalist>
+            <div id="street-loading" style="font-size:11px;color:#185FA5;display:none;">🔍 מחפש רחובות...</div>
+          </div>
+          <div class="fg">
+            <label>מספר בית *</label>
+            <input id="p-street-num" placeholder="77" type="number" min="1" />
           </div>
         </div>
         <input type="hidden" id="p-address" />
@@ -1181,38 +1165,6 @@ body {
             <option value="שכירות לשימוש עצמי">🔑 הארגון שוכר נכס לשימושו</option>
           </select>
           <div id="ownership-type-desc" style="font-size:11px;color:#185FA5;margin-top:6px;padding:6px 10px;background:#E6F1FB;border-radius:6px;"></div>
-        </div>
-        <div class="form-row-2">
-          <div class="fg">
-            <label>רחוב ומספר *</label>
-            <input id="p-street" placeholder="סוקולוב 77" />
-          </div>
-          <div class="fg">
-            <label>עיר *</label>
-            <select id="p-city">
-              <option value="">בחר עיר...</option>
-              <option>אבו גוש</option><option>אור יהודה</option><option>אור עקיבא</option>
-              <option>אילת</option><option>אלעד</option><option>אריאל</option>
-              <option>אשדוד</option><option>אשקלון</option><option>באר שבע</option>
-              <option>בית שאן</option><option>בית שמש</option><option>בני ברק</option>
-              <option>בת ים</option><option>גבעת שמואל</option><option>גבעתיים</option>
-              <option>דימונה</option><option>הוד השרון</option><option>הרצליה</option>
-              <option>חדרה</option><option>חולון</option><option>חיפה</option>
-              <option>טבריה</option><option>טירת כרמל</option><option>יבנה</option>
-              <option>יהוד-מונוסון</option><option>ירושלים</option><option>כפר סבא</option>
-              <option>לוד</option><option>מודיעין-מכבים-רעות</option>
-              <option>נהריה</option><option>נס ציונה</option><option>נצרת</option>
-              <option>נתניה</option><option>עכו</option><option>עפולה</option>
-              <option>פתח תקווה</option><option>צפת</option>
-              <option>קריית אונו</option><option>קריית ביאליק</option>
-              <option>קריית גת</option><option>קריית ים</option>
-              <option>קריית מוצקין</option><option>קריית שמונה</option>
-              <option>ראש העין</option><option>ראשון לציון</option>
-              <option>רחובות</option><option>רמלה</option><option>רמת גן</option>
-              <option>רמת השרון</option><option>רעננה</option><option>שוהם</option>
-              <option>תל אביב-יפו</option><option>אחר</option>
-            </select>
-          </div>
         </div>
         <div class="form-row-2">
           <div class="fg"><label>מספר יחידה</label><input id="p-unit" placeholder="17" /></div>
@@ -1684,7 +1636,9 @@ async function loadProperties() {
 }
 
 async function saveProperty() {
-  const street=document.getElementById('p-street').value.trim();
+  const streetName=document.getElementById('p-street-name').value.trim();
+  const streetNum=document.getElementById('p-street-num').value.trim();
+  const street=streetName+(streetNum?' '+streetNum:'');
   const city=document.getElementById('p-city').value;
   const type=document.getElementById('p-type').value;
   const status=document.getElementById('p-status').value;
@@ -1699,7 +1653,8 @@ async function saveProperty() {
   const oEmail=document.getElementById('o-email').value.trim();
   const oAddress=document.getElementById('o-address').value.trim();
   const notes=document.getElementById('p-notes').value.trim();
-  if(!street){showMsg('prop-msg','error','נא למלא רחוב');return;}
+  if(!streetName){showMsg('prop-msg','error','נא למלא שם רחוב');return;}
+  if(!streetNum){showMsg('prop-msg','error','נא למלא מספר בית');return;}
   if(!city){showMsg('prop-msg','error','נא לבחור עיר');return;}
   if(!oName){showMsg('prop-msg','error','נא למלא שם בעל הנכס');return;}
   if(!oId){showMsg('prop-msg','error','נא למלא ת.ז / ח.פ של בעל הנכס');return;}
@@ -1740,7 +1695,7 @@ async function saveProperty() {
   btn.disabled=false;
   btn.innerHTML='💾 שמור נכס';
   if(error){showMsg('prop-msg','error','שגיאה: '+error.message);return;}
-  ['p-street','p-unit','p-floor','p-parking','p-notes','o-name','o-id','o-phone','o-email','o-address'].forEach(id=>document.getElementById(id).value='');
+  ['p-street-name','p-street-num','p-unit','p-floor','p-parking','p-notes','o-name','o-id','o-phone','o-email','o-address'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('p-city').value='';
   document.getElementById('o-id-type').value='ת.ז';
   showMsg('prop-msg','success','✓ הנכס נשמר בהצלחה!');
@@ -2441,6 +2396,49 @@ async function toggleForSale() {
     alert('✅ הנכס פורסם למכירה בלוח!');
     loadPropertyDetail(p.id);
   }
+}
+
+// ── STREET LOOKUP ────────────────────────────────
+let _streetTimer=null;
+let _cachedCity='';
+let _cachedStreets=[];
+
+async function filterStreets() {
+  const city=document.getElementById('p-city').value.trim();
+  const streetInput=document.getElementById('p-street-name').value.trim();
+  
+  if(!city||streetInput.length<2) return;
+  
+  // טען רחובות רק אם העיר השתנתה
+  if(city!==_cachedCity){
+    _cachedCity=city;
+    _cachedStreets=[];
+    document.getElementById('street-loading').style.display='block';
+    
+    clearTimeout(_streetTimer);
+    _streetTimer=setTimeout(async()=>{
+      try {
+        const url=`https://data.gov.il/api/3/action/datastore_search?resource_id=9ad3862c-8391-4b2f-84a4-2d4c68625f4b&q=${encodeURIComponent(city)}&limit=500`;
+        const res=await fetch(url);
+        const data=await res.json();
+        if(data.result&&data.result.records){
+          _cachedStreets=[...new Set(data.result.records.map(r=>r['שם_רחוב']).filter(Boolean))].sort();
+          updateStreetList(streetInput);
+        }
+      } catch(e) {
+        console.log('Street API error:', e);
+      }
+      document.getElementById('street-loading').style.display='none';
+    }, 500);
+  } else {
+    updateStreetList(streetInput);
+  }
+}
+
+function updateStreetList(query) {
+  const filtered=query?_cachedStreets.filter(s=>s.includes(query)):_cachedStreets.slice(0,50);
+  const dl=document.getElementById('streets-list');
+  dl.innerHTML=filtered.map(s=>`<option value="${s}">`).join('');
 }
 
 // ── VERIFICATION ─────────────────────────────────
