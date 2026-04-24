@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.1.1 | timeme.co.il -->
+<!-- TIME.ME v1.1.2 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -722,7 +722,7 @@ body {
         <div class="stat-card"><div class="stat-label">סה"כ משתמשים</div><div class="stat-val" id="stat-total">0</div></div>
         <div class="stat-card"><div class="stat-label">בעלי נכסים</div><div class="stat-val" id="stat-owners">0</div></div>
         <div class="stat-card"><div class="stat-label">שוכרים</div><div class="stat-val" id="stat-tenants">0</div></div>
-        <div class="stat-card"><div class="stat-label">מתווכים</div><div class="stat-val" id="stat-agents">0</div></div>
+        <div class="stat-card"><div class="stat-label">ארגונים</div><div class="stat-val" id="stat-agents">0</div></div>
       </div>
 
       <!-- רשימת משתמשים -->
@@ -2380,6 +2380,13 @@ async function impersonateUser(userId, userName, userRole) {
     document.getElementById('nav-contract').style.display = 'block';
     currentUser = { id: userId };
     showPage('properties', document.getElementById('nav-props'));
+  } else if(userRole === 'organization') {
+    document.getElementById('nav-props').style.display = 'block';
+    document.getElementById('nav-add').style.display = 'block';
+    document.getElementById('nav-org').style.display = 'block';
+    currentUser = { id: userId };
+    showPage('org', document.getElementById('nav-org'));
+    loadOrgDashboard({ id: userId });
   } else if(userRole === 'agent') {
     document.getElementById('nav-props').style.display = 'block';
     currentUser = { id: userId };
@@ -2982,7 +2989,7 @@ async function loadAdminUsers() {
   document.getElementById('stat-total').textContent=users.length;
   document.getElementById('stat-owners').textContent=users.filter(u=>u.role==='owner').length;
   document.getElementById('stat-tenants').textContent=users.filter(u=>u.role==='tenant').length;
-  document.getElementById('stat-agents').textContent=users.filter(u=>u.role==='agent').length;
+  document.getElementById('stat-agents').textContent=users.filter(u=>u.role==='agent'||u.role==='organization').length;
 
   // טעינת נכסים לכל משתמש
   const{data:props}=await sb.from('properties').select('owner_id');
