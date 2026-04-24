@@ -565,8 +565,10 @@ function renderCards(props, inquiries) {
       <div class="card-body">
         <div class="card-id">📍 תעודת זהות נכס: ${fullAddr}</div>
         ${features.length>0?`<div class="card-features">${features.map(f=>`<span class="feat-tag">${f}</span>`).join('')}</div>`:''}
-        ${p.rent_price?`<div style="font-size:14px;font-weight:700;color:#185FA5;margin-bottom:6px;">💰 ${fmtNum(p.rent_price)} ₪/חודש</div>`:''}
-        ${p.sale_price&&p.for_sale?`<div style="font-size:14px;font-weight:700;color:#E24B4A;margin-bottom:6px;">🏷️ מחיר מכירה: ${fmtNum(p.sale_price)} ₪</div>`:''}
+        <div id="price-display-${p.id}" style="margin-bottom:6px;">
+          ${p.rent_price&&!p.for_sale?'<span style="font-size:14px;font-weight:700;color:#185FA5;">💰 '+fmtNum(p.rent_price)+' ₪/חודש</span>':''}
+          ${p.for_sale&&p.sale_price?'<span style="font-size:14px;font-weight:700;color:#E24B4A;">🏷️ '+fmtNum(p.sale_price)+' ₪</span>':''}
+        </div>
         <div class="card-marketing">${p.marketing_notes||'נכס מטופח ומוכן לאכלוס'}</div>
         <div style="margin-bottom:8px;">
           ${p.verification_status==='מאומת'?
