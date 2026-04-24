@@ -468,15 +468,6 @@ async function loadProperties() {
 
   document.getElementById('loading').style.display='none';
   
-  const allData=[...(vacantProps||[]), ...soonProps];
-  
-  if(allData.length===0){
-    document.getElementById('empty').style.display='block';
-    updateStats([],[]);
-    return;
-  }
-  allProps=allData;
-
   // טען פרסומי שוכרים מאושרים
   const{data:tenantListings}=await sb.from('tenant_listings')
     .select('*').in('status',['פורסם ללא בעל נכס','מאושר']);
