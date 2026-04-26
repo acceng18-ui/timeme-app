@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.2.1 | timeme.co.il -->
+<!-- TIME.ME v1.2.3 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -424,6 +424,7 @@ body {
                   <div style="font-size:11px;color:#185FA5;margin-top:3px;" id="pd-contract-info"></div>
                 </div>
                 <button class="btn-add" onclick="goCreateContract()" id="pd-contract-btn" style="padding:7px 16px;font-size:12px;">+ צור חוזה</button>
+                <button onclick="toggleExistingContractForm()" id="pd-existing-btn" style="padding:7px 16px;font-size:12px;background:#E1F5EE;color:#0F6E56;border:1.5px solid #5DCAA5;border-radius:8px;cursor:pointer;font-family:Arial;font-weight:700;">📋 הכנס פרטי שכירות קיימת</button>
                 <button id="pd-sale-btn" onclick="toggleForSale()" style="padding:7px 16px;font-size:12px;border:none;border-radius:8px;cursor:pointer;font-family:Arial;display:none;">🏷️ פרסם למכירה</button>
               </div>
               <!-- תקפות חוזה -->
@@ -495,6 +496,36 @@ body {
               </div>
               <button class="btn-main" style="width:auto;padding:9px 20px;" onclick="uploadContractFile()" id="upload-contract-btn">📤 העלה חוזה</button>
               <div class="msg" id="upload-contract-msg"></div>
+            </div>
+
+            <!-- טופס פרטי שכירות קיימת -->
+            <div id="existing-contract-form" style="display:none;background:#F0FBF7;border:1.5px solid #5DCAA5;border-radius:12px;padding:16px;margin-bottom:12px;">
+              <div class="form-section-title" style="background:#E1F5EE;border-right-color:#1D9E75;margin-bottom:12px;">📋 פרטי שכירות קיימת</div>
+              <div class="form-row-2">
+                <div class="fg"><label>תאריך התחלה *</label><input id="ec-start" type="date" /></div>
+                <div class="fg"><label>תאריך סיום *</label><input id="ec-end" type="date" /></div>
+              </div>
+              <div class="form-row-2">
+                <div class="fg"><label>שכ"ד חודשי (₪) *</label><input id="ec-rent" type="number" placeholder="8500" /></div>
+                <div class="fg"><label>יש אופציה?</label>
+                  <select id="ec-option" onchange="document.getElementById('ec-option-date-row').style.display=this.value==='כן'?'block':'none'">
+                    <option value="לא">לא</option>
+                    <option value="כן">כן</option>
+                  </select>
+                </div>
+              </div>
+              <div id="ec-option-date-row" style="display:none;">
+                <div class="fg"><label>תאריך סיום אופציה</label><input id="ec-option-date" type="date" /></div>
+              </div>
+              <div class="form-row-2">
+                <div class="fg"><label>שם שוכר</label><input id="ec-tenant-name" placeholder="ישראל ישראלי" /></div>
+                <div class="fg"><label>טלפון שוכר</label><input id="ec-tenant-phone" placeholder="050-1234567" /></div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:8px;">
+                <button onclick="saveExistingContract()" style="background:#1D9E75;color:white;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;">💾 שמור פרטים</button>
+                <button onclick="toggleExistingContractForm()" style="background:white;color:#555;border:1px solid #ccc;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;">ביטול</button>
+              </div>
+              <div class="msg" id="ec-msg"></div>
             </div>
 
             <!-- קובץ חוזה קיים -->
@@ -657,6 +688,17 @@ body {
 
           <!-- TAB: ביטוח -->
           <div class="pd-content" id="pdt-insurance" style="display:none;">
+
+            <!-- התראה אין ביטוח -->
+            <div id="no-insurance-alert" style="display:none;background:#FFF3E0;border:2px solid #FFB74D;border-radius:12px;padding:14px;margin-bottom:14px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="font-size:28px;">⚠️</div>
+                <div>
+                  <div style="font-size:14px;font-weight:700;color:#8A6000;">לנכס זה אין פוליסת ביטוח!</div>
+                  <div style="font-size:12px;color:#8A6000;margin-top:4px;">מומלץ מאוד לבטח את הנכס — מלא את הפרטים למטה</div>
+                </div>
+              </div>
+            </div>
 
             <!-- סטטוס ביטוח -->
             <div id="insurance-status-bar" style="display:none;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
@@ -1725,6 +1767,52 @@ async function saveProperty() {
   setTimeout(()=>showPage('properties',document.getElementById('nav-props')),1200);
 }
 
+function toggleExistingContractForm() {
+  const form = document.getElementById('existing-contract-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+async function saveExistingContract() {
+  if(!currentProp) return;
+  
+  const start = document.getElementById('ec-start').value;
+  const end = document.getElementById('ec-end').value;
+  const rent = document.getElementById('ec-rent').value;
+  const hasOption = document.getElementById('ec-option').value;
+  const optionDate = document.getElementById('ec-option-date').value;
+  const tenantName = document.getElementById('ec-tenant-name').value.trim();
+  const tenantPhone = document.getElementById('ec-tenant-phone').value.trim();
+
+  if(!start||!end||!rent){showMsg('ec-msg','error','נא למלא תאריכים ושכ"ד');return;}
+
+  const btn = document.querySelector('#existing-contract-form button');
+  btn.disabled = true;
+
+  // שמור חוזה
+  const{data:contract, error}=await sb.from('contracts').insert({
+    property_id: currentProp.id,
+    start_date: start,
+    end_date: end,
+    monthly_rent: parseFloat(rent),
+    has_option: hasOption,
+    option_date: hasOption==='כן'&&optionDate?optionDate:null,
+    status: 'פעיל',
+    contract_data: {tenant_name: tenantName, tenant_phone: tenantPhone}
+  }).select().single();
+
+  if(error){showMsg('ec-msg','error','שגיאה: '+error.message);btn.disabled=false;return;}
+
+  // עדכן סטטוס נכס למושכר
+  await sb.from('properties').update({status:'מושכר'}).eq('id',currentProp.id);
+
+  showMsg('ec-msg','success','✓ פרטי השכירות נשמרו!');
+  setTimeout(()=>{
+    toggleExistingContractForm();
+    loadPropertyDetail(currentProp.id);
+  }, 1500);
+  btn.disabled = false;
+}
+
 async function quickUpdatePrice(propId, currentRent, currentSale) {
   const type=prompt('עדכן מחיר:\n1. שכירות\n2. מכירה\nהכנס 1 או 2:');
   if(!type) return;
@@ -2563,7 +2651,50 @@ async function checkAllNotifications() {
     }
   }
 
-  // 4. התראות פניות מהלוח
+  // 4. בדוק נכסים ללא ביטוח
+  const{data:insurances_all}=await sb.from('insurance')
+    .select('property_id').in('property_id',propIds);
+  
+  const insuredPropIds=new Set((insurances_all||[]).map(i=>i.property_id));
+  
+  for(const prop of props){
+    if(!insuredPropIds.has(prop.id)){
+      const existing=await sb.from('notifications')
+        .select('id').eq('user_id',currentUser.id)
+        .eq('type','no_insurance').eq('property_id',prop.id)
+        .gte('created_at',todayStr+'T00:00:00');
+      if(!existing.data?.length){
+        await createNotification(currentUser.id,'no_insurance',
+          '⚠️ נכס ללא ביטוח',
+          `לנכס ${prop.address} אין פוליסת ביטוח — מומלץ להוסיף`,
+          prop.id);
+      }
+    }
+  }
+
+  // 5. נכסים מושכרים ללא חוזה
+  const{data:activeContracts}=await sb.from('contracts')
+    .select('property_id').in('property_id',propIds).eq('status','פעיל');
+  
+  const contractedPropIds=new Set((activeContracts||[]).map(c=>c.property_id));
+  
+  for(const prop of props){
+    const{data:propData}=await sb.from('properties').select('status').eq('id',prop.id).single();
+    if(propData?.status==='מושכר'&&!contractedPropIds.has(prop.id)){
+      const existing=await sb.from('notifications')
+        .select('id').eq('user_id',currentUser.id)
+        .eq('type','no_contract').eq('property_id',prop.id)
+        .gte('created_at',todayStr+'T00:00:00');
+      if(!existing.data?.length){
+        await createNotification(currentUser.id,'no_contract',
+          '⚠️ נכס מושכר ללא פרטי שכירות',
+          `הנכס ${prop.address} מסומן כמושכר אך אין חוזה פעיל — הכנס פרטי שכירות`,
+          prop.id);
+      }
+    }
+  }
+
+  // 6. התראות פניות מהלוח
   const{data:inquiries}=await sb.from('property_inquiries')
     .select('*').in('property_id',propIds).eq('status','חדש')
     .gte('created_at',todayStr+'T00:00:00');
@@ -3468,11 +3599,13 @@ async function loadInsurance(propId) {
     document.getElementById('ins-f-notes').value=ins.notes||'';
     document.getElementById('ins-form-title').textContent='✏️ עדכון ביטוח';
     document.getElementById('ins-cancel-btn').style.display='block';
+    document.getElementById('no-insurance-alert').style.display='none';
   } else {
     statusBar.style.display='none';
     details.style.display='none';
     document.getElementById('ins-form-title').textContent='+ הוספת ביטוח';
     document.getElementById('ins-cancel-btn').style.display='none';
+    document.getElementById('no-insurance-alert').style.display='block';
   }
 }
 
