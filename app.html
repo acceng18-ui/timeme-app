@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.2.4 | timeme.co.il -->
+<!-- TIME.ME v1.2.5 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -653,12 +653,17 @@ body {
                   <div class="fg"><label>תיאור *</label><input id="exp-desc" placeholder="תיקון דוד שמש" /></div>
                   <div class="fg"><label>קטגוריה *</label>
                     <select id="exp-cat">
-                      <option value="תיקונים">🔧 תיקונים</option>
+                      <option value="אחזקה">🔧 אחזקה</option>
+                      <option value="שיפוץ">🏗️ שיפוץ</option>
+                      <option value="משכנתא">🏦 משכנתא</option>
+                      <option value="הלוואה">💳 הלוואה</option>
                       <option value="ביטוח">🛡️ ביטוח</option>
-                      <option value="מסים">🏛️ מסים</option>
+                      <option value="ארנונה">🏛️ ארנונה</option>
+                      <option value="ועד בית">🏢 ועד בית</option>
+                      <option value="עו״ד / רו״ח">⚖️ עו״ד / רו״ח</option>
+                      <option value="מסים">📊 מסים</option>
                       <option value="ניהול">📋 ניהול</option>
-                      <option value="שיפוץ">🔨 שיפוץ</option>
-                      <option value="אחר">📦 אחר</option>
+                      <option value="כללי">📦 כללי</option>
                     </select>
                   </div>
                 </div>
@@ -1048,6 +1053,56 @@ body {
           <div class="fg"><textarea id="t-message" placeholder="כתוב כאן את פנייתך..." rows="3"></textarea></div>
           <button class="btn-main" style="width:auto;padding:9px 20px;" onclick="sendTenantMessage()">📨 שלח פנייה</button>
           <div class="msg" id="t-msg"></div>
+        </div>
+
+        <!-- הוצאות שוכר -->
+        <div class="form-card" style="margin-bottom:12px;">
+          <div class="form-section-title" style="border-right-color:#E24B4A;">💰 הוצאות הדירה שלי</div>
+          <p style="font-size:12px;color:#555;margin-bottom:12px;">הזן הוצאות הקשורות לדירה — תיקונים, ארנונה, חשמל וכו'</p>
+          
+          <!-- טופס הוספת הוצאה -->
+          <div style="background:#F8FAFF;border:1.5px dashed #B5D4F4;border-radius:10px;padding:14px;margin-bottom:14px;">
+            <div class="form-row-2">
+              <div class="fg"><label>תיאור *</label><input id="texp-desc" placeholder="תיקון ברז" /></div>
+              <div class="fg"><label>קטגוריה *</label>
+                <select id="texp-cat">
+                  <option value="תיקונים">🔧 תיקונים</option>
+                  <option value="ארנונה">🏛️ ארנונה</option>
+                  <option value="ועד בית">🏢 ועד בית</option>
+                  <option value="חשמל">⚡ חשמל</option>
+                  <option value="מים">💧 מים</option>
+                  <option value="גז">🔥 גז</option>
+                  <option value="אינטרנט">🌐 אינטרנט</option>
+                  <option value="כללי">📋 כללי</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="fg"><label>סכום (₪) *</label><input id="texp-amount" type="number" placeholder="200" /></div>
+              <div class="fg"><label>תאריך *</label><input id="texp-date" type="date" /></div>
+            </div>
+            <div class="fg"><label>הערות</label><input id="texp-notes" placeholder="פרטים נוספים..." /></div>
+            <button class="btn-main" style="width:auto;padding:9px 20px;background:#E24B4A;" onclick="saveTenantExpense()">💾 שמור הוצאה</button>
+            <div class="msg" id="texp-msg"></div>
+          </div>
+
+          <!-- רשימת הוצאות -->
+          <div id="texp-list">
+            <div style="text-align:center;color:#888;font-size:13px;padding:10px;">טוען הוצאות...</div>
+          </div>
+          
+          <!-- סיכום חודשי -->
+          <div id="texp-summary" style="background:#F8FAFF;border:1px solid #E6F1FB;border-radius:10px;padding:12px;margin-top:10px;display:none;">
+            <div style="font-size:13px;font-weight:700;color:#042C53;margin-bottom:8px;">📊 סיכום הוצאות</div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;">
+              <span style="color:#555;">סה"כ הוצאות החודש:</span>
+              <span style="font-weight:700;color:#E24B4A;" id="texp-total-month">₪0</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px;">
+              <span style="color:#555;">סה"כ הוצאות שנתי:</span>
+              <span style="font-weight:700;color:#185FA5;" id="texp-total-year">₪0</span>
+            </div>
+          </div>
         </div>
 
         <!-- כרטיס שוכר -->
@@ -2919,6 +2974,7 @@ async function addOrgMember() {
 async function loadTenantDashboard(user) {
   // טען פרופיל
   loadTenantProfile();
+  loadTenantExpenses();
 
   // מצא את הנכס המקושר לשוכר
   const{data:tenantProp}=await sb.from('tenant_properties')
@@ -3206,6 +3262,87 @@ async function publishTenantListing() {
     statusText.textContent='🟢 הנכס פורסם בלוח!';
     showMsg('tl-msg','success','✓ הנכס פורסם בדף הפומבי!');
   }
+}
+
+async function saveTenantExpense() {
+  if(!currentUser) return;
+  const desc=document.getElementById('texp-desc').value.trim();
+  const cat=document.getElementById('texp-cat').value;
+  const amount=document.getElementById('texp-amount').value;
+  const date=document.getElementById('texp-date').value;
+  const notes=document.getElementById('texp-notes').value.trim();
+
+  if(!desc||!amount||!date){showMsg('texp-msg','error','נא למלא תיאור, סכום ותאריך');return;}
+
+  const btn=document.querySelector('#texp-msg').previousElementSibling;
+  btn.disabled=true;
+
+  // מצא את הנכס המקושר
+  const{data:tp}=await sb.from('tenant_properties')
+    .select('property_id').eq('tenant_id',currentUser.id).eq('status','פעיל').single();
+
+  const{error}=await sb.from('expenses').insert({
+    property_id:tp?.property_id||null,
+    description:desc,
+    category:cat,
+    amount:parseFloat(amount),
+    expense_date:date,
+    vendor:notes,
+    includes_vat:false
+  });
+
+  btn.disabled=false;
+  if(error){showMsg('texp-msg','error','שגיאה: '+error.message);return;}
+  showMsg('texp-msg','success','✓ הוצאה נשמרה!');
+  
+  document.getElementById('texp-desc').value='';
+  document.getElementById('texp-amount').value='';
+  document.getElementById('texp-notes').value='';
+  
+  loadTenantExpenses();
+}
+
+async function loadTenantExpenses() {
+  if(!currentUser) return;
+  
+  const{data:tp}=await sb.from('tenant_properties')
+    .select('property_id').eq('tenant_id',currentUser.id).eq('status','פעיל').single();
+  
+  if(!tp) return;
+
+  const{data:expenses}=await sb.from('expenses')
+    .select('*').eq('property_id',tp.property_id)
+    .order('expense_date',{ascending:false}).limit(20);
+
+  const list=document.getElementById('texp-list');
+  if(!list) return;
+
+  if(!expenses||expenses.length===0){
+    list.innerHTML='<div style="text-align:center;color:#888;font-size:13px;padding:10px;">אין הוצאות עדיין</div>';
+    return;
+  }
+
+  const CATS={'תיקונים':'🔧','ארנונה':'🏛️','ועד בית':'🏢','חשמל':'⚡','מים':'💧','גז':'🔥','אינטרנט':'🌐','כללי':'📋'};
+
+  list.innerHTML=expenses.map(e=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #F0F6FF;">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#042C53;">${CATS[e.category]||'📋'} ${e.description}</div>
+        <div style="font-size:11px;color:#888;">${fmtDate(e.expense_date)} • ${e.category}</div>
+      </div>
+      <div style="font-size:14px;font-weight:700;color:#E24B4A;">₪${Number(e.amount).toLocaleString('he-IL')}</div>
+    </div>
+  `).join('');
+
+  // חשב סיכום
+  const now=new Date();
+  const thisMonth=expenses.filter(e=>new Date(e.expense_date).getMonth()===now.getMonth());
+  const totalMonth=thisMonth.reduce((s,e)=>s+Number(e.amount),0);
+  const totalYear=expenses.reduce((s,e)=>s+Number(e.amount),0);
+  
+  document.getElementById('texp-total-month').textContent='₪'+totalMonth.toLocaleString('he-IL');
+  document.getElementById('texp-total-year').textContent='₪'+totalYear.toLocaleString('he-IL');
+  document.getElementById('texp-summary').style.display='block';
 }
 
 async function sendTenantMessage() {
