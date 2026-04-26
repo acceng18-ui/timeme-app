@@ -113,14 +113,24 @@ body { font-family: Arial, Helvetica, sans-serif; direction: rtl; background: #F
   box-shadow: 0 2px 12px rgba(4,44,83,0.1);
 }
 @media (max-width: 600px) {
-  .props-grid { grid-template-columns: 1fr; }
+  .props-grid { grid-template-columns: 1fr; gap: 12px; }
+  .hero { padding: 30px 16px; }
   .hero h1 { font-size: 22px; }
-  .hero-stats { gap: 20px; }
-  .filter-bar { padding: 10px 14px; }
-  .main { padding: 14px; }
+  .hero p { font-size: 13px; }
+  .hero-stats { gap: 16px; flex-wrap: wrap; }
+  .hero-stat-num { font-size: 28px; }
+  .filter-bar { padding: 10px 12px; gap: 8px; flex-wrap: wrap; }
+  .filter-bar select, .filter-bar input { font-size: 13px; min-width: 0; flex: 1; }
+  .main { padding: 12px; }
   .card-address { font-size: 14px; }
-  .card-actions { flex-direction: column; }
-  .btn-photos, .btn-offer { width: 100%; }
+  .card-actions { flex-direction: column; gap: 8px; }
+  .btn-photos, .btn-offer { width: 100%; text-align: center; }
+  .header { padding: 10px 14px; }
+  .logo-name { font-size: 20px; }
+  .logo-tag { display: none; }
+  .hero div[style*="display:flex"] { flex-direction: column; }
+  .hero div[style*="display:flex"] button { width: 100%; }
+  #notif-panel { width: calc(100vw - 20px) !important; }
 }
 .prop-card:hover { box-shadow: 0 4px 20px rgba(24,95,165,0.15); border-color: #185FA5; }
 
