@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://www.timeme.co.il/sitemap.xml
