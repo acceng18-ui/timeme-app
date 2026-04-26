@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.2.0 | timeme.co.il -->
+<!-- TIME.ME v1.2.1 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -236,12 +236,27 @@ body {
   <div class="dash-top">
     <div class="dash-logo">TIME<em>.</em>ME</div>
     <div class="dash-user">
+      <div id="notif-bell" onclick="toggleNotifPanel()" style="position:relative;cursor:pointer;margin-left:8px;display:none;">
+        <span style="font-size:22px;">🔔</span>
+        <span id="notif-count" style="position:absolute;top:-4px;right:-4px;background:#E24B4A;color:white;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;">0</span>
+      </div>
       <span class="dash-uname" id="dash-uname"></span>
       <div class="dash-avatar" id="dash-avatar">?</div>
       <button class="btn-logout" onclick="handleLogout()">יציאה</button>
     </div>
   </div>
   <div class="accent-bar"></div>
+
+<!-- פאנל התראות -->
+<div id="notif-panel" style="display:none;position:fixed;top:60px;left:20px;width:340px;background:white;border:1.5px solid #B5D4F4;border-radius:14px;box-shadow:0 8px 32px rgba(4,44,83,0.15);z-index:1000;max-height:500px;overflow-y:auto;">
+  <div style="padding:14px 18px;border-bottom:1px solid #E6F1FB;display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-size:15px;font-weight:700;color:#042C53;">🔔 התראות</div>
+    <button onclick="markAllRead()" style="background:none;border:none;color:#185FA5;font-size:12px;cursor:pointer;">סמן הכל כנקרא</button>
+  </div>
+  <div id="notif-list" style="padding:8px;">
+    <div style="text-align:center;padding:20px;color:#888;font-size:13px;">אין התראות חדשות</div>
+  </div>
+</div>
 
   <!-- פס התחזות -->
   <div id="impersonate-bar" style="display:none;background:#FFF3E0;border-bottom:2px solid #FFB74D;padding:8px 20px;display:none;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
@@ -1568,6 +1583,8 @@ async function enterDashboard(user) {
       }
     },500);
   }
+  loadNotifCount();
+  checkAllNotifications();
   loadProperties();
 }
 
@@ -1632,6 +1649,7 @@ async function loadProperties() {
         <span class="badge ${p.status==='מושכר'?'badge-rented':p.status==='בשיפוץ'?'badge-renov':'badge-vacant'}">${p.status}</span>
         <div style="display:flex;gap:4px;flex-wrap:wrap;">
           ${p.verification_status!=='מאומת'?`<button onclick="event.stopPropagation();quickVerify('${p.id}')" style="background:#1D9E75;color:white;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;">✅ אמת</button>`:'<span style="font-size:10px;color:#0F6E56;font-weight:700;">🟢 אומת</span>'}
+          <button onclick="event.stopPropagation();quickUpdatePrice('${p.id}',${p.rent_price||0},${p.sale_price||0})" style="background:#FFF3E0;color:#8A6000;border:1px solid #FFB74D;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;">💰 מחיר</button>
           <button class="btn-del" onclick="event.stopPropagation();deleteProperty('${p.id}')" title="מחק נכס">🗑️</button>
           <span style="font-size:11px;color:#185FA5;align-self:center;">פתח ←</span>
         </div>
@@ -1705,6 +1723,23 @@ async function saveProperty() {
   document.getElementById('o-id-type').value='ת.ז';
   showMsg('prop-msg','success','✓ הנכס נשמר בהצלחה!');
   setTimeout(()=>showPage('properties',document.getElementById('nav-props')),1200);
+}
+
+async function quickUpdatePrice(propId, currentRent, currentSale) {
+  const type=prompt('עדכן מחיר:\n1. שכירות\n2. מכירה\nהכנס 1 או 2:');
+  if(!type) return;
+  
+  if(type==='1'){
+    const price=prompt(`מחיר שכירות נוכחי: ${currentRent?Number(currentRent).toLocaleString('he-IL')+' ₪':'לא הוגדר'}\nהכנס מחיר חדש (₪/חודש):`);
+    if(!price||isNaN(price)) return;
+    await sb.from('properties').update({rent_price:parseFloat(price)}).eq('id',propId);
+  } else if(type==='2'){
+    const price=prompt(`מחיר מכירה נוכחי: ${currentSale?Number(currentSale).toLocaleString('he-IL')+' ₪':'לא הוגדר'}\nהכנס מחיר חדש (₪):`);
+    if(!price||isNaN(price)) return;
+    await sb.from('properties').update({sale_price:parseFloat(price)}).eq('id',propId);
+  }
+  
+  loadProperties();
 }
 
 async function quickVerify(propId) {
@@ -2374,6 +2409,180 @@ async function stopImpersonate() {
 
   showPage('admin', document.getElementById('nav-admin'));
   loadAdminUsers();
+}
+
+// ── NOTIFICATIONS ────────────────────────────────
+let notifPanelOpen = false;
+
+function toggleNotifPanel() {
+  notifPanelOpen = !notifPanelOpen;
+  document.getElementById('notif-panel').style.display = notifPanelOpen ? 'block' : 'none';
+  if(notifPanelOpen) loadNotifications();
+}
+
+// סגור פאנל בלחיצה מחוץ
+document.addEventListener('click', function(e) {
+  if(!e.target.closest('#notif-bell') && !e.target.closest('#notif-panel')) {
+    document.getElementById('notif-panel').style.display = 'none';
+    notifPanelOpen = false;
+  }
+});
+
+async function loadNotifications() {
+  if(!currentUser) return;
+  const{data}=await sb.from('notifications')
+    .select('*').eq('user_id',currentUser.id)
+    .order('created_at',{ascending:false}).limit(20);
+  
+  const list=document.getElementById('notif-list');
+  if(!data||data.length===0){
+    list.innerHTML='<div style="text-align:center;padding:20px;color:#888;font-size:13px;">אין התראות</div>';
+    return;
+  }
+  
+  list.innerHTML=data.map(n=>`
+    <div onclick="markRead('${n.id}')" style="padding:12px;border-radius:10px;margin-bottom:6px;cursor:pointer;background:${n.is_read?'#F8FAFF':'#E6F1FB'};border:1px solid ${n.is_read?'#E6F1FB':'#B5D4F4'};">
+      <div style="font-size:13px;font-weight:${n.is_read?'400':'700'};color:#042C53;">${n.title}</div>
+      <div style="font-size:11px;color:#555;margin-top:4px;">${n.message}</div>
+      <div style="font-size:10px;color:#888;margin-top:4px;">${fmtDate(n.created_at)}</div>
+    </div>
+  `).join('');
+}
+
+async function markRead(id) {
+  await sb.from('notifications').update({is_read:true}).eq('id',id);
+  loadNotifCount();
+  loadNotifications();
+}
+
+async function markAllRead() {
+  if(!currentUser) return;
+  await sb.from('notifications').update({is_read:true})
+    .eq('user_id',currentUser.id).eq('is_read',false);
+  loadNotifCount();
+  loadNotifications();
+}
+
+async function loadNotifCount() {
+  if(!currentUser) return;
+  const{count}=await sb.from('notifications')
+    .select('*',{count:'exact',head:true})
+    .eq('user_id',currentUser.id).eq('is_read',false);
+  
+  const bell=document.getElementById('notif-bell');
+  const badge=document.getElementById('notif-count');
+  bell.style.display='flex';
+  
+  if(count>0){
+    badge.style.display='flex';
+    badge.textContent=count>9?'9+':count;
+  } else {
+    badge.style.display='none';
+  }
+}
+
+async function createNotification(userId, type, title, message, propertyId=null) {
+  if(!userId) return;
+  await sb.from('notifications').insert({
+    user_id:userId, type, title, message, property_id:propertyId
+  });
+}
+
+async function checkAllNotifications() {
+  if(!currentUser) return;
+  
+  // טען נכסים של המשתמש
+  const{data:props}=await sb.from('properties')
+    .select('id,address,owner_id').eq('owner_id',currentUser.id);
+  
+  if(!props||props.length===0) return;
+  
+  const propIds=props.map(p=>p.id);
+  const today=new Date();
+  const in7=new Date(); in7.setDate(today.getDate()+7);
+  const in90=new Date(); in90.setDate(today.getDate()+90);
+  const todayStr=today.toISOString().split('T')[0];
+  const in7Str=in7.toISOString().split('T')[0];
+  const in90Str=in90.toISOString().split('T')[0];
+
+  // 1. התראות ביטוח — שבוע לפני
+  const{data:insurances}=await sb.from('insurance')
+    .select('*').in('property_id',propIds)
+    .gte('expiry_date',todayStr).lte('expiry_date',in7Str);
+  
+  for(const ins of insurances||[]){
+    const prop=props.find(p=>p.id===ins.property_id);
+    const existing=await sb.from('notifications')
+      .select('id').eq('user_id',currentUser.id)
+      .eq('type','insurance').eq('property_id',ins.property_id)
+      .gte('created_at',todayStr+'T00:00:00');
+    if(!existing.data?.length){
+      await createNotification(currentUser.id,'insurance',
+        '🛡️ פוליסת ביטוח פוקעת בקרוב',
+        `הביטוח של ${prop?.address} פוקע בתאריך ${fmtDate(ins.expiry_date)}`,
+        ins.property_id);
+    }
+  }
+
+  // 2. התראות חוזה — 90 יום לפני סיום
+  const{data:contracts}=await sb.from('contracts')
+    .select('*').in('property_id',propIds).eq('status','פעיל')
+    .gte('end_date',todayStr).lte('end_date',in90Str);
+  
+  for(const c of contracts||[]){
+    const prop=props.find(p=>p.id===c.property_id);
+    const daysLeft=Math.ceil((new Date(c.end_date)-today)/(1000*60*60*24));
+    const existing=await sb.from('notifications')
+      .select('id').eq('user_id',currentUser.id)
+      .eq('type','contract').eq('property_id',c.property_id)
+      .gte('created_at',todayStr+'T00:00:00');
+    if(!existing.data?.length){
+      await createNotification(currentUser.id,'contract',
+        '📄 חוזה מסתיים בקרוב',
+        `החוזה של ${prop?.address} מסתיים בעוד ${daysLeft} ימים`,
+        c.property_id);
+    }
+  }
+
+  // 3. התראות תשלומים — שיקים שמגיעים היום
+  const{data:payments}=await sb.from('payments')
+    .select('*').in('property_id',propIds)
+    .eq('status','ממתין').eq('due_date',todayStr);
+  
+  for(const pay of payments||[]){
+    const prop=props.find(p=>p.id===pay.property_id);
+    const existing=await sb.from('notifications')
+      .select('id').eq('user_id',currentUser.id)
+      .eq('type','payment').eq('property_id',pay.property_id)
+      .gte('created_at',todayStr+'T00:00:00');
+    if(!existing.data?.length){
+      await createNotification(currentUser.id,'payment',
+        '💳 תשלום מגיע היום',
+        `תשלום של ${pay.amount?Number(pay.amount).toLocaleString('he-IL')+' ₪':''} עבור ${prop?.address}`,
+        pay.property_id);
+    }
+  }
+
+  // 4. התראות פניות מהלוח
+  const{data:inquiries}=await sb.from('property_inquiries')
+    .select('*').in('property_id',propIds).eq('status','חדש')
+    .gte('created_at',todayStr+'T00:00:00');
+  
+  for(const inq of inquiries||[]){
+    const prop=props.find(p=>p.id===inq.property_id);
+    const existing=await sb.from('notifications')
+      .select('id').eq('user_id',currentUser.id)
+      .eq('type','inquiry').eq('property_id',inq.property_id)
+      .gte('created_at',todayStr+'T00:00:00');
+    if(!existing.data?.length){
+      await createNotification(currentUser.id,'inquiry',
+        '📨 פנייה חדשה מהלוח',
+        `${inq.full_name} פנה לגבי ${prop?.address}`,
+        inq.property_id);
+    }
+  }
+
+  loadNotifCount();
 }
 
 // ── FOR SALE ─────────────────────────────────────
