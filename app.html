@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.3.0 | timeme.co.il -->
+<!-- TIME.ME v1.3.1 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -320,6 +320,7 @@ body {
     <button class="nav-tab" id="nav-add" onclick="showPage('add-property',this)">➕ הוסף נכס</button>
     <button class="nav-tab" id="nav-contract" onclick="showPage('add-contract',this)">📋 טופס הכנת חוזה</button>
     <button class="nav-tab" id="nav-admin" onclick="showPage('admin',this);loadAdminUsers();" style="display:none;">👥 משתמשים</button>
+    <button class="nav-tab" id="nav-my-props" onclick="showPage('my-props',this);loadMyPersonalProps();" style="display:none;">🏠 הנכסים שלי</button>
 
     <button class="nav-tab" id="nav-tenant" onclick="showPage('tenant',this)" style="display:none;">🔑 הנכס שלי</button>
     <button class="nav-tab" id="nav-org" onclick="showPage('org',this)" style="display:none;">🏢 הארגון שלי</button>
@@ -1254,6 +1255,25 @@ body {
 
     </div>
 
+    <!-- הנכסים שלי האישיים - מנהל -->
+    <div class="page" id="page-my-props">
+      <div class="page-title">🏠 הנכסים שלי האישיים</div>
+      <div class="page-sub">נכסים הרשומים על שמי — ניהול מלא</div>
+      
+      <!-- סטטיסטיקות אישיות -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px;">
+        <div class="stat-card"><div class="stat-label">נכסים</div><div class="stat-val" id="mp-total">0</div></div>
+        <div class="stat-card"><div class="stat-label">הכנסה חודשית</div><div class="stat-val" id="mp-income" style="color:#1D9E75;font-size:15px;">₪0</div></div>
+        <div class="stat-card"><div class="stat-label">הוצאות חודשיות</div><div class="stat-val" id="mp-expenses" style="color:#E24B4A;font-size:15px;">₪0</div></div>
+        <div class="stat-card"><div class="stat-label">רווח נקי</div><div class="stat-val" id="mp-profit" style="color:#185FA5;font-size:15px;">₪0</div></div>
+      </div>
+      
+      <!-- רשימת נכסים -->
+      <div id="my-props-list">
+        <div style="text-align:center;padding:20px;color:#888;">טוען...</div>
+      </div>
+    </div>
+
     <!-- הוסף נכס -->
     <div class="page" id="page-add-property">
       <div class="page-title">הוספת נכס חדש</div>
@@ -1727,6 +1747,7 @@ async function enterDashboard(user) {
   // הצג טאב ניהול רק למנהל
   if(profile?.is_admin){
     document.getElementById('nav-admin').style.display='block';
+  document.getElementById('nav-my-props').style.display='block';
   document.getElementById('nav-props').textContent='📊 כל הנכסים';
   }
   // שוכר — הצג דשבורד שוכר
@@ -2029,6 +2050,56 @@ function exportPropsCSV() {
   a.href = url;
   a.download = 'timeme_properties.csv';
   a.click();
+}
+
+async function loadMyPersonalProps() {
+  if(!currentUser) return;
+  
+  const{data:props}=await sb.from('properties')
+    .select('*').eq('owner_id',currentUser.id)
+    .order('created_at',{ascending:false});
+  
+  // סטטיסטיקות
+  const total = (props||[]).length;
+  const income = (props||[]).reduce((s,p)=>s+(p.rent_price||0),0);
+  document.getElementById('mp-total').textContent = total;
+  document.getElementById('mp-income').textContent = '₪'+income.toLocaleString('he-IL');
+  
+  // הוצאות החודש
+  if(props&&props.length>0){
+    const propIds = props.map(p=>p.id);
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
+    const{data:expenses}=await sb.from('expenses')
+      .select('amount').in('property_id',propIds).gte('expense_date',monthStart);
+    const totalExp = (expenses||[]).reduce((s,e)=>s+Number(e.amount),0);
+    document.getElementById('mp-expenses').textContent = '₪'+totalExp.toLocaleString('he-IL');
+    document.getElementById('mp-profit').textContent = '₪'+(income-totalExp).toLocaleString('he-IL');
+  }
+  
+  // הצג נכסים
+  const list = document.getElementById('my-props-list');
+  if(!props||props.length===0){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">🏠</div><div class="empty-title">אין נכסים אישיים</div><button class="btn-add" onclick="showPage('add-property',document.getElementById('nav-add'))">+ הוסף נכס</button></div>`;
+    return;
+  }
+  
+  const STATUS_COLOR = {'פנוי':'#1D9E75','מושכר':'#185FA5','שימוש אישי':'#534AB7','בשיפוץ':'#FF8F00'};
+  const ICONS = {'דירה':'🏠','דירת גן':'🌿','פנטהאוס':'👑','וילה':'🏡','קוטג':'🏘️','חנות':'🏪','משרד':'🏢','מחסן':'📦','קרקע':'🌍','משק':'🌾','אזור תעשייה':'🏭'};
+  
+  list.innerHTML = props.map(p=>`
+    <div style="background:white;border:1.5px solid #E6F1FB;border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px rgba(4,44,83,0.06);" onclick="openProperty('${p.id}')">
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:700;color:#042C53;">${ICONS[p.type]||'🏠'} ${p.address||'—'}</div>
+        <div style="font-size:12px;color:#555;margin-top:4px;">${p.type||''} ${p.rooms?'| '+p.rooms+' חדרים':''} ${p.floor?'| קומה '+p.floor:''}</div>
+        ${p.verification_status==='מאומת'?'<span style="font-size:10px;color:#1D9E75;font-weight:700;">🟢 מאומת</span>':'<span style="font-size:10px;color:#E24B4A;font-weight:700;">🔴 לא מאומת</span>'}
+      </div>
+      <div style="text-align:left;display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+        <span style="background:${STATUS_COLOR[p.status]||'#888'}20;color:${STATUS_COLOR[p.status]||'#888'};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${p.status||'—'}</span>
+        ${p.rent_price?`<span style="font-size:12px;font-weight:700;color:#185FA5;">₪${Number(p.rent_price).toLocaleString('he-IL')}/חודש</span>`:''}
+      </div>
+    </div>
+  `).join('');
 }
 
 async function deleteProperty(id) {
