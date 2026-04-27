@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.2.7 | timeme.co.il -->
+<!-- TIME.ME v1.2.8 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -724,7 +724,7 @@ body {
                   <div class="fg"><label>ספק</label><input id="exp-vendor" placeholder="שרברב דוד" /></div>
                   <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
                     <input type="checkbox" id="exp-vat" checked style="width:16px;height:16px;" onchange="calcVat()" />
-                    <label for="exp-vat" style="font-size:12px;cursor:pointer;">כולל מע"מ (17%)</label>
+                    <label for="exp-vat" style="font-size:12px;cursor:pointer;">כולל מע"מ (18%)</label>
                   </div>
                 </div>
                 <div id="vat-calc" style="font-size:11px;color:#185FA5;background:#E6F1FB;padding:6px 10px;border-radius:6px;margin-bottom:10px;"></div>
@@ -3613,7 +3613,7 @@ function calcVat() {
     const vat=(amt-pre).toFixed(2);
     el.textContent='לפני מע"מ: '+Number(pre).toLocaleString('he-IL')+' ₪ | מע"מ: '+Number(vat).toLocaleString('he-IL')+' ₪';
   } else {
-    const vat=(amt*0.17).toFixed(2);
+    const vat=(amt*0.18).toFixed(2);
     const total=(amt*1.17).toFixed(2);
     el.textContent='כולל מע"מ: '+Number(total).toLocaleString('he-IL')+' ₪ | מע"מ: '+Number(vat).toLocaleString('he-IL')+' ₪';
   }
@@ -3670,8 +3670,8 @@ async function loadExpenses(propId) {
     
     const list=document.getElementById('exp-list');
     list.innerHTML=data.map(e=>{
-      const inclAmt=e.includes_vat?e.amount:e.amount*1.17;
-      const preAmt=e.includes_vat?e.amount/1.17:e.amount;
+      const inclAmt=e.includes_vat?e.amount:e.amount*1.18;
+      const preAmt=e.includes_vat?e.amount/1.18:e.amount;
       const vatAmt=inclAmt-preAmt;
       totalExp+=inclAmt;
       const bg=COLORS[e.category]||'#F5F9FF';
