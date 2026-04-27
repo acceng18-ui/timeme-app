@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.2.6 | timeme.co.il -->
+<!-- TIME.ME v1.2.7 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -141,6 +141,7 @@ body {
 .badge-rented { background: #E1F5EE; color: #0F6E56; }
 .badge-vacant { background: #FFF8E1; color: #8A6000; }
 .badge-renov  { background: #FFF3E0; color: #E65100; }
+.badge-personal { background: #EDE7F6; color: #4527A0; }
 .btn-del { background: none; border: none; color: #E24B4A; font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
 .btn-del:hover { background: #FCE4EC; }
 .form-card { background: white; border: 1.5px solid #B5D4F4; border-radius: 14px; padding: 20px; max-width: 560px; }
@@ -1305,6 +1306,7 @@ body {
             <select id="p-status">
               <option value="פנוי">○ פנוי</option>
               <option value="מושכר">● מושכר</option>
+              <option value="שימוש אישי">🏠 שימוש אישי</option>
               <option value="בשיפוץ">🔨 בשיפוץ</option>
             </select>
           </div>
@@ -1791,7 +1793,7 @@ async function loadProperties() {
         </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-        <span class="badge ${p.status==='מושכר'?'badge-rented':p.status==='בשיפוץ'?'badge-renov':'badge-vacant'}">${p.status}</span>
+        <span class="badge ${p.status==='מושכר'?'badge-rented':p.status==='שימוש אישי'?'badge-personal':p.status==='בשיפוץ'?'badge-renov':'badge-vacant'}">${p.status}</span>
         <div style="display:flex;gap:4px;flex-wrap:wrap;">
           ${p.verification_status!=='מאומת'?`<button onclick="event.stopPropagation();quickVerify('${p.id}')" style="background:#1D9E75;color:white;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;">✅ אמת</button>`:'<span style="font-size:10px;color:#0F6E56;font-weight:700;">🟢 אומת</span>'}
           <button onclick="event.stopPropagation();quickUpdatePrice('${p.id}',${p.rent_price||0},${p.sale_price||0})" style="background:#FFF3E0;color:#8A6000;border:1px solid #FFB74D;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;">💰 מחיר</button>
@@ -1966,7 +1968,18 @@ async function loadPropertyDetail(id) {
   if(!p)return;
   currentProp=p;
 
-  // scroll to panel
+  // שימוש אישי — הסתר/הצג טאבים
+  const isPersonal = p.status === 'שימוש אישי';
+  const contractTab = document.querySelector('.pd-tab[onclick*="contract"]');
+  const checksTab = document.querySelector('.pd-tab[onclick*="checks"]');
+  if(contractTab) contractTab.style.display = isPersonal ? 'none' : '';
+  if(checksTab) checksTab.style.display = isPersonal ? 'none' : '';
+  if(isPersonal) {
+    // עבור ישירות להוצאות
+    showPdTab('expenses', document.querySelector('.pd-tab[onclick*="expenses"]'));
+  } else {
+    showPdTab('info', document.querySelector('.pd-tab[onclick*="info"]'));
+  }
   const panel=document.getElementById('prop-detail-panel');
   panel.style.display='block';
   panel.scrollIntoView({behavior:'smooth',block:'start'});
@@ -2983,7 +2996,7 @@ async function loadOrgDashboard(user) {
           <div style="font-size:12px;font-weight:700;color:#042C53;">${ICONS[p.type]||'🏠'} ${p.address}${p.unit?' '+p.unit:''}</div>
           <div style="font-size:11px;color:#888;">${p.type||''} ${p.floor?'| קומה '+p.floor:''}</div>
         </div>
-        <span class="badge ${p.status==='מושכר'?'badge-rented':p.status==='בשיפוץ'?'badge-renov':'badge-vacant'}">${p.status}</span>
+        <span class="badge ${p.status==='מושכר'?'badge-rented':p.status==='שימוש אישי'?'badge-personal':p.status==='בשיפוץ'?'badge-renov':'badge-vacant'}">${p.status}</span>
       </div>
     `).join('');
   } else {
