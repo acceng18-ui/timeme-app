@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.3.1 | timeme.co.il -->
+<!-- TIME.ME v1.3.2 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -623,7 +623,10 @@ body {
           <div class="pd-content" id="pdt-checks" style="display:none;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
               <div class="form-section-title" style="margin:0;">💳 מעקב תשלומים</div>
-              <button class="btn-add" onclick="openAddPayment()" style="padding:7px 16px;font-size:12px;">+ הוסף תשלום</button>
+              <div style="display:flex;gap:8px;">
+                <button onclick="openRecurringForm('income')" style="padding:7px 14px;font-size:12px;background:#E1F5EE;color:#0F6E56;border:1.5px solid #5DCAA5;border-radius:8px;cursor:pointer;font-weight:700;">🔄 הכנסה חוזרת</button>
+                <button class="btn-add" onclick="openAddPayment()" style="padding:7px 16px;font-size:12px;">+ הוסף תשלום</button>
+              </div>
             </div>
 
             <!-- סיכום -->
@@ -718,7 +721,10 @@ body {
             <!-- הוספת הוצאה -->
             <div style="background:#F5F9FF;border:1.5px dashed #B5D4F4;border-radius:12px;padding:14px;margin-bottom:14px;">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                <div class="form-section-title" style="margin:0;">+ הוספת הוצאה</div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                  <div class="form-section-title" style="margin:0;">+ הוספת הוצאה</div>
+                  <button onclick="openRecurringForm('expense')" style="padding:5px 12px;font-size:11px;background:#FCE4EC;color:#880E4F;border:1.5px solid #F48FB1;border-radius:8px;cursor:pointer;font-weight:700;">🔄 הוצאה חוזרת</button>
+                </div>
                 <button onclick="toggleExpForm()" id="exp-toggle-btn" style="background:#E6F1FB;color:#185FA5;border:1px solid #B5D4F4;padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;">הצג</button>
               </div>
               <div id="exp-form" style="display:none;">
@@ -1570,6 +1576,48 @@ body {
   </div>
 </div>
 
+<!-- מודל הכנסה/הוצאה מחזורית -->
+<div id="recurring-modal" style="display:none;position:fixed;inset:0;background:rgba(4,44,83,0.6);z-index:2000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:white;border-radius:20px;max-width:480px;width:100%;padding:28px;box-shadow:0 20px 60px rgba(4,44,83,0.3);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:16px;font-weight:700;color:#042C53;" id="recurring-title">🔄 הכנסה חוזרת</div>
+      <button onclick="closeRecurringModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#888;">✕</button>
+    </div>
+    
+    <div class="form-row-2">
+      <div class="fg"><label>סכום (₪) *</label><input id="rec-amount" type="number" placeholder="8500" /></div>
+      <div class="fg"><label>יום בחודש *</label><input id="rec-day" type="number" placeholder="1" min="1" max="28" /></div>
+    </div>
+    <div class="form-row-2">
+      <div class="fg"><label>תיאור *</label><input id="rec-desc" placeholder="שכ״ד חודשי" /></div>
+      <div class="fg"><label>מספר חודשים</label><input id="rec-months" type="number" value="12" min="1" max="36" /></div>
+    </div>
+    <div class="fg" id="rec-cat-row">
+      <label>קטגוריה</label>
+      <select id="rec-cat">
+        <option value="אחזקה">🔧 אחזקה</option>
+        <option value="משכנתא">🏦 משכנתא</option>
+        <option value="הלוואה">💳 הלוואה</option>
+        <option value="ביטוח">🛡️ ביטוח</option>
+        <option value="ארנונה">🏛️ ארנונה</option>
+        <option value="ועד בית">🏢 ועד בית</option>
+        <option value="כללי">📦 כללי</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>תאריך התחלה *</label>
+      <input id="rec-start" type="date" />
+    </div>
+    <div style="background:#E6F1FB;border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:#185FA5;">
+      💡 המערכת תיצור אוטומטית רשומות לכל החודשים.<br>
+      כל רשומה תחכה לאישור "שולם / התקבל".<br>
+      אם עבר התאריך ולא אושר — תישלח התראה.
+    </div>
+    <button class="btn-main" onclick="saveRecurring()" id="rec-btn">✅ צור סדרה חוזרת</button>
+    <div class="msg" id="rec-msg"></div>
+  </div>
+</div>
+
 <script>
 const SURL = 'https://boyvrlgfgcixvmvfoocc.supabase.co';
 const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJveXZybGdmZ2NpeHZtdmZvb2NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMzIzMzAsImV4cCI6MjA5MTgwODMzMH0.vMtn66RZ8x4FBeZWtczjEnXq97TwQBMAFHn7KaD38ns';
@@ -1788,6 +1836,7 @@ async function enterDashboard(user) {
   }
   loadNotifCount();
   checkAllNotifications();
+  checkOverdueRecurring();
   loadProperties();
 }
 
@@ -2100,6 +2149,151 @@ async function loadMyPersonalProps() {
       </div>
     </div>
   `).join('');
+}
+
+// ── RECURRING ────────────────────────────────────
+let _recurringType = 'income'; // 'income' or 'expense'
+
+function openRecurringForm(type) {
+  _recurringType = type;
+  const isIncome = type === 'income';
+  document.getElementById('recurring-title').textContent = isIncome ? '🔄 הכנסה חוזרת' : '🔄 הוצאה חוזרת';
+  document.getElementById('rec-desc').placeholder = isIncome ? 'שכ״ד חודשי' : 'תשלום הוצאה';
+  document.getElementById('rec-cat-row').style.display = isIncome ? 'none' : 'block';
+  document.getElementById('rec-start').valueAsDate = new Date();
+  document.getElementById('recurring-modal').style.display = 'flex';
+}
+
+function closeRecurringModal() {
+  document.getElementById('recurring-modal').style.display = 'none';
+  showMsg('rec-msg','','');
+}
+
+async function saveRecurring() {
+  if(!currentProp) return;
+  const amount = parseFloat(document.getElementById('rec-amount').value);
+  const day = parseInt(document.getElementById('rec-day').value);
+  const desc = document.getElementById('rec-desc').value.trim();
+  const months = parseInt(document.getElementById('rec-months').value) || 12;
+  const startDate = document.getElementById('rec-start').value;
+  const cat = document.getElementById('rec-cat').value;
+
+  if(!amount){showMsg('rec-msg','error','נא למלא סכום');return;}
+  if(!day||day<1||day>28){showMsg('rec-msg','error','נא למלא יום בין 1-28');return;}
+  if(!desc){showMsg('rec-msg','error','נא למלא תיאור');return;}
+  if(!startDate){showMsg('rec-msg','error','נא למלא תאריך התחלה');return;}
+
+  const btn = document.getElementById('rec-btn');
+  btn.disabled = true;
+  btn.textContent = 'יוצר...';
+
+  const start = new Date(startDate);
+  const isIncome = _recurringType === 'income';
+  const errors = [];
+
+  for(let i = 0; i < months; i++){
+    const date = new Date(start.getFullYear(), start.getMonth() + i, day);
+    const dateStr = date.toISOString().split('T')[0];
+
+    if(isIncome){
+      // הכנסה → טבלת payments
+      const{error} = await sb.from('payments').insert({
+        property_id: currentProp.id,
+        month_number: i + 1,
+        due_date: dateStr,
+        amount: amount,
+        payment_type: 'שיק',
+        status: 'ממתין',
+        notes: desc + ' (חוזר)',
+        is_recurring: true
+      });
+      if(error) errors.push(error.message);
+    } else {
+      // הוצאה → טבלת expenses
+      const{error} = await sb.from('expenses').insert({
+        property_id: currentProp.id,
+        description: desc,
+        category: cat,
+        amount: amount,
+        expense_date: dateStr,
+        is_recurring: true,
+        recurring_status: 'ממתין'
+      });
+      if(error) errors.push(error.message);
+    }
+  }
+
+  btn.disabled = false;
+  btn.textContent = '✅ צור סדרה חוזרת';
+
+  if(errors.length > 0){
+    showMsg('rec-msg','error','שגיאה: '+errors[0]);
+    return;
+  }
+
+  showMsg('rec-msg','success','✓ נוצרו '+months+' רשומות בהצלחה!');
+  setTimeout(()=>{
+    closeRecurringModal();
+    if(isIncome) loadPayments();
+    else loadExpenses(currentProp.id);
+  }, 1500);
+}
+
+// בדיקת הכנסות/הוצאות שעבר תאריכן ולא אושרו
+async function checkOverdueRecurring() {
+  if(!currentUser) return;
+  
+  const{data:props} = await sb.from('properties')
+    .select('id,address').eq('owner_id', currentUser.id);
+  if(!props||props.length===0) return;
+  
+  const propIds = props.map(p=>p.id);
+  const today = new Date().toISOString().split('T')[0];
+  const todayStr = today;
+
+  // בדוק תשלומים שעבר תאריכם (הכנסות)
+  const{data:overduePayments} = await sb.from('payments')
+    .select('*').in('property_id', propIds)
+    .eq('status','ממתין')
+    .eq('is_recurring', true)
+    .lt('due_date', todayStr);
+
+  for(const pay of overduePayments||[]){
+    const prop = props.find(p=>p.id===pay.property_id);
+    const existing = await sb.from('notifications')
+      .select('id').eq('user_id',currentUser.id)
+      .eq('type','overdue_income').eq('property_id',pay.property_id)
+      .gte('created_at', todayStr+'T00:00:00');
+    if(!existing.data?.length){
+      await createNotification(currentUser.id,'overdue_income',
+        '💳 הכנסה חוזרת לא אושרה',
+        `תשלום של ₪${Number(pay.amount).toLocaleString('he-IL')} עבור ${prop?.address} — עבר ${pay.due_date} ולא סומן כהתקבל`,
+        pay.property_id);
+    }
+  }
+
+  // בדוק הוצאות שעבר תאריכן
+  const{data:overdueExp} = await sb.from('expenses')
+    .select('*').in('property_id', propIds)
+    .eq('is_recurring', true)
+    .eq('recurring_status','ממתין')
+    .lt('expense_date', todayStr);
+
+  for(const exp of overdueExp||[]){
+    const prop = props.find(p=>p.id===exp.property_id);
+    const existing = await sb.from('notifications')
+      .select('id').eq('user_id',currentUser.id)
+      .eq('type','overdue_expense').eq('property_id',exp.property_id)
+      .gte('created_at', todayStr+'T00:00:00');
+    if(!existing.data?.length){
+      await createNotification(currentUser.id,'overdue_expense',
+        '💸 הוצאה חוזרת לא אושרה',
+        `הוצאת ${exp.description} של ₪${Number(exp.amount).toLocaleString('he-IL')} עבור ${prop?.address} — עבר ${exp.expense_date} ולא אושרה`,
+        exp.property_id);
+    }
+  }
+
+  loadNotifCount();
 }
 
 async function deleteProperty(id) {
@@ -2935,12 +3129,42 @@ async function loadNotifications() {
   }
   
   list.innerHTML=data.map(n=>`
-    <div onclick="markRead('${n.id}')" style="padding:12px;border-radius:10px;margin-bottom:6px;cursor:pointer;background:${n.is_read?'#F8FAFF':'#E6F1FB'};border:1px solid ${n.is_read?'#E6F1FB':'#B5D4F4'};">
+    <div onclick="notifClick('${n.id}','${n.type}','${n.property_id||''}')" style="padding:12px;border-radius:10px;margin-bottom:6px;cursor:pointer;background:${n.is_read?'#F8FAFF':'#E6F1FB'};border:1px solid ${n.is_read?'#E6F1FB':'#B5D4F4'};">
       <div style="font-size:13px;font-weight:${n.is_read?'400':'700'};color:#042C53;">${n.title}</div>
       <div style="font-size:11px;color:#555;margin-top:4px;">${n.message}</div>
       <div style="font-size:10px;color:#888;margin-top:4px;">${fmtDate(n.created_at)}</div>
     </div>
   `).join('');
+}
+
+async function notifClick(id, type, propId) {
+  // סמן כנקרא
+  await sb.from('notifications').update({is_read:true}).eq('id',id);
+  loadNotifCount();
+  
+  // סגור פאנל
+  document.getElementById('notif-panel').style.display='none';
+  notifPanelOpen=false;
+  
+  // נווט ליעד
+  if(propId && propId !== 'null' && propId !== '') {
+    // פתח את הנכס
+    showPage('properties', document.getElementById('nav-props'));
+    setTimeout(async()=>{
+      await loadPropertyDetail(propId);
+      // פתח את הטאב הרלוונטי
+      if(type==='insurance'||type==='no_insurance'){
+        showPdTab('insurance', document.querySelector('.pd-tab[onclick*="insurance"]'));
+      } else if(type==='contract'||type==='no_contract'){
+        showPdTab('contract', document.querySelector('.pd-tab[onclick*="contract"]'));
+      } else if(type==='payment'){
+        showPdTab('checks', document.querySelector('.pd-tab[onclick*="checks"]'));
+      }
+    }, 300);
+  } else if(type==='inquiry'){
+    // פנייה מהלוח - עבור ללוח
+    window.open('index.html','_blank');
+  }
 }
 
 async function markRead(id) {
