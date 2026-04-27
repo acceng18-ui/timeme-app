@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מרכז הידע — TIME.ME | מאמרים על ניהול נכסים</title>
+<meta name="description" content="מאמרים מקצועיים על ניהול נכסים — לשוכרים, בעלי נכסים וארגונים. ביטוחים, הוצאות, ערבויות ועוד." />
+<link rel="canonical" href="https://www.timeme.co.il/articles.html" />
+<meta property="og:title" content="מרכז הידע — TIME.ME" />
+<meta property="og:description" content="מאמרים מקצועיים על ניהול נכסים בישראל" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;700;900&family=Heebo:wght@300;400;500;700&display=swap');
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  :root {
+    --navy: #042C53;
+    --blue: #185FA5;
+    --light-blue: #378ADD;
+    --green: #1D9E75;
+    --orange: #FF8F00;
+    --purple: #534AB7;
+    --red: #E24B4A;
+    --bg: #F5F8FF;
+    --white: #FFFFFF;
+    --text: #1A1A2E;
+    --text-light: #555;
+  }
+
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    direction: rtl;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, #0F3D6E 100%);
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(4,44,83,0.3);
+  }
+
+  .logo {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: white;
+    text-decoration: none;
+    letter-spacing: 2px;
+  }
+
+  .logo em { color: #85B7EB; font-style: normal; }
+
+  .header-nav { display: flex; gap: 12px; }
+  .btn-nav {
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+  }
+  .btn-home { background: rgba(255,255,255,0.1); color: #85B7EB; border: 1.5px solid rgba(255,255,255,0.2); }
+  .btn-login { background: var(--light-blue); color: white; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #185FA5 100%);
+    padding: 60px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: rgba(55,138,221,0.1);
+  }
+
+  .hero-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    color: #85B7EB;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .hero h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 42px;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .hero p { color: #B5D4F4; font-size: 16px; max-width: 600px; margin: 0 auto; }
+
+  /* SEARCH */
+  .search-bar {
+    max-width: 500px;
+    margin: 30px auto 0;
+    position: relative;
+  }
+
+  .search-bar input {
+    width: 100%;
+    padding: 14px 50px 14px 20px;
+    border-radius: 50px;
+    border: none;
+    font-size: 15px;
+    font-family: 'Heebo', sans-serif;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+
+  .search-bar span {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+  }
+
+  /* MAIN */
+  .main { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+  /* CATEGORIES */
+  .categories {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .cat-btn {
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .cat-btn.active, .cat-btn:hover { transform: translateY(-1px); }
+  .cat-all { background: var(--navy); color: white; }
+  .cat-tenant { background: #E1F5EE; color: #0F6E56; border-color: #5DCAA5; }
+  .cat-tenant.active { background: #1D9E75; color: white; }
+  .cat-owner { background: #E6F1FB; color: #185FA5; border-color: #B5D4F4; }
+  .cat-owner.active { background: #185FA5; color: white; }
+  .cat-personal { background: #EDE7F6; color: #4527A0; border-color: #B39DDB; }
+  .cat-personal.active { background: #534AB7; color: white; }
+  .cat-org { background: #FFF3E0; color: #8A6000; border-color: #FFB74D; }
+  .cat-org.active { background: #FF8F00; color: white; }
+  .cat-solar { background: #FFFDE7; color: #F57F17; border-color: #FFD600; }
+  .cat-solar.active { background: #F57F17; color: white; }
+
+  /* ARTICLES GRID */
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  .article-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(4,44,83,0.08);
+    border: 1.5px solid #E6F1FB;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .article-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(4,44,83,0.15);
+    border-color: var(--light-blue);
+  }
+
+  .card-stripe {
+    height: 6px;
+    width: 100%;
+  }
+
+  .card-body { padding: 22px; flex: 1; }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .card-category {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .card-read-time { font-size: 11px; color: #888; }
+
+  .card-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  .card-excerpt { font-size: 13px; color: var(--text-light); line-height: 1.7; }
+
+  .card-footer {
+    padding: 14px 22px;
+    border-top: 1px solid #F0F6FF;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-icon { font-size: 24px; }
+  .card-arrow { color: var(--blue); font-size: 18px; font-weight: 700; }
+
+  /* ARTICLE MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(4,44,83,0.6);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+
+  .modal {
+    background: white;
+    border-radius: 20px;
+    max-width: 720px;
+    width: 100%;
+    margin: 20px auto;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(4,44,83,0.3);
+  }
+
+  .modal-header {
+    padding: 30px 36px 24px;
+    border-bottom: 1px solid #F0F6FF;
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #F0F6FF;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-category { font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; display: inline-block; margin-bottom: 12px; }
+  .modal-title { font-family: 'Frank Ruhl Libre', serif; font-size: 28px; font-weight: 900; color: var(--navy); line-height: 1.3; margin-bottom: 8px; }
+  .modal-meta { font-size: 12px; color: #888; }
+
+  .modal-body { padding: 30px 36px; }
+
+  .modal-body h3 { font-family: 'Frank Ruhl Libre', serif; font-size: 20px; color: var(--navy); margin: 24px 0 10px; }
+  .modal-body p { font-size: 14px; color: var(--text-light); line-height: 1.8; margin-bottom: 12px; }
+  .modal-body ul { padding-right: 20px; margin-bottom: 12px; }
+  .modal-body li { font-size: 14px; color: var(--text-light); line-height: 1.8; margin-bottom: 6px; }
+
+  .modal-tip {
+    background: #E1F5EE;
+    border-right: 4px solid #1D9E75;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #0F6E56;
+    font-weight: 500;
+  }
+
+  .modal-warning {
+    background: #FFF3E0;
+    border-right: 4px solid #FF8F00;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #8A6000;
+    font-weight: 500;
+  }
+
+  .modal-cta {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    padding: 24px 36px;
+    text-align: center;
+    color: white;
+  }
+
+  .modal-cta p { color: #B5D4F4; font-size: 14px; margin-bottom: 14px; }
+  .modal-cta button {
+    background: white;
+    color: var(--navy);
+    border: none;
+    padding: 12px 32px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Heebo', sans-serif;
+  }
+
+  /* SOLAR CTA */
+  .solar-section {
+    background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
+    border-radius: 20px;
+    padding: 40px;
+    margin-top: 40px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .solar-section::before {
+    content: '☀️';
+    position: absolute;
+    font-size: 120px;
+    opacity: 0.1;
+    top: -10px;
+    right: -20px;
+  }
+
+  .solar-section h2 { font-family: 'Frank Ruhl Libre', serif; font-size: 28px; margin-bottom: 12px; }
+  .solar-section p { color: #B3C2F0; margin-bottom: 24px; font-size: 15px; }
+  .solar-section input {
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    font-family: 'Heebo', sans-serif;
+    width: 300px;
+    max-width: 100%;
+    margin-left: 10px;
+  }
+  .solar-section button {
+    background: #FFD600;
+    color: #1A237E;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Heebo', sans-serif;
+  }
+
+  @media (max-width: 600px) {
+    .header { padding: 12px 16px; }
+    .hero { padding: 40px 16px; }
+    .hero h1 { font-size: 28px; }
+    .main { padding: 20px 14px; }
+    .articles-grid { grid-template-columns: 1fr; gap: 14px; }
+    .modal-header, .modal-body { padding: 20px; }
+    .modal-title { font-size: 22px; }
+    .modal-cta { padding: 20px; }
+    .solar-section { padding: 24px 16px; }
+    .solar-section input { width: 100%; margin: 0 0 10px; }
+    .solar-section button { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <a href="index.html" class="logo">TIME<em>.</em>ME</a>
+  <div class="header-nav">
+    <a href="index.html" class="btn-nav btn-home">🏠 לוח נכסים</a>
+    <a href="app.html" class="btn-nav btn-login">כניסה 🔑</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">📚 מרכז הידע</div>
+  <h1>כל מה שצריך לדעת<br>על ניהול נכסים</h1>
+  <p>מאמרים מקצועיים לשוכרים, בעלי נכסים וארגונים — מהניסיון היומיומי בשטח</p>
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="חפש מאמר..." oninput="filterArticles()" />
+    <span>🔍</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- CATEGORIES -->
+  <div class="categories">
+    <button class="cat-btn cat-all active" onclick="filterCategory('all',this)">📋 הכל</button>
+    <button class="cat-btn cat-tenant" onclick="filterCategory('tenant',this)">🔑 שוכר</button>
+    <button class="cat-btn cat-owner" onclick="filterCategory('owner',this)">🏠 בעל נכס</button>
+    <button class="cat-btn cat-personal" onclick="filterCategory('personal',this)">🏡 שימוש אישי</button>
+    <button class="cat-btn cat-org" onclick="filterCategory('org',this)">🏢 ארגון</button>
+    <button class="cat-btn cat-solar" onclick="filterCategory('solar',this)">☀️ סולארי</button>
+  </div>
+
+  <!-- ARTICLES GRID -->
+  <div class="articles-grid" id="articles-grid"></div>
+
+  <!-- SOLAR CTA -->
+  <div class="solar-section" id="solar-section">
+    <h2>☀️ מערכת סולארית לנכס שלך</h2>
+    <p>בדוק אם הנכס שלך מתאים למערכת סולארית — חסוך בחשמל ויצר הכנסה נוספת</p>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;">
+      <input type="text" id="solar-address" placeholder="הכנס כתובת מדויקת..." />
+      <button onclick="checkSolar()">בדוק עכשיו ☀️</button>
+    </div>
+    <div id="solar-result" style="margin-top:16px;font-size:14px;"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+      <div class="modal-category" id="modal-cat"></div>
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-meta" id="modal-meta"></div>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-cta">
+      <p>נהל את הנכסים שלך בצורה חכמה עם TIME.ME</p>
+      <button onclick="window.location.href='app.html'">התחל עכשיו — חינם 🚀</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ARTICLES = [
+  // ===== שוכר =====
+  {
+    id: 1,
+    category: 'tenant',
+    catLabel: '🔑 שוכר',
+    catColor: '#E1F5EE',
+    catText: '#0F6E56',
+    stripe: '#1D9E75',
+    icon: '📊',
+    title: 'הכנסת נתוני הוצאות — למה זה חשוב?',
+    excerpt: 'מעקב אחר הוצאות הדירה שלך יכול לחסוך כסף ולמנוע ויכוחים מיותרים עם בעל הנכס.',
+    readTime: '3 דקות קריאה',
+    content: `
+      <h3>מדוע לתעד הוצאות?</h3>
+      <p>כשוכר, אתה עלול להוציא כסף על תיקונים, ארנונה, ועד בית ועוד — ולעיתים קשה לדעת מי אחראי על מה. תיעוד מסודר יכול להציל אותך במחלוקות.</p>
+      
+      <div class="modal-tip">💡 טיפ: צלם כל קבלה מיד לאחר התשלום ושמור בתיקייה ייעודית</div>
+      
+      <h3>אילו הוצאות לתעד?</h3>
+      <ul>
+        <li>🔧 <strong>תיקונים</strong> — שרברב, חשמלאי, מנעולן</li>
+        <li>🏛️ <strong>ארנונה</strong> — חשוב לוודא שמוגדרת על שמך</li>
+        <li>🏢 <strong>ועד בית</strong> — לפי החוזה</li>
+        <li>⚡ <strong>חשמל, מים, גז</strong> — מדי חודש</li>
+        <li>🌐 <strong>אינטרנט</strong> — לעיתים משולם דרך בעל הנכס</li>
+      </ul>
+      
+      <h3>מה שייך לבעל הנכס?</h3>
+      <p>בדרך כלל, בעל הנכס אחראי על: תיקוני מבנה (גג, צנרת ראשית), ביטוח מבנה, ועד בית (אם לא סוכם אחרת בחוזה).</p>
+      
+      <div class="modal-warning">⚠️ שים לב: לפני כל תיקון גדול — קבל אישור בכתב מבעל הנכס</div>
+      
+      <h3>איך TIME.ME עוזר?</h3>
+      <p>במערכת TIME.ME תוכל להזין כל הוצאה בקלות, לראות סיכום חודשי ושנתי, ולשתף עם בעל הנכס בלחיצה.</p>
+    `
+  },
+  {
+    id: 2,
+    category: 'tenant',
+    catLabel: '🔑 שוכר',
+    catColor: '#E1F5EE',
+    catText: '#0F6E56',
+    stripe: '#1D9E75',
+    icon: '🛡️',
+    title: 'קיום ביטוחים לפי החוזה',
+    excerpt: 'החוזה מחייב אותך לבטח את הנכס? הנה מה שצריך לדעת על ביטוח שוכר.',
+    readTime: '4 דקות קריאה',
+    content: `
+      <h3>איזה ביטוח מחויב מהשוכר?</h3>
+      <p>רוב חוזי השכירות מחייבים את השוכר לרכוש ביטוח תכולה ולעיתים גם אחריות צד ג'.</p>
+      
+      <h3>סוגי ביטוח לשוכר</h3>
+      <ul>
+        <li>🏠 <strong>ביטוח תכולה</strong> — מגן על הרהיטים והחפצים שלך</li>
+        <li>👥 <strong>אחריות צד ג'</strong> — אם גרמת נזק לשכן</li>
+        <li>🔥 <strong>ביטוח נגד שריפה ונזקי מים</strong> — לעיתים נדרש בחוזה</li>
+      </ul>
+      
+      <div class="modal-tip">💡 בדוק בחוזה שלך בסעיף "ביטוח" — מה בדיוק מחויב ממך</div>
+      
+      <h3>מה לא ביטוח השוכר?</h3>
+      <p>ביטוח מבנה (המבנה עצמו) הוא תמיד באחריות בעל הנכס — לא שלך.</p>
+      
+      <div class="modal-warning">⚠️ אי-קיום ביטוח לפי החוזה עלול לגרום לביטול החוזה!</div>
+    `
+  },
+  {
+    id: 3,
+    category: 'tenant',
+    catLabel: '🔑 שוכר',
+    catColor: '#E1F5EE',
+    catText: '#0F6E56',
+    stripe: '#1D9E75',
+    icon: '🔧',
+    title: 'שמירה על הנכס — חובות השוכר',
+    excerpt: 'מה מותר, מה אסור ואיך לשמור על הנכס כדי לקבל את הערבון בחזרה.',
+    readTime: '3 דקות קריאה',
+    content: `
+      <h3>מה אתה חייב לשמור?</h3>
+      <p>כשוכר, אתה מחויב להחזיר את הנכס במצב שבו קיבלת אותו — בניכוי בלאי סביר.</p>
+      
+      <h3>בלאי סביר vs. נזק</h3>
+      <ul>
+        <li>✅ <strong>בלאי סביר</strong> — שריטות קטנות בריצפה, דהיית צבע, בלאי בציוד ישן</li>
+        <li>❌ <strong>נזק</strong> — שבירת חלון, חורים בקיר, כתמים גדולים</li>
+      </ul>
+      
+      <div class="modal-tip">💡 צלם את הנכס ביום הכניסה! שמור את התמונות — הן הראיה שלך</div>
+      
+      <h3>טיפים לשמירה על הנכס</h3>
+      <ul>
+        <li>דווח מיד על נזק לא מכוון</li>
+        <li>אל תתלה מסמרים בקירות בלי אישור</li>
+        <li>נקה את המזגן כל עונה</li>
+        <li>דווח על נזישות מים מיד</li>
+      </ul>
+      
+      <div class="modal-warning">⚠️ אי-דיווח על נזק יכול לגרום לאחריות נוספת בסוף השכירות</div>
+    `
+  },
+  {
+    id: 4,
+    category: 'tenant',
+    catLabel: '🔑 שוכר',
+    catColor: '#E1F5EE',
+    catText: '#0F6E56',
+    stripe: '#1D9E75',
+    icon: '🤝',
+    title: 'מהי ערבות שוכר ואיך היא עובדת?',
+    excerpt: 'ערב, ערבות בנקאית, שיק ביטחון — מה ההבדל ומה כדאי לדעת לפני שחותמים.',
+    readTime: '5 דקות קריאה',
+    content: `
+      <h3>מהי ערבות?</h3>
+      <p>ערבות היא בטוחה שבעל הנכס מקבל ממך — על מנת להבטיח שתשלם שכר דירה ותחזיר את הנכס במצב תקין.</p>
+      
+      <h3>סוגי ערבויות</h3>
+      <ul>
+        <li>👤 <strong>ערב אישי</strong> — אדם שמתחייב לשלם אם אתה לא תשלם</li>
+        <li>🏦 <strong>ערבות בנקאית</strong> — בנק מתחייב לשלם עד סכום מסוים</li>
+        <li>📋 <strong>שיק ביטחון</strong> — שיק שניתן לפירעון רק בהפרת תנאי חוזה</li>
+      </ul>
+      
+      <div class="modal-tip">💡 ערבות בנקאית עדיפה על שיק ביטחון — היא יותר מאובטחת עבורך</div>
+      
+      <h3>מה קורה בסוף השכירות?</h3>
+      <p>אם החזרת את הנכס במצב תקין ושילמת את כל חובותיך — הערבות מוחזרת לך. בדרך כלל תוך 30-60 יום.</p>
+      
+      <div class="modal-warning">⚠️ קרא את סעיף הערבות בחוזה בקפידה — סכום, תנאים ומועד החזרה</div>
+    `
+  },
+  {
+    id: 5,
+    category: 'tenant',
+    catLabel: '🔑 שוכר',
+    catColor: '#E1F5EE',
+    catText: '#0F6E56',
+    stripe: '#1D9E75',
+    icon: '💳',
+    title: 'מהו שיק ביטחון?',
+    excerpt: 'שיק ביטחון הוא אמצעי נפוץ בשכירות — אבל יש כללים ברורים מתי ניתן לממש אותו.',
+    readTime: '4 דקות קריאה',
+    content: `
+      <h3>מה זה שיק ביטחון?</h3>
+      <p>שיק ביטחון הוא שיק שאתה נותן לבעל הנכס, אבל הוא רשאי לממש אותו רק בתנאים מסוימים שמוגדרים בחוזה.</p>
+      
+      <h3>מתי ניתן לממש שיק ביטחון?</h3>
+      <ul>
+        <li>אי-תשלום שכר דירה</li>
+        <li>נזקים לנכס מעבר לבלאי סביר</li>
+        <li>הפרת תנאי החוזה</li>
+      </ul>
+      
+      <div class="modal-warning">⚠️ בעל נכס שממש שיק ביטחון שלא לפי תנאי החוזה — עלול להיות אחראי לנזקים</div>
+      
+      <h3>טיפים לשיק ביטחון</h3>
+      <ul>
+        <li>רשום בחוזה את הסכום המדויק</li>
+        <li>קבע מתי השיק יוחזר לך</li>
+        <li>בקש אישור קבלה בכתב</li>
+        <li>אל תיתן שיק ביטחון על סכום גבוה מדמי שכירות של 3 חודשים</li>
+      </ul>
+      
+      <div class="modal-tip">💡 שמור צילום של השיק שנתת — תאריך, סכום וסיבה</div>
+    `
+  },
+
+  // ===== בעל נכס =====
+  {
+    id: 6,
+    category: 'owner',
+    catLabel: '🏠 בעל נכס',
+    catColor: '#E6F1FB',
+    catText: '#185FA5',
+    stripe: '#185FA5',
+    icon: '💰',
+    title: 'הכנסת נתוני הכנסות — מה לתעד?',
+    excerpt: 'מעקב מסודר אחר ההכנסות שלך חוסך זמן בדיווח למס הכנסה ומונע אי הבנות.',
+    readTime: '4 דקות קריאה',
+    content: `
+      <h3>אילו הכנסות יש לתעד?</h3>
+      <ul>
+        <li>💳 שכר דירה חודשי</li>
+        <li>🔑 דמי מפתח (אם רלוונטי)</li>
+        <li>🅿️ תשלום על חניה</li>
+        <li>📦 תשלום על מחסן</li>
+        <li>☀️ הכנסה ממערכת סולארית</li>
+      </ul>
+      
+      <div class="modal-tip">💡 ב-TIME.ME כל שיק שסומן כ"שולם" נרשם אוטומטית כהכנסה</div>
+      
+      <h3>מיסוי על הכנסות שכירות</h3>
+      <p>הכנסה משכירות למגורים עד תקרה מסוימת פטורה ממס. מעל התקרה ישנן שתי מסלולים — 10% מס סופי או מס שולי עם זכות לניכוי הוצאות.</p>
+      
+      <div class="modal-warning">⚠️ מומלץ להתייעץ עם רואה חשבון לגבי מסלול המיסוי המתאים לך</div>
+    `
+  },
+  {
+    id: 7,
+    category: 'owner',
+    catLabel: '🏠 בעל נכס',
+    catColor: '#E6F1FB',
+    catText: '#185FA5',
+    stripe: '#185FA5',
+    icon: '📊',
+    title: 'הכנסת נתוני הוצאות — מה ניתן לנכות?',
+    excerpt: 'הוצאות אחזקה, שיפוץ ומשכנתא — חלקן ניתנות לניכוי ממס. מה צריך לתעד?',
+    readTime: '5 דקות קריאה',
+    content: `
+      <h3>הוצאות מוכרות לניכוי</h3>
+      <ul>
+        <li>🔧 תיקונים ואחזקה שוטפת</li>
+        <li>🛡️ ביטוח מבנה</li>
+        <li>⚖️ שכר טרחת עורך דין ורואה חשבון</li>
+        <li>📋 ועד בית</li>
+        <li>🏗️ שיפוצים (בתנאים מסוימים)</li>
+      </ul>
+      
+      <div class="modal-tip">💡 שמור כל חשבונית — גם הקטנות! הכל מצטבר</div>
+      
+      <h3>הוצאות שאינן מוכרות</h3>
+      <ul>
+        <li>💳 תשלומי משכנתא (קרן) — מוכרת רק ריבית</li>
+        <li>🏠 הוצאות לנכס שאינו מושכר</li>
+      </ul>
+      
+      <h3>איך לנהל נכון?</h3>
+      <p>פתח חשבון בנק נפרד לנכס — כל הכנסה ויציאה דרכו. זה יחסוך לך שעות עבודה בסוף שנה.</p>
+      
+      <div class="modal-warning">⚠️ שמור חשבוניות למשך 7 שנים — זה חוק!</div>
+    `
+  },
+  {
+    id: 8,
+    category: 'owner',
+    catLabel: '🏠 בעל נכס',
+    catColor: '#E6F1FB',
+    catText: '#185FA5',
+    stripe: '#185FA5',
+    icon: '🛡️',
+    title: 'קיום ביטוחים אישיים לבעל נכס',
+    excerpt: 'ביטוח מבנה, ביטוח תכולה, אובדן שכר דירה — מה הכרחי ומה מומלץ?',
+    readTime: '4 דקות קריאה',
+    content: `
+      <h3>ביטוח מבנה — חובה!</h3>
+      <p>ביטוח מבנה מגן על הנכס עצמו — קירות, תקרה, ריצפה, צנרת. זהו ביטוח בסיסי שכל בעל נכס חייב להחזיק.</p>
+      
+      <h3>ביטוחים מומלצים נוספים</h3>
+      <ul>
+        <li>🏚️ <strong>אובדן שכר דירה</strong> — אם הנכס ניזוק ואינו ראוי למגורים</li>
+        <li>👥 <strong>אחריות צד ג'</strong> — אם שוכר נפגע בנכס</li>
+        <li>🔐 <strong>ביטוח כנגד פינוי</strong> — הגנה בהליכים משפטיים</li>
+      </ul>
+      
+      <div class="modal-tip">💡 ב-TIME.ME תוכל לעקוב אחר תאריך חידוש הביטוח ולקבל התראה שבוע לפני</div>
+      
+      <h3>חידוש ביטוח</h3>
+      <p>אל תשכח לחדש את הביטוח בזמן! פוליסה שפגה משאירה אותך חשוף לנזקים.</p>
+      
+      <div class="modal-warning">⚠️ בדוק שערך הביטוח מעודכן — ערך נכסים עלה משמעותית בשנים האחרונות</div>
+    `
+  },
+  {
+    id: 9,
+    category: 'owner',
+    catLabel: '🏠 בעל נכס',
+    catColor: '#E6F1FB',
+    catText: '#185FA5',
+    stripe: '#185FA5',
+    icon: '🔨',
+    title: 'שמירה על הנכס — אחריות בעל הנכס',
+    excerpt: 'נכס מתוחזק היטב שווה יותר, מושך שוכרים טובים יותר ומפחית תביעות.',
+    readTime: '3 דקות קריאה',
+    content: `
+      <h3>מה באחריות בעל הנכס?</h3>
+      <ul>
+        <li>🏗️ תיקוני מבנה ותשתיות</li>
+        <li>🚿 צנרת ראשית</li>
+        <li>⚡ חיווט ראשי</li>
+        <li>🌧️ גג ואטימה</li>
+        <li>🏢 חזית המבנה</li>
+      </ul>
+      
+      <div class="modal-tip">💡 בדיקת נכס אחת לשנה — לפני חידוש חוזה — חוסכת תיקונים יקרים</div>
+      
+      <h3>תחזוקה מונעת חוסכת כסף</h3>
+      <p>עלות בדיקה שנתית: כמה מאות שקלים. עלות נזישה שלא טופלה: אלפי שקלים. ההשקעה משתלמת.</p>
+      
+      <h3>מה אם השוכר גרם נזק?</h3>
+      <p>יש להגדיר בחוזה מנגנון ברור — מי מעריך את הנזק, מה הזמן לתיקון, ואיך מנכים מהערבון.</p>
+    `
+  },
+  {
+    id: 10,
+    category: 'owner',
+    catLabel: '🏠 בעל נכס',
+    catColor: '#E6F1FB',
+    catText: '#185FA5',
+    stripe: '#185FA5',
+    icon: '🤝',
+    title: 'מהי ערבות בעל נכס — ואיך להגן על עצמך',
+    excerpt: 'ערבות היא הכלי המרכזי להגנתך — איך לנסח אותה נכון ומה לדרוש מהשוכר.',
+    readTime: '5 דקות קריאה',
+    content: `
+      <h3>מה לדרוש כערבות?</h3>
+      <p>ככלל, מומלץ לדרוש ערבות השווה ל-2-3 חודשי שכירות. ניתן לשלב:</p>
+      <ul>
+        <li>💳 שיק ביטחון</li>
+        <li>🏦 ערבות בנקאית</li>
+        <li>👤 ערב אישי</li>
+      </ul>
+      
+      <div class="modal-tip">💡 בדוק את כושר ההחזר של השוכר לפני חתימה — תלושי שכר, עו"ש</div>
+      
+      <h3>ערב אישי — מה לדרוש?</h3>
+      <p>בקש מהערב לחתום על כתב ערבות נפרד, וודא שהוא מבין את התחייבויותיו.</p>
+      
+      <div class="modal-warning">⚠️ ערבות שנוסחה לא נכון עשויה להיות חסרת תוקף — השתמש בעורך דין</div>
+      
+      <h3>מתי להחזיר את הערבות?</h3>
+      <p>לאחר שהשוכר פינה את הנכס, שילם את כל חובותיו ועשית ביקורת סיום — החזר בתוך 30-60 יום.</p>
+    `
+  },
+
+  // ===== שימוש אישי =====
+  {
+    id: 11,
+    category: 'personal',
+    catLabel: '🏡 שימוש אישי',
+    catColor: '#EDE7F6',
+    catText: '#4527A0',
+    stripe: '#534AB7',
+    icon: '📈',
+    title: 'ניהול הוצאות נכון לנכס בשימוש אישי',
+    excerpt: 'גרים בנכס שלכם? כך תנהלו הוצאות בצורה חכמה ותראו את התמונה הכלכלית המלאה.',
+    readTime: '4 דקות קריאה',
+    content: `
+      <h3>למה לנהל הוצאות על הבית שלי?</h3>
+      <p>גם אם אתה גר בנכס שלך, מעקב אחר הוצאות חיוני — לתכנון תקציב, להחלטות שיפוץ ולהכנה למכירה עתידית.</p>
+      
+      <h3>קטגוריות הוצאות עיקריות</h3>
+      <ul>
+        <li>🏦 <strong>משכנתא</strong> — קרן וריבית</li>
+        <li>🔧 <strong>אחזקה</strong> — תיקונים שוטפים</li>
+        <li>🏗️ <strong>שיפוצים</strong> — השקעה בנכס</li>
+        <li>🏛️ <strong>ארנונה</strong> — לפי מדרגות</li>
+        <li>🏢 <strong>ועד בית</strong></li>
+        <li>🛡️ <strong>ביטוח מבנה</strong></li>
+      </ul>
+      
+      <div class="modal-tip">💡 ב-TIME.ME תוכל לראות כמה עולה לך הבית כל חודש ולתכנן קדימה</div>
+      
+      <h3>הוצאה גדולה בפתח?</h3>
+      <p>תכנן קרן חירום לנכס — 1-2% מערך הנכס לשנה. כך לא תהיה מופתע בתיקון גג או החלפת מזגן.</p>
+    `
+  },
+  {
+    id: 12,
+    category: 'personal',
+    catLabel: '🏡 שימוש אישי',
+    catColor: '#EDE7F6',
+    catText: '#4527A0',
+    stripe: '#534AB7',
+    icon: '🏦',
+    title: 'מעקב משכנתא — כל מה שצריך לדעת',
+    excerpt: 'כיצד לעקוב אחר המשכנתא שלך, מתי כדאי למחזר ואיך להוריד את ההחזר החודשי.',
+    readTime: '6 דקות קריאה',
+    content: `
+      <h3>מה צריך לדעת על המשכנתא שלך?</h3>
+      <ul>
+        <li>💰 גובה ההחזר החודשי</li>
+        <li>📅 מסלולי הריבית (פריים, קבועה, משתנה)</li>
+        <li>⏱️ מספר השנים שנותרו</li>
+        <li>🏷️ יתרת קרן</li>
+      </ul>
+      
+      <div class="modal-tip">💡 הזן את פרטי המשכנתא שלך ב-TIME.ME כ"הוצאה חודשית" וראה כמה אתה משלם בשנה</div>
+      
+      <h3>מתי כדאי למחזר?</h3>
+      <p>אם הריביות ירדו ב-1% ומעלה ממה שיש לך, כדאי לבדוק מיחזור. הבנק מחויב לתת לך הצעה ללא עלות.</p>
+      
+      <h3>קיצור תקופת המשכנתא</h3>
+      <p>הוספת 500-1000 ₪ לתשלום החודשי יכולה לקצר את המשכנתא ב-3-5 שנים ולחסוך עשרות אלפי שקלים בריבית.</p>
+      
+      <div class="modal-warning">⚠️ עמלת פירעון מוקדם — בדוק לפני שאתה פורע מסלולים קבועים</div>
+    `
+  },
+  {
+    id: 13,
+    category: 'personal',
+    catLabel: '🏡 שימוש אישי',
+    catColor: '#EDE7F6',
+    catText: '#4527A0',
+    stripe: '#534AB7',
+    icon: '🏗️',
+    title: 'הגדלת ערך הבית על ידי שיפוץ חכם',
+    excerpt: 'לא כל שיפוץ מחזיר את השקעתו. איזה שיפוצים מגדילים ערך ואיזה רק עולים?',
+    readTime: '5 דקות קריאה',
+    content: `
+      <h3>שיפוצים שמחזירים את ההשקעה</h3>
+      <ul>
+        <li>🍳 <strong>מטבח</strong> — השקעה של 50K יכולה להוסיף 100K לערך</li>
+        <li>🚿 <strong>אמבטיה / מקלחת</strong> — תשואה גבוהה מאוד</li>
+        <li>🎨 <strong>צביעה ושיפוץ קוסמטי</strong> — זול ומשתלם</li>
+        <li>☀️ <strong>מערכת סולארית</strong> — מוריד עלויות ומעלה ערך</li>
+      </ul>
+      
+      <h3>שיפוצים שלא בהכרח משתלמים</h3>
+      <ul>
+        <li>🏊 בריכת שחייה (אלא אם האזור מצדיק)</li>
+        <li>🎯 שיפוצים מאוד אישיים וייחודיים</li>
+        <li>🌿 גינה מורכבת</li>
+      </ul>
+      
+      <div class="modal-tip">💡 לפני שיפוץ — שאל מתווך מה הקונים מחפשים באזור שלך</div>
+      
+      <div class="modal-warning">⚠️ שיפוץ ללא היתר עלול לגרום לבעיות ברישום ובמכירה</div>
+    `
+  },
+
+  // ===== ארגון =====
+  {
+    id: 14,
+    category: 'org',
+    catLabel: '🏢 ארגון',
+    catColor: '#FFF3E0',
+    catText: '#8A6000',
+    stripe: '#FF8F00',
+    icon: '🗂️',
+    title: 'ניהול כלל הנכסים הארגוניים',
+    excerpt: 'כיצד לנהל עשרות נכסים בצורה יעילה, עם מספר נציגים ותיעוד מסודר.',
+    readTime: '5 דקות קריאה',
+    content: `
+      <h3>אתגרי ניהול נכסים ארגוניים</h3>
+      <ul>
+        <li>📋 ריבוי נכסים — כל אחד עם סטטוס שונה</li>
+        <li>👥 ריבוי נציגים — מי אחראי על מה</li>
+        <li>📊 דיווח לניהול — תמונה כוללת</li>
+        <li>⚖️ ציות לחוזים — בכל הנכסים</li>
+      </ul>
+      
+      <div class="modal-tip">💡 ב-TIME.ME כל נציג רואה רק את הנכסים שהוקצו לו — עם הרשאות מוגדרות</div>
+      
+      <h3>3 סוגי יחס לנכס</h3>
+      <ul>
+        <li>💰 <strong>בעלות להשכרה</strong> — ניהול שוכרים ותשלומים</li>
+        <li>🏢 <strong>בעלות לשימוש עצמי</strong> — ניהול הוצאות פנימיות</li>
+        <li>🔑 <strong>שכירות לשימוש עצמי</strong> — מעקב התחייבויות</li>
+      </ul>
+      
+      <h3>דוח ניהולי</h3>
+      <p>פעם בחודש — הפק דוח של כלל ההכנסות וההוצאות לכל הנכסים. כך תדע בדיוק מה הרווח הנקי.</p>
+    `
+  },
+  {
+    id: 15,
+    category: 'org',
+    catLabel: '🏢 ארגון',
+    catColor: '#FFF3E0',
+    catText: '#8A6000',
+    stripe: '#FF8F00',
+    icon: '💸',
+    title: 'ניהול כלל ההוצאות הארגוניות',
+    excerpt: 'כיצד לעקוב אחר הוצאות בכל הנכסים, לזהות בזבוז ולמקסם רווחים.',
+    readTime: '4 דקות קריאה',
+    content: `
+      <h3>קטגוריות הוצאות ארגוניות</h3>
+      <ul>
+        <li>🔧 אחזקה שוטפת</li>
+        <li>🏗️ שיפוצים ושדרוגים</li>
+        <li>🛡️ ביטוחים (ריבוי פוליסות)</li>
+        <li>⚖️ יעוץ משפטי וחשבונאי</li>
+        <li>🏢 ניהול ועד בית</li>
+        <li>💳 הלוואות ומשכנתאות</li>
+      </ul>
+      
+      <div class="modal-tip">💡 קבע ספק קבוע לתחזוקה — עלות נמוכה יותר ושירות מהיר יותר</div>
+      
+      <h3>ניתוח הוצאות</h3>
+      <p>השווה הוצאות בין נכסים דומים — נכס שעולה יותר מהממוצע אולי צריך שיפוץ מונע.</p>
+      
+      <div class="modal-warning">⚠️ הפרד בין הוצאות לפי נכסים — חשוב לדיווח מס</div>
+    `
+  },
+  {
+    id: 16,
+    category: 'org',
+    catLabel: '🏢 ארגון',
+    catColor: '#FFF3E0',
+    catText: '#8A6000',
+    stripe: '#FF8F00',
+    icon: '📈',
+    title: 'מהן ההכנסות הארגוניות — ואיך לחשב תשואה?',
+    excerpt: 'חישוב תשואה על נדל"ן, הכנסה ברוטו ונטו, ואיך לדעת אם הנכס משתלם.',
+    readTime: '5 דקות קריאה',
+    content: `
+      <h3>חישוב תשואה גולמית</h3>
+      <p><strong>תשואה גולמית = (שכ"ד שנתי / שווי נכס) × 100</strong></p>
+      <p>דוגמה: נכס ששווה 1,500,000 ₪ ומניא שכ"ד של 6,000 ₪/חודש:<br>
+      (72,000 / 1,500,000) × 100 = <strong>4.8%</strong></p>
+      
+      <h3>תשואה נטו</h3>
+      <p>מחכה הוצאות: ארנונה, ועד בית, ביטוח, תיקונים, ריק.<br>
+      תשואה נטו בישראל: בדרך כלל <strong>2.5%-4%</strong></p>
+      
+      <div class="modal-tip">💡 נכס עם תשואה נמוכה מ-2.5% — שקול למכור ולהשקיע מחדש</div>
+      
+      <h3>הכנסה נוספת</h3>
+      <ul>
+        <li>☀️ מערכת סולארית — 500-1500 ₪/חודש</li>
+        <li>🅿️ חניה — 200-600 ₪/חודש</li>
+        <li>📦 מחסן — 200-400 ₪/חודש</li>
+      </ul>
+    `
+  },
+
+  // ===== סולארי =====
+  {
+    id: 17,
+    category: 'solar',
+    catLabel: '☀️ סולארי',
+    catColor: '#FFFDE7',
+    catText: '#F57F17',
+    stripe: '#FFD600',
+    icon: '☀️',
+    title: 'מערכת סולארית לנכס — כל מה שצריך לדעת',
+    excerpt: 'מערכת סולארית יכולה לחסוך 500-1500 ₪ בחודש ולהוסיף ערך לנכס. איך מתחילים?',
+    readTime: '6 דקות קריאה',
+    content: `
+      <h3>יתרונות מערכת סולארית</h3>
+      <ul>
+        <li>⚡ <strong>חיסכון בחשמל</strong> — 500-1500 ₪/חודש</li>
+        <li>💰 <strong>מכירת עודפים לחברת חשמל</strong> — הכנסה פאסיבית</li>
+        <li>🏡 <strong>הגדלת ערך הנכס</strong> — עד 5-10%</li>
+        <li>🌱 <strong>פחות זיהום</strong></li>
+      </ul>
+      
+      <h3>האם הנכס מתאים?</h3>
+      <ul>
+        <li>☀️ גג פנוי וחשוף לשמש</li>
+        <li>📐 שטח גג מינימלי 20-30 מ"ר</li>
+        <li>🏠 גג שאינו מוצלל ע"י עצים / בניינים</li>
+        <li>⚡ חיבור לרשת החשמל</li>
+      </ul>
+      
+      <div class="modal-tip">💡 השתמש במחשבון הכתובת שלנו למטה לבדיקת התאמת הנכס!</div>
+      
+      <h3>עלויות ותשואה</h3>
+      <p>מערכת ביתית (10 קילוואט): כ-30,000-50,000 ₪<br>
+      החזר השקעה: 5-8 שנים<br>
+      אחריות: 25 שנה על פאנלים</p>
+      
+      <h3>מענקים ותמריצים</h3>
+      <p>ניתן לקבל מענק ממשלתי וכן הלוואה בריבית מופחתת דרך משרד האנרגיה.</p>
+      
+      <div class="modal-warning">⚠️ בדוק תקנות ועד הבית לפני התקנה בבניין משותף</div>
+    `
+  }
+];
+
+let currentCategory = 'all';
+let currentSearch = '';
+
+function renderArticles() {
+  const grid = document.getElementById('articles-grid');
+  const filtered = ARTICLES.filter(a => {
+    const matchCat = currentCategory === 'all' || a.category === currentCategory;
+    const matchSearch = !currentSearch || 
+      a.title.includes(currentSearch) || 
+      a.excerpt.includes(currentSearch) ||
+      a.content.includes(currentSearch);
+    return matchCat && matchSearch;
+  });
+
+  grid.innerHTML = filtered.map(a => `
+    <div class="article-card" onclick="openArticle(${a.id})">
+      <div class="card-stripe" style="background:${a.stripe};"></div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="card-category" style="background:${a.catColor};color:${a.catText};">${a.catLabel}</span>
+          <span class="card-read-time">⏱️ ${a.readTime}</span>
+        </div>
+        <div class="card-title">${a.title}</div>
+        <div class="card-excerpt">${a.excerpt}</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-icon">${a.icon}</span>
+        <span class="card-arrow">קרא עוד ←</span>
+      </div>
+    </div>
+  `).join('');
+
+  if(filtered.length === 0) {
+    grid.innerHTML = '<div style="text-align:center;color:#888;padding:40px;grid-column:1/-1;">לא נמצאו מאמרים</div>';
+  }
+}
+
+function filterCategory(cat, btn) {
+  currentCategory = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderArticles();
+}
+
+function filterArticles() {
+  currentSearch = document.getElementById('search-input').value;
+  renderArticles();
+}
+
+function openArticle(id) {
+  const a = ARTICLES.find(x => x.id === id);
+  if(!a) return;
+
+  document.getElementById('modal-cat').textContent = a.catLabel;
+  document.getElementById('modal-cat').style.cssText = `background:${a.catColor};color:${a.catText};font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;display:inline-block;margin-bottom:12px;`;
+  document.getElementById('modal-title').textContent = a.title;
+  document.getElementById('modal-meta').textContent = `⏱️ ${a.readTime}`;
+  document.getElementById('modal-body').innerHTML = a.content;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if(e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+});
+
+function checkSolar() {
+  const addr = document.getElementById('solar-address').value.trim();
+  if(!addr) { alert('נא להזין כתובת'); return; }
+  
+  const result = document.getElementById('solar-result');
+  result.innerHTML = '<span style="color:#FFD600;">⏳ בודק...</span>';
+  
+  setTimeout(() => {
+    result.innerHTML = `
+      <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:16px;margin-top:8px;text-align:right;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:8px;">✅ הנכס ב${addr} עשוי להתאים למערכת סולארית!</div>
+        <div style="font-size:13px;color:#B3C2F0;margin-bottom:12px;">לפרטים מדויקים ופגישה עם יועץ — צור קשר עם TIME.ME</div>
+        <button onclick="window.location.href='app.html'" style="background:#FFD600;color:#1A237E;border:none;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif;">🔑 כניסה למערכת לפרטים נוספים</button>
+      </div>
+    `;
+  }, 1500);
+}
+
+// Init
+renderArticles();
+</script>
+</body>
+</html>
