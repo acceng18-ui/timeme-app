@@ -1780,6 +1780,12 @@ async function enterDashboard(user) {
     document.getElementById('nav-admin').style.display='block';
   document.getElementById('nav-all-props').style.display='block';
   document.getElementById('nav-my-props').style.display='block';
+  // למנהל — הסתר טאב נכסים רגיל, פתח כל הנכסים
+  document.getElementById('nav-props').style.display='none';
+  document.getElementById('nav-add').style.display='block';
+  // פתח "כל הנכסים" כברירת מחדל למנהל
+  showPage('all-props', document.getElementById('nav-all-props'));
+  loadAllProperties();
   }
   // שוכר — הצג דשבורד שוכר
   if(profile?.role==='tenant'){
