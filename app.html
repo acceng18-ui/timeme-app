@@ -494,7 +494,7 @@ body {
                     <span id="pd-cdays" class="info-val-pd"></span>
                   </div>
                   <div class="info-row-pd">
-                    <span class="info-lbl">💰 שכ"ד חודשי</span>
+                    <span class="info-lbl">💰 שכ״ד חודשי</span>
                     <span id="pd-crent" class="info-val-pd" style="color:#185FA5;"></span>
                   </div>
                   <div class="info-row-pd" id="pd-option-row" style="display:none;">
@@ -557,7 +557,7 @@ body {
                 <div class="fg"><label>תאריך סיום *</label><input id="ec-end" type="date" /></div>
               </div>
               <div class="form-row-2">
-                <div class="fg"><label>שכ"ד חודשי (₪) *</label><input id="ec-rent" type="number" placeholder="8500" /></div>
+                <div class="fg"><label>שכ״ד חודשי (₪) *</label><input id="ec-rent" type="number" placeholder="8500" /></div>
                 <div class="fg"><label>יש אופציה?</label>
                   <select id="ec-option" onchange="document.getElementById('ec-option-date-row').style.display=this.value==='כן'?'block':'none'">
                     <option value="לא">לא</option>
@@ -680,7 +680,7 @@ body {
             <!-- סיכום -->
             <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px;">
               <div style="background:#E1F5EE;border:1px solid #5DCAA5;border-radius:10px;padding:11px;text-align:right;">
-                <div style="font-size:10px;color:#0F6E56;">הכנסות שכ"ד</div>
+                <div style="font-size:10px;color:#0F6E56;">הכנסות שכ״ד</div>
                 <div style="font-size:16px;font-weight:700;color:#0F6E56;" id="exp-income">0 ₪</div>
               </div>
               <div style="background:#FCE4EC;border:1px solid #F48FB1;border-radius:10px;padding:11px;text-align:right;">
@@ -1013,10 +1013,10 @@ body {
             </div>
           </div>
 
-          <!-- תאריך ושכ"ד -->
+          <!-- תאריך ושכ״ד -->
           <div class="form-row-2">
             <div class="fg"><label>תאריך פינוי *</label><input id="tl-vacate" type="date" /></div>
-            <div class="fg"><label>שכ"ד (₪/חודש)</label><input id="tl-rent" type="number" placeholder="8250" /></div>
+            <div class="fg"><label>שכ״ד (₪/חודש)</label><input id="tl-rent" type="number" placeholder="8250" /></div>
           </div>
           <div class="fg"><label>הערות לשוכר הבא</label><textarea id="tl-notes" placeholder="פרטים נוספים על הנכס, השכנים, הסביבה..." rows="2"></textarea></div>
           <div id="listing-status-display" style="display:none;border-radius:10px;padding:10px 14px;margin-bottom:10px;">
@@ -1069,7 +1069,7 @@ body {
                 <span id="t-cend" class="info-val-pd" style="color:#E24B4A;"></span>
               </div>
               <div class="info-row-pd">
-                <span class="info-lbl">💰 שכ"ד חודשי</span>
+                <span class="info-lbl">💰 שכ״ד חודשי</span>
                 <span id="t-crent" class="info-val-pd" style="color:#185FA5;"></span>
               </div>
               <div class="info-row-pd">
@@ -1276,7 +1276,7 @@ body {
               <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">סוג</th>
               <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">סטטוס</th>
               <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">בעלים</th>
-              <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">שכ"ד מבוקש</th>
+              <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">שכ״ד מבוקש</th>
               <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">אימות</th>
               <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">פעולות</th>
             </tr>
@@ -1546,7 +1546,7 @@ body {
         <!-- דמי שכירות -->
         <div class="form-section-title" style="margin-top:16px;background:#FFF8E1;border-right-color:#F9A825;">💰 דמי שכירות</div>
         <div class="form-row-2">
-          <div class="fg"><label>שכ"ד חודשי (₪) *</label><input id="c-rent" type="number" placeholder="8250" /></div>
+          <div class="fg"><label>שכ״ד חודשי (₪) *</label><input id="c-rent" type="number" placeholder="8250" /></div>
           <div class="fg"><label>מספר שיקים</label><input id="c-checks" type="number" value="12" placeholder="12" /></div>
         </div>
         <div class="form-row-2">
@@ -1975,7 +1975,7 @@ async function saveExistingContract() {
   const tenantName = document.getElementById('ec-tenant-name').value.trim();
   const tenantPhone = document.getElementById('ec-tenant-phone').value.trim();
 
-  if(!start||!end||!rent){showMsg('ec-msg','error','נא למלא תאריכים ושכ"ד');return;}
+  if(!start||!end||!rent){showMsg('ec-msg','error','נא למלא תאריכים ושכד');return;}
 
   const btn = document.querySelector('#existing-contract-form button');
   btn.disabled = true;
@@ -2141,7 +2141,7 @@ async function loadPropertyDetail(id) {
     const isExpired=today>endDate;
 
     document.getElementById('pd-contract-status').textContent=isExpired?'❌ חוזה פג':isActive?'✅ חוזה פעיל':'⏳ חוזה עתידי';
-    document.getElementById('pd-contract-info').textContent='שכ"ד: '+Number(c.monthly_rent).toLocaleString('he-IL')+' ₪ | '+daysLeft+' ימים לסיום';
+    document.getElementById('pd-contract-info').textContent='שכד: '+Number(c.monthly_rent).toLocaleString('he-IL')+' ₪ | '+daysLeft+' ימים לסיום';
     document.getElementById('pd-contract-btn').textContent='+ חדש חוזה';
 
     // הצג תאריכים
@@ -2573,7 +2573,7 @@ ${cd.hasOption==='כן'?`<p class="clause ind">1.2 אופציה להארכה ב-
 <p class="clause ind">${cd.hasOption==='כן'?'1.3':'1.2'} יציאה מוקדמת: הודעה של 60 יום מראש ומציאת שוכר חלופי לשביעות רצון המשכיר.</p>
 
 <div class="sec">2. דמי השכירות</div>
-<p class="clause ind">2.1 שכ"ד חודשי: <span class="f fa">${rentNIS} ₪</span>. בתקופת האופציה: <span class="f fa">${rentNIS} ₪ + ריבית במשק</span>.</p>
+<p class="clause ind">2.1 שכ״ד חודשי: <span class="f fa">${rentNIS} ₪</span>. בתקופת האופציה: <span class="f fa">${rentNIS} ₪ + ריבית במשק</span>.</p>
 <p class="clause ind">2.2 יופקדו <span class="f fa">${cd.checks} שיקים</span> עם חתימת ההסכם. שיק ראשון לפירעון ביום <span class="f fa">${fmtDate(cd.check1)}</span>, כל שיק על סך <span class="f fa">${rentNIS} ₪</span>.</p>
 <p class="clause ind">2.3 ריבית פיגורים: <span class="f fa">8% לחודש</span>. קנס יציאה מאוחרת: <span class="f fo">${fmtNum(cd.penalty)} ₪ ליום</span>.</p>
 
@@ -2765,7 +2765,7 @@ function applyAllPropsFilter() {
 }
 
 function exportAllPropsCSV() {
-  const headers = ['כתובת','סוג','סטטוס','בעלים','שכ"ד מבוקש','אימות'];
+  const headers = ['כתובת','סוג','סטטוס','בעלים','שכד מבוקש','אימות'];
   const rows = _allPropsData.map(p=>[
     p.address||'',
     p.type||'',
@@ -2780,7 +2780,7 @@ function exportAllPropsCSV() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'timeme_נכסים_'+new Date().toLocaleDateString('he-IL').replace(/\//g,'-')+'.csv';
+  a.download = 'timeme_properties_'+new Date().toISOString().split('T')[0]+'.csv';
   a.click();
 }
 
@@ -3450,11 +3450,11 @@ async function checkAddressExists() {
     // הצג פרטים קיימים
     const features=[];
     if(p.rooms) features.push('🛏️ '+p.rooms+' חדרים');
-    if(p.size_sqm) features.push('📐 '+p.size_sqm+' מ"ר');
+    if(p.size_sqm) features.push('📐 '+p.size_sqm+' מ״ר');
     if(p.floor) features.push('🏢 קומה '+p.floor);
     if(p.has_elevator) features.push('🛗 מעלית');
     if(p.has_balcony) features.push('🌿 מרפסת');
-    if(p.has_mamad) features.push('🛡️ ממ"ד');
+    if(p.has_mamad) features.push('🛡️ ממ״ד');
     if(p.has_parking||p.parking) features.push('🚗 חניה');
 
     document.getElementById('found-features').innerHTML=features.map(f=>
@@ -3462,7 +3462,7 @@ async function checkAddressExists() {
     ).join('');
     foundDiv.style.display='block';
 
-    // מלא שכ"ד מחוזה
+    // מלא שכ״ד מחוזה
     const{data:contracts}=await sb.from('contracts').select('monthly_rent').eq('property_id',p.id).order('created_at',{ascending:false}).limit(1);
     if(contracts&&contracts.length>0) document.getElementById('tl-rent').value=contracts[0].monthly_rent||'';
 
@@ -3648,7 +3648,7 @@ async function checkTenantListingApproval(propId) {
     card.style.display='block';
     document.getElementById('tenant-listing-details').innerHTML=
       `<div><strong>תאריך פינוי:</strong> ${l.vacate_date?fmtDate(l.vacate_date):'—'}</div>
-       <div><strong>שכ"ד:</strong> ${l.monthly_rent?Number(l.monthly_rent).toLocaleString('he-IL')+' ₪':'—'}</div>
+       <div><strong>שכ״ד:</strong> ${l.monthly_rent?Number(l.monthly_rent).toLocaleString('he-IL')+' ₪':'—'}</div>
        ${l.notes?`<div><strong>הערות:</strong> ${l.notes}</div>`:''}`;
     card.dataset.listingId=l.id;
   } else {
@@ -3834,11 +3834,11 @@ function calcVat() {
   if(incl){
     const pre=(amt/1.17).toFixed(2);
     const vat=(amt-pre).toFixed(2);
-    el.textContent='לפני מע"מ: '+Number(pre).toLocaleString('he-IL')+' ₪ | מע"מ: '+Number(vat).toLocaleString('he-IL')+' ₪';
+    el.textContent='לפני מע״מ: '+Number(pre).toLocaleString('he-IL')+' ₪ | מע״מ: '+Number(vat).toLocaleString('he-IL')+' ₪';
   } else {
     const vat=(amt*0.18).toFixed(2);
     const total=(amt*1.17).toFixed(2);
-    el.textContent='כולל מע"מ: '+Number(total).toLocaleString('he-IL')+' ₪ | מע"מ: '+Number(vat).toLocaleString('he-IL')+' ₪';
+    el.textContent='כולל מע״מ: '+Number(total).toLocaleString('he-IL')+' ₪ | מע״מ: '+Number(vat).toLocaleString('he-IL')+' ₪';
   }
 }
 
