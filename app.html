@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.2.8 | timeme.co.il -->
+<!-- TIME.ME v1.3.0 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -320,6 +320,8 @@ body {
     <button class="nav-tab" id="nav-add" onclick="showPage('add-property',this)">➕ הוסף נכס</button>
     <button class="nav-tab" id="nav-contract" onclick="showPage('add-contract',this)">📋 טופס הכנת חוזה</button>
     <button class="nav-tab" id="nav-admin" onclick="showPage('admin',this);loadAdminUsers();" style="display:none;">👥 משתמשים</button>
+    <button class="nav-tab" id="nav-all-props" onclick="showPage('all-props',this);loadAllProperties();" style="display:none;">📊 כל הנכסים</button>
+    <button class="nav-tab" id="nav-my-props" onclick="showPage('my-props',this);loadMyPersonalProperties();" style="display:none;">🏠 הנכסים שלי</button>
     <button class="nav-tab" id="nav-tenant" onclick="showPage('tenant',this)" style="display:none;">🔑 הנכס שלי</button>
     <button class="nav-tab" id="nav-org" onclick="showPage('org',this)" style="display:none;">🏢 הארגון שלי</button>
   </div>
@@ -794,11 +796,22 @@ body {
                 <label>סוג ביטוח *</label>
                 <select id="ins-f-type">
                   <option value="">בחר...</option>
-                  <option value="תכולה">תכולה בלבד</option>
-                  <option value="צד שלישי">צד שלישי בלבד</option>
-                  <option value="תכולה + צד שלישי">תכולה + צד שלישי</option>
-                  <option value="מבנה">מבנה</option>
-                  <option value="מקיף">מקיף</option>
+                  <optgroup label="🏠 בעל נכס">
+                    <option value="ביטוח מבנה">🏗️ ביטוח מבנה</option>
+                    <option value="ביטוח מבנה + תכולה">🏠 ביטוח מבנה + תכולה</option>
+                    <option value="אובדן שכר דירה">💰 אובדן שכר דירה</option>
+                    <option value="אחריות מעביד">👷 אחריות מעביד</option>
+                  </optgroup>
+                  <optgroup label="🔑 שוכר">
+                    <option value="ביטוח תכולה">📦 ביטוח תכולה</option>
+                    <option value="תכולה + צד שלישי">📦 תכולה + צד שלישי</option>
+                  </optgroup>
+                  <optgroup label="🌐 כללי">
+                    <option value="צד שלישי">👥 צד שלישי</option>
+                    <option value="ביטוח מקיף">🛡️ ביטוח מקיף</option>
+                    <option value="ביטוח חיים על המשכנתא">🏦 ביטוח חיים/משכנתא</option>
+                    <option value="אחר">📋 אחר</option>
+                  </optgroup>
                 </select>
               </div>
               <div class="form-row-2">
@@ -1218,6 +1231,78 @@ body {
       </div>
     </div>
 
+    </div>
+
+    <!-- כל הנכסים - מנהל -->
+    <div class="page" id="page-all-props">
+      <div class="page-title">📊 כל הנכסים במערכת</div>
+      <div class="page-sub">תצוגה מרוכזת וטבלאות השוואה</div>
+
+      <!-- סטטיסטיקות -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-label">סה"כ נכסים</div><div class="stat-val" id="ap-total">0</div></div>
+        <div class="stat-card"><div class="stat-label">פנויים</div><div class="stat-val" id="ap-vacant" style="color:#1D9E75;">0</div></div>
+        <div class="stat-card"><div class="stat-label">מושכרים</div><div class="stat-val" id="ap-rented" style="color:#185FA5;">0</div></div>
+        <div class="stat-card"><div class="stat-label">שימוש אישי</div><div class="stat-val" id="ap-personal" style="color:#534AB7;">0</div></div>
+        <div class="stat-card"><div class="stat-label">הכנסה חודשית</div><div class="stat-val" id="ap-income" style="color:#FF8F00;font-size:16px;">₪0</div></div>
+      </div>
+
+      <!-- פילטרים -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;background:white;padding:12px;border-radius:12px;border:1.5px solid #E6F1FB;">
+        <select id="ap-filter-status" onchange="applyAllPropsFilter()" style="padding:7px 12px;border-radius:8px;border:1px solid #B5D4F4;font-family:Arial;font-size:12px;">
+          <option value="">כל הסטטוסים</option>
+          <option value="פנוי">○ פנוי</option>
+          <option value="מושכר">● מושכר</option>
+          <option value="שימוש אישי">🏠 שימוש אישי</option>
+          <option value="בשיפוץ">🔨 בשיפוץ</option>
+        </select>
+        <select id="ap-filter-type" onchange="applyAllPropsFilter()" style="padding:7px 12px;border-radius:8px;border:1px solid #B5D4F4;font-family:Arial;font-size:12px;">
+          <option value="">כל הסוגים</option>
+          <option value="דירה">🏠 דירה</option>
+          <option value="משרד">🏢 משרד</option>
+          <option value="חנות">🏪 חנות</option>
+          <option value="אזור תעשייה">🏭 אזור תעשייה</option>
+        </select>
+        <input id="ap-filter-city" placeholder="🔍 חפש עיר/כתובת..." oninput="applyAllPropsFilter()" style="padding:7px 12px;border-radius:8px;border:1px solid #B5D4F4;font-family:Arial;font-size:12px;min-width:160px;" />
+        <button onclick="exportAllPropsCSV()" style="padding:7px 14px;background:#1D9E75;color:white;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;margin-right:auto;">📥 ייצא CSV</button>
+      </div>
+
+      <!-- טבלה -->
+      <div style="overflow-x:auto;background:white;border-radius:12px;border:1.5px solid #E6F1FB;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead>
+            <tr style="background:#F0F6FF;border-bottom:2px solid #B5D4F4;">
+              <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">כתובת</th>
+              <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">סוג</th>
+              <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">סטטוס</th>
+              <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">בעלים</th>
+              <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">שכ"ד מבוקש</th>
+              <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">אימות</th>
+              <th style="padding:12px 16px;text-align:right;color:#042C53;font-weight:700;">פעולות</th>
+            </tr>
+          </thead>
+          <tbody id="ap-table-body">
+            <tr><td colspan="7" style="text-align:center;padding:30px;color:#888;">טוען...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- הנכסים שלי האישיים - מנהל -->
+    <div class="page" id="page-my-props">
+      <div class="page-title">🏠 הנכסים שלי האישיים</div>
+      <div class="page-sub">נכסים שרשומים על שמי במערכת</div>
+
+      <!-- סטטיסטיקות אישיות -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-label">נכסים</div><div class="stat-val" id="mp-total">0</div></div>
+        <div class="stat-card"><div class="stat-label">הכנסה חודשית</div><div class="stat-val" id="mp-income" style="color:#1D9E75;font-size:16px;">₪0</div></div>
+        <div class="stat-card"><div class="stat-label">הוצאות חודשיות</div><div class="stat-val" id="mp-expenses" style="color:#E24B4A;font-size:16px;">₪0</div></div>
+        <div class="stat-card"><div class="stat-label">רווח נקי</div><div class="stat-val" id="mp-profit" style="color:#185FA5;font-size:16px;">₪0</div></div>
+      </div>
+
+      <!-- רשימת נכסים אישיים -->
+      <div id="my-props-list"></div>
     </div>
 
     <!-- הוסף נכס -->
@@ -1693,6 +1778,8 @@ async function enterDashboard(user) {
   // הצג טאב ניהול רק למנהל
   if(profile?.is_admin){
     document.getElementById('nav-admin').style.display='block';
+  document.getElementById('nav-all-props').style.display='block';
+  document.getElementById('nav-my-props').style.display='block';
   }
   // שוכר — הצג דשבורד שוכר
   if(profile?.role==='tenant'){
@@ -2613,6 +2700,142 @@ async function stopImpersonate() {
 
   showPage('admin', document.getElementById('nav-admin'));
   loadAdminUsers();
+}
+
+// ── ALL PROPERTIES (ADMIN) ───────────────────────
+let _allPropsData = [];
+
+async function loadAllProperties() {
+  const{data:props}=await sb.from('properties').select('*,users(full_name,email)').order('created_at',{ascending:false});
+  _allPropsData = props||[];
+  renderAllPropsStats(props||[]);
+  renderAllPropsTable(props||[]);
+}
+
+function renderAllPropsStats(props) {
+  document.getElementById('ap-total').textContent = props.length;
+  document.getElementById('ap-vacant').textContent = props.filter(p=>p.status==='פנוי').length;
+  document.getElementById('ap-rented').textContent = props.filter(p=>p.status==='מושכר').length;
+  document.getElementById('ap-personal').textContent = props.filter(p=>p.status==='שימוש אישי').length;
+  const totalIncome = props.reduce((s,p)=>s+(p.rent_price||0),0);
+  document.getElementById('ap-income').textContent = '₪'+totalIncome.toLocaleString('he-IL');
+}
+
+function renderAllPropsTable(props) {
+  const tbody = document.getElementById('ap-table-body');
+  if(!props.length){
+    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:30px;color:#888;">אין נכסים</td></tr>';
+    return;
+  }
+  
+  const STATUS_COLOR = {'פנוי':'#1D9E75','מושכר':'#185FA5','שימוש אישי':'#534AB7','בשיפוץ':'#FF8F00'};
+  const VERIFY_BADGE = {'מאומת':'🟢','ממתין לאימות':'🟡','לא הוגש':'🔴'};
+  
+  tbody.innerHTML = props.map(p=>`
+    <tr style="border-bottom:1px solid #F0F6FF;cursor:pointer;" onmouseover="this.style.background='#F8FAFF'" onmouseout="this.style.background=''" onclick="openPropFromAdmin('${p.id}')">
+      <td style="padding:12px 16px;font-weight:600;color:#042C53;">${p.address||'—'}</td>
+      <td style="padding:12px 16px;color:#555;">${p.type||'—'}</td>
+      <td style="padding:12px 16px;">
+        <span style="background:${STATUS_COLOR[p.status]||'#888'}20;color:${STATUS_COLOR[p.status]||'#888'};padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">${p.status||'—'}</span>
+      </td>
+      <td style="padding:12px 16px;color:#555;font-size:12px;">${p.owner_name||p.users?.full_name||'—'}</td>
+      <td style="padding:12px 16px;font-weight:600;color:#185FA5;">${p.rent_price?'₪'+Number(p.rent_price).toLocaleString('he-IL'):'—'}</td>
+      <td style="padding:12px 16px;">${VERIFY_BADGE[p.verification_status]||'🔴'} ${p.verification_status||'לא הוגש'}</td>
+      <td style="padding:12px 16px;">
+        ${p.verification_status!=='מאומת'?`<button onclick="event.stopPropagation();quickVerify('${p.id}')" style="background:#1D9E75;color:white;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;">✅ אמת</button>`:''}
+      </td>
+    </tr>
+  `).join('');
+}
+
+function applyAllPropsFilter() {
+  const status = document.getElementById('ap-filter-status').value;
+  const type = document.getElementById('ap-filter-type').value;
+  const city = document.getElementById('ap-filter-city').value.toLowerCase();
+  
+  const filtered = _allPropsData.filter(p => {
+    if(status && p.status !== status) return false;
+    if(type && p.type !== type) return false;
+    if(city && !p.address?.toLowerCase().includes(city)) return false;
+    return true;
+  });
+  
+  renderAllPropsStats(filtered);
+  renderAllPropsTable(filtered);
+}
+
+function exportAllPropsCSV() {
+  const headers = ['כתובת','סוג','סטטוס','בעלים','שכ"ד מבוקש','אימות'];
+  const rows = _allPropsData.map(p=>[
+    p.address||'',
+    p.type||'',
+    p.status||'',
+    p.owner_name||'',
+    p.rent_price||'',
+    p.verification_status||''
+  ]);
+  
+  const csv = [headers,...rows].map(r=>r.join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'timeme_נכסים_'+new Date().toLocaleDateString('he-IL').replace(/\//g,'-')+'.csv';
+  a.click();
+}
+
+function openPropFromAdmin(id) {
+  // פתח את הנכס בדשבורד
+  showPage('properties', document.getElementById('nav-props'));
+  setTimeout(()=>openProperty(id), 300);
+}
+
+// ── MY PERSONAL PROPERTIES (ADMIN) ───────────────
+async function loadMyPersonalProperties() {
+  if(!currentUser) return;
+  
+  const{data:props}=await sb.from('properties')
+    .select('*').eq('owner_id',currentUser.id).order('created_at',{ascending:false});
+  
+  document.getElementById('mp-total').textContent = (props||[]).length;
+  
+  // חשב הכנסות
+  const income = (props||[]).reduce((s,p)=>s+(p.rent_price||0),0);
+  document.getElementById('mp-income').textContent = '₪'+income.toLocaleString('he-IL');
+  
+  // חשב הוצאות החודש
+  const propIds = (props||[]).map(p=>p.id);
+  if(propIds.length>0){
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
+    const{data:expenses}=await sb.from('expenses')
+      .select('amount').in('property_id',propIds).gte('expense_date',monthStart);
+    const totalExp = (expenses||[]).reduce((s,e)=>s+Number(e.amount),0);
+    document.getElementById('mp-expenses').textContent = '₪'+totalExp.toLocaleString('he-IL');
+    document.getElementById('mp-profit').textContent = '₪'+(income-totalExp).toLocaleString('he-IL');
+  }
+  
+  // הצג נכסים
+  const list = document.getElementById('my-props-list');
+  if(!props||props.length===0){
+    list.innerHTML='<div class="empty-state"><div class="empty-icon">🏠</div><div class="empty-title">אין נכסים אישיים</div></div>';
+    return;
+  }
+  
+  const STATUS_COLOR = {'פנוי':'#1D9E75','מושכר':'#185FA5','שימוש אישי':'#534AB7','בשיפוץ':'#FF8F00'};
+  
+  list.innerHTML = props.map(p=>`
+    <div style="background:white;border:1.5px solid #E6F1FB;border-radius:12px;padding:16px;margin-bottom:12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;" onclick="openPropFromAdmin('${p.id}')">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#042C53;">${p.address||'—'}</div>
+        <div style="font-size:12px;color:#555;margin-top:4px;">${p.type||''} ${p.floor?'| קומה '+p.floor:''} ${p.rooms?'| '+p.rooms+' חד'':''}</div>
+      </div>
+      <div style="text-align:left;">
+        <span style="background:${STATUS_COLOR[p.status]||'#888'}20;color:${STATUS_COLOR[p.status]||'#888'};padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">${p.status||'—'}</span>
+        ${p.rent_price?`<div style="font-size:13px;font-weight:700;color:#185FA5;margin-top:6px;">₪${Number(p.rent_price).toLocaleString('he-IL')}/חודש</div>`:''}
+      </div>
+    </div>
+  `).join('');
 }
 
 // ── NOTIFICATIONS ────────────────────────────────
