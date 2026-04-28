@@ -113,46 +113,86 @@ body { font-family: Arial, Helvetica, sans-serif; direction: rtl; background: #F
   box-shadow: 0 2px 12px rgba(4,44,83,0.1);
 }
 @media (max-width: 768px) {
-  /* Header */
-  .header { padding: 10px 14px; }
+  /* Header — קומפקטי */
+  .header { padding: 8px 12px; }
   .logo-name { font-size: 18px; }
   .logo-tag { display: none; }
-  .logo-icon { width: 28px; height: 28px; font-size: 14px; }
-  
-  /* הסתר כפתורים פחות חשובים — השאר רק כניסה */
+  .logo-icon { width: 26px; height: 26px; font-size: 13px; }
   .header-btn-articles { display: none; }
   .header-btn-add { display: none; }
-  
-  /* Hero */
-  .hero { padding: 24px 14px; }
-  .hero h1 { font-size: 20px; line-height: 1.3; }
-  .hero p { font-size: 12px; }
-  .hero-stats { gap: 12px; flex-wrap: wrap; justify-content: center; }
-  .hero-stat-num { font-size: 24px; }
+
+  /* Hero — קצר יותר */
+  .hero { padding: 20px 12px; }
+  .hero h1 { font-size: 19px; line-height: 1.3; margin-bottom: 8px; }
+  .hero p { font-size: 12px; margin-bottom: 12px; }
+  .hero-stats { gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 12px; }
+  .hero-stat-num { font-size: 22px; }
   .hero-stat-label { font-size: 10px; }
-  .hero div[style*="display:flex"] { flex-direction: column; gap: 8px !important; }
-  .hero div[style*="display:flex"] button { width: 100% !important; padding: 10px !important; font-size: 13px !important; }
-  
-  /* Filter */
-  .filter-bar { padding: 10px 12px; gap: 6px; flex-wrap: wrap; }
-  .filter-bar select, .filter-bar input { font-size: 13px; min-width: 0; flex: 1; padding: 7px 8px; }
-  
+  .hero div[style*="display:flex"] { flex-direction: row !important; gap: 8px !important; flex-wrap: wrap; }
+  .hero div[style*="display:flex"] button { flex: 1; padding: 10px 8px !important; font-size: 12px !important; min-width: 120px; }
+
+  /* Filter bar — קומפקטי */
+  .filter-bar { 
+    padding: 8px 10px; 
+    gap: 6px; 
+    top: 52px;
+    flex-wrap: wrap;
+  }
+  .filter-bar select { 
+    font-size: 12px; 
+    padding: 7px 8px; 
+    flex: 1;
+    min-width: calc(50% - 6px);
+    max-width: calc(50% - 3px);
+  }
+  .filter-bar input { 
+    font-size: 12px; 
+    padding: 7px 8px; 
+    width: 100%;
+    flex: none;
+  }
+  .filter-bar button {
+    font-size: 12px;
+    padding: 7px 12px;
+    width: 100%;
+  }
+
   /* Main */
-  .main { padding: 10px; }
-  
-  /* Grid — עמודה אחת */
-  .props-grid { grid-template-columns: 1fr; gap: 10px; }
-  
-  /* Cards */
-  .prop-card { padding: 12px; }
+  .main { padding: 8px 10px; }
+
+  /* Grid — 2 כרטיסיות קטנות זו לצד זו */
+  .props-grid { 
+    grid-template-columns: 1fr 1fr; 
+    gap: 8px; 
+  }
+
+  /* Cards — קומפקטיות */
+  .prop-card { border-radius: 12px; }
+  .card-body { padding: 10px; }
+  .card-address { font-size: 12px; font-weight: 700; }
+  .card-meta { font-size: 10px; gap: 4px; flex-wrap: wrap; }
+  .card-price { font-size: 13px; }
+  .card-actions { 
+    padding: 8px 10px;
+    flex-direction: column; 
+    gap: 6px; 
+  }
+  .btn-photos, .btn-offer { 
+    width: 100%; 
+    text-align: center; 
+    font-size: 11px; 
+    padding: 8px 6px;
+    border-radius: 8px;
+  }
+  .tag { font-size: 9px; padding: 2px 6px; }
+  .card-icon { font-size: 18px; }
+}
+
+/* מסכים קטנים מאוד — עמודה אחת */
+@media (max-width: 400px) {
+  .props-grid { grid-template-columns: 1fr; }
+  .card-body { padding: 12px; }
   .card-address { font-size: 13px; }
-  .card-meta { font-size: 11px; }
-  .card-price { font-size: 14px; }
-  .card-actions { flex-direction: column; gap: 6px; }
-  .btn-photos, .btn-offer { width: 100%; text-align: center; font-size: 12px; padding: 9px; }
-  
-  /* Tags */
-  .tag { font-size: 10px; padding: 2px 7px; }
 }
 .prop-card:hover { box-shadow: 0 4px 20px rgba(24,95,165,0.15); border-color: #185FA5; }
 
