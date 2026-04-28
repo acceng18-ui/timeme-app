@@ -112,25 +112,47 @@ body { font-family: Arial, Helvetica, sans-serif; direction: rtl; background: #F
   overflow: hidden; transition: box-shadow 0.2s, border-color 0.2s;
   box-shadow: 0 2px 12px rgba(4,44,83,0.1);
 }
-@media (max-width: 600px) {
-  .props-grid { grid-template-columns: 1fr; gap: 12px; }
-  .hero { padding: 30px 16px; }
-  .hero h1 { font-size: 22px; }
-  .hero p { font-size: 13px; }
-  .hero-stats { gap: 16px; flex-wrap: wrap; }
-  .hero-stat-num { font-size: 28px; }
-  .filter-bar { padding: 10px 12px; gap: 8px; flex-wrap: wrap; }
-  .filter-bar select, .filter-bar input { font-size: 13px; min-width: 0; flex: 1; }
-  .main { padding: 12px; }
-  .card-address { font-size: 14px; }
-  .card-actions { flex-direction: column; gap: 8px; }
-  .btn-photos, .btn-offer { width: 100%; text-align: center; }
+@media (max-width: 768px) {
+  /* Header */
   .header { padding: 10px 14px; }
-  .logo-name { font-size: 20px; }
+  .logo-name { font-size: 18px; }
   .logo-tag { display: none; }
-  .hero div[style*="display:flex"] { flex-direction: column; }
-  .hero div[style*="display:flex"] button { width: 100%; }
-  #notif-panel { width: calc(100vw - 20px) !important; }
+  .logo-icon { width: 28px; height: 28px; font-size: 14px; }
+  
+  /* הסתר כפתורים פחות חשובים — השאר רק כניסה */
+  .header-btn-articles { display: none; }
+  .header-btn-add { display: none; }
+  
+  /* Hero */
+  .hero { padding: 24px 14px; }
+  .hero h1 { font-size: 20px; line-height: 1.3; }
+  .hero p { font-size: 12px; }
+  .hero-stats { gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .hero-stat-num { font-size: 24px; }
+  .hero-stat-label { font-size: 10px; }
+  .hero div[style*="display:flex"] { flex-direction: column; gap: 8px !important; }
+  .hero div[style*="display:flex"] button { width: 100% !important; padding: 10px !important; font-size: 13px !important; }
+  
+  /* Filter */
+  .filter-bar { padding: 10px 12px; gap: 6px; flex-wrap: wrap; }
+  .filter-bar select, .filter-bar input { font-size: 13px; min-width: 0; flex: 1; padding: 7px 8px; }
+  
+  /* Main */
+  .main { padding: 10px; }
+  
+  /* Grid — עמודה אחת */
+  .props-grid { grid-template-columns: 1fr; gap: 10px; }
+  
+  /* Cards */
+  .prop-card { padding: 12px; }
+  .card-address { font-size: 13px; }
+  .card-meta { font-size: 11px; }
+  .card-price { font-size: 14px; }
+  .card-actions { flex-direction: column; gap: 6px; }
+  .btn-photos, .btn-offer { width: 100%; text-align: center; font-size: 12px; padding: 9px; }
+  
+  /* Tags */
+  .tag { font-size: 10px; padding: 2px 7px; }
 }
 .prop-card:hover { box-shadow: 0 4px 20px rgba(24,95,165,0.15); border-color: #185FA5; }
 
@@ -286,9 +308,9 @@ body { font-family: Arial, Helvetica, sans-serif; direction: rtl; background: #F
     </div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
-    <button onclick="window.location.href='articles.html'" style="padding:9px 18px;background:transparent;color:#85B7EB;border:1.5px solid rgba(255,255,255,0.2);border-radius:8px;cursor:pointer;font-family:Arial;font-size:13px;font-weight:700;">📚 מאמרים</button>
+    <button class="header-btn-articles" onclick="window.location.href='articles.html'" style="padding:9px 18px;background:transparent;color:#85B7EB;border:1.5px solid rgba(255,255,255,0.2);border-radius:8px;cursor:pointer;font-family:Arial;font-size:13px;font-weight:700;">📚 מאמרים</button>
     <button onclick="window.location.href='app.html'" style="padding:9px 18px;background:transparent;color:#85B7EB;border:1.5px solid #85B7EB;border-radius:8px;cursor:pointer;font-family:Arial;font-size:13px;font-weight:700;">כניסה 🔑</button>
-    <button onclick="window.location.href='app.html'" style="padding:9px 18px;background:#1D9E75;color:white;border:none;border-radius:8px;cursor:pointer;font-family:Arial;font-size:13px;font-weight:700;">🏠 הוסף נכס</button>
+    <button class="header-btn-add" onclick="window.location.href='app.html'" style="padding:9px 18px;background:#1D9E75;color:white;border:none;border-radius:8px;cursor:pointer;font-family:Arial;font-size:13px;font-weight:700;">🏠 הוסף נכס</button>
     <button class="btn-login" onclick="window.location.href='app.html'">הרשמה חינם ✨</button>
   </div>
 </div>
