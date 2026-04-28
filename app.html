@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.3.6 | timeme.co.il -->
+<!-- TIME.ME v1.3.8 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -18,59 +18,69 @@ body {
   background: linear-gradient(160deg, #042C53 0%, #185FA5 60%, #378ADD 100%);
   display: flex; align-items: center; justify-content: center; padding: 20px;
 }
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   body { padding: 0; }
   
   /* Header */
   .dash-top { padding: 10px 12px; }
-  .dash-logo { font-size: 20px; }
+  .dash-logo { font-size: 16px; }
+  .dash-logo span { display: none; }
   .dash-uname { display: none; }
   .btn-logout { padding: 5px 10px; font-size: 11px; }
   
-  /* Nav */
-  .nav-bar { padding: 0 8px; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .nav-tab { padding: 10px 10px; font-size: 11px; white-space: nowrap; min-width: fit-content; }
+  /* Nav — גלילה אופקית */
+  .nav-bar { padding: 0 4px; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .nav-bar::-webkit-scrollbar { display: none; }
+  .nav-tab { padding: 10px 12px; font-size: 11px; white-space: nowrap; }
   
   /* Body */
   .dash-body { padding: 10px; }
   .page-title { font-size: 16px; }
-  .page-sub { font-size: 12px; }
+  .page-sub { font-size: 12px; margin-bottom: 12px; }
+  
+  /* Auth */
+  .auth-card { padding: 20px 14px; border-radius: 14px; margin: 8px; width: calc(100% - 16px); }
+  .logo-name { font-size: 24px; }
+  .mode-tab { font-size: 12px; padding: 8px; }
+  .role-tab { font-size: 11px; padding: 7px 4px; }
   
   /* Forms */
-  .form-card { padding: 14px; border-radius: 10px; }
+  .form-card { padding: 12px; border-radius: 10px; max-width: 100%; }
   .form-row-2 { grid-template-columns: 1fr !important; gap: 8px; }
+  .fg { margin-bottom: 10px; }
   .fg label { font-size: 12px; }
-  .fg input, .fg select, .fg textarea { font-size: 14px; padding: 10px; }
+  .fg input, .fg select, .fg textarea { font-size: 15px; padding: 10px 12px; border-radius: 8px; }
   .btn-main { width: 100% !important; padding: 12px !important; font-size: 14px !important; }
+  .btn-cancel { width: 100%; padding: 11px; font-size: 13px; margin-top: 6px; }
+  .form-section-title { font-size: 12px; }
   
   /* Property cards */
-  .prop-card { padding: 12px; border-radius: 10px; }
-  .prop-header { flex-direction: column; gap: 6px; }
+  .prop-card { padding: 10px 12px; flex-wrap: wrap; gap: 8px; }
+  .prop-icon { width: 36px; height: 36px; font-size: 18px; }
+  .prop-name { font-size: 13px; }
+  .prop-addr { font-size: 10px; }
+  .prop-detail { font-size: 10px; }
   
-  /* Auth card */
-  .auth-card { padding: 24px 16px; border-radius: 14px; margin: 10px; }
-  
-  /* Property detail tabs */
-  .pd-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .pd-tab { padding: 8px 10px; font-size: 11px; white-space: nowrap; }
-  
-  /* Info rows */
-  .info-row-pd { flex-direction: column; gap: 2px; }
-  .info-lbl { font-size: 11px; }
-  .info-val-pd { font-size: 13px; }
-  
-  /* Contract form */
-  .form-section-title { font-size: 13px; }
-  
-  /* Notification panel */
-  #notif-panel { width: calc(100vw - 20px) !important; left: 10px !important; right: 10px !important; }
+  /* Property detail */
+  .pd-tab { padding: 8px 10px; font-size: 10px; white-space: nowrap; }
+  .info-row-pd { padding: 6px 10px; }
+  .info-lbl { font-size: 10px; }
+  .info-val-pd { font-size: 12px; }
   
   /* Stats */
-  .stat-card { padding: 10px; }
-  .stat-val { font-size: 22px; }
+  .stat-card { padding: 8px 10px; }
+  .stat-val { font-size: 20px; }
+  .stat-label { font-size: 10px; }
   
-  /* Hide less important elements on mobile */
-  .dash-logo span { display: none; }
+  /* Payments table */
+  .pay-row { grid-template-columns: 30px 1fr 1fr auto; font-size: 11px; }
+  .pay-row-head { grid-template-columns: 30px 1fr 1fr auto; }
+  
+  /* Notification panel */
+  #notif-panel { width: calc(100vw - 16px) !important; left: 8px !important; right: 8px !important; top: 55px !important; }
+  
+  /* Recurring modal */
+  #recurring-modal > div { padding: 20px 14px; margin: 10px; }
 }
 .auth-card {
   background: white; border-radius: 20px;
@@ -697,83 +707,80 @@ body {
           <div class="pd-content" id="pdt-expenses" style="display:none;">
 
             <!-- בחירת שנה -->
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
               <span style="font-size:12px;font-weight:700;color:#185FA5;">שנה:</span>
               <div id="exp-year-btns" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
             </div>
 
-            <!-- סיכום 5 קופסאות -->
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:16px;">
-              <div style="background:#E1F5EE;border:1.5px solid #5DCAA5;border-radius:12px;padding:12px;text-align:right;">
+            <!-- סיכום 5 קופסאות — 2 שורות במובייל -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+              <div style="background:#E1F5EE;border:1.5px solid #5DCAA5;border-radius:12px;padding:10px 12px;">
                 <div style="font-size:10px;color:#0F6E56;font-weight:700;">🟢 הכנסה קיימת</div>
-                <div style="font-size:17px;font-weight:700;color:#0F6E56;" id="exp-income">₪0</div>
+                <div style="font-size:18px;font-weight:700;color:#0F6E56;" id="exp-income">₪0</div>
                 <div style="font-size:9px;color:#1D9E75;">תשלומים שנגבו</div>
               </div>
-              <div style="background:#E3F2FD;border:1.5px solid #90CAF9;border-radius:12px;padding:12px;text-align:right;">
+              <div style="background:#E3F2FD;border:1.5px solid #90CAF9;border-radius:12px;padding:10px 12px;">
                 <div style="font-size:10px;color:#1565C0;font-weight:700;">🔵 הכנסה עתידית</div>
-                <div style="font-size:17px;font-weight:700;color:#1565C0;" id="exp-income-future">₪0</div>
+                <div style="font-size:18px;font-weight:700;color:#1565C0;" id="exp-income-future">₪0</div>
                 <div style="font-size:9px;color:#1976D2;">תשלומים ממתינים</div>
               </div>
-              <div style="background:#FCE4EC;border:1.5px solid #F48FB1;border-radius:12px;padding:12px;text-align:right;">
+              <div style="background:#FCE4EC;border:1.5px solid #F48FB1;border-radius:12px;padding:10px 12px;">
                 <div style="font-size:10px;color:#880E4F;font-weight:700;">🔴 הוצאה שבוצעה</div>
-                <div style="font-size:17px;font-weight:700;color:#880E4F;" id="exp-total">₪0</div>
+                <div style="font-size:18px;font-weight:700;color:#880E4F;" id="exp-total">₪0</div>
                 <div style="font-size:9px;color:#C62828;">הוצאות שעברו</div>
               </div>
-              <div style="background:#FFF8E1;border:1.5px solid #FFD54F;border-radius:12px;padding:12px;text-align:right;">
+              <div style="background:#FFF8E1;border:1.5px solid #FFD54F;border-radius:12px;padding:10px 12px;">
                 <div style="font-size:10px;color:#8A6000;font-weight:700;">🟡 התחייבות</div>
-                <div style="font-size:17px;font-weight:700;color:#8A6000;" id="exp-commitment">₪0</div>
+                <div style="font-size:18px;font-weight:700;color:#8A6000;" id="exp-commitment">₪0</div>
                 <div style="font-size:9px;color:#F9A825;">הוצאות עתידיות</div>
               </div>
-              <div style="background:#EDE7F6;border:1.5px solid #B39DDB;border-radius:12px;padding:12px;text-align:right;">
+              <div style="background:#EDE7F6;border:1.5px solid #B39DDB;border-radius:12px;padding:10px 12px;grid-column:1/-1;">
                 <div style="font-size:10px;color:#4527A0;font-weight:700;">⚫ רווח נקי</div>
-                <div style="font-size:17px;font-weight:700;" id="exp-net" style="color:#4527A0;">₪0</div>
-                <div style="font-size:9px;color:#6A1B9A;">הכנסה פחות הוצאה</div>
+                <div style="font-size:20px;font-weight:700;" id="exp-net">₪0</div>
+                <div style="font-size:9px;color:#6A1B9A;">הכנסה קיימת פחות הוצאה שבוצעה</div>
               </div>
             </div>
 
-            <!-- הוספת הוצאה -->
-            <div style="background:#F5F9FF;border:1.5px dashed #B5D4F4;border-radius:12px;padding:14px;margin-bottom:14px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-                <div style="display:flex;gap:8px;align-items:center;">
-                  <div class="form-section-title" style="margin:0;">+ הוספת הוצאה</div>
-                  <button onclick="openRecurringForm('expense')" style="padding:5px 12px;font-size:11px;background:#FCE4EC;color:#880E4F;border:1.5px solid #F48FB1;border-radius:8px;cursor:pointer;font-weight:700;">🔄 הוצאה חוזרת</button>
+            <!-- כפתורי פעולה -->
+            <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+              <button onclick="toggleExpForm()" id="exp-toggle-btn" style="flex:1;background:#185FA5;color:white;border:none;padding:10px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:Arial;">+ הוסף הוצאה</button>
+              <button onclick="openRecurringForm('expense')" style="flex:1;background:#FCE4EC;color:#880E4F;border:1.5px solid #F48FB1;padding:10px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;font-family:Arial;">🔄 הוצאה חוזרת</button>
+            </div>
+
+            <!-- טופס הוספת הוצאה -->
+            <div id="exp-form" style="display:none;background:#F5F9FF;border:1.5px dashed #B5D4F4;border-radius:12px;padding:14px;margin-bottom:14px;">
+              <div class="form-row-2">
+                <div class="fg"><label>תיאור *</label><input id="exp-desc" placeholder="תיקון דוד שמש" /></div>
+                <div class="fg"><label>קטגוריה *</label>
+                  <select id="exp-cat">
+                    <option value="אחזקה">🔧 אחזקה</option>
+                    <option value="שיפוץ">🏗️ שיפוץ</option>
+                    <option value="משכנתא">🏦 משכנתא</option>
+                    <option value="הלוואה">💳 הלוואה</option>
+                    <option value="ביטוח">🛡️ ביטוח</option>
+                    <option value="ארנונה">🏛️ ארנונה</option>
+                    <option value="ועד בית">🏢 ועד בית</option>
+                    <option value="עו״ד / רו״ח">⚖️ עו״ד / רו״ח</option>
+                    <option value="מסים">📊 מסים</option>
+                    <option value="ניהול">📋 ניהול</option>
+                    <option value="כללי">📦 כללי</option>
+                  </select>
                 </div>
-                <button onclick="toggleExpForm()" id="exp-toggle-btn" style="background:#E6F1FB;color:#185FA5;border:1px solid #B5D4F4;padding:5px 12px;border-radius:8px;cursor:pointer;font-size:12px;">הצג</button>
               </div>
-              <div id="exp-form" style="display:none;">
-                <div class="form-row-2">
-                  <div class="fg"><label>תיאור *</label><input id="exp-desc" placeholder="תיקון דוד שמש" /></div>
-                  <div class="fg"><label>קטגוריה *</label>
-                    <select id="exp-cat">
-                      <option value="אחזקה">🔧 אחזקה</option>
-                      <option value="שיפוץ">🏗️ שיפוץ</option>
-                      <option value="משכנתא">🏦 משכנתא</option>
-                      <option value="הלוואה">💳 הלוואה</option>
-                      <option value="ביטוח">🛡️ ביטוח</option>
-                      <option value="ארנונה">🏛️ ארנונה</option>
-                      <option value="ועד בית">🏢 ועד בית</option>
-                      <option value="עו״ד / רו״ח">⚖️ עו״ד / רו״ח</option>
-                      <option value="מסים">📊 מסים</option>
-                      <option value="ניהול">📋 ניהול</option>
-                      <option value="כללי">📦 כללי</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="form-row-2">
-                  <div class="fg"><label>סכום (₪) *</label><input id="exp-amount" type="number" placeholder="500" oninput="calcVat()" /></div>
-                  <div class="fg"><label>תאריך *</label><input id="exp-date" type="date" /></div>
-                </div>
-                <div class="form-row-2">
-                  <div class="fg"><label>ספק</label><input id="exp-vendor" placeholder="שרברב דוד" /></div>
-                  <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
-                    <input type="checkbox" id="exp-vat" checked style="width:16px;height:16px;" onchange="calcVat()" />
-                    <label for="exp-vat" style="font-size:12px;cursor:pointer;">כולל מע"מ (18%)</label>
-                  </div>
-                </div>
-                <div id="vat-calc" style="font-size:11px;color:#185FA5;background:#E6F1FB;padding:6px 10px;border-radius:6px;margin-bottom:10px;"></div>
-                <button class="btn-main" style="width:auto;padding:9px 20px;" onclick="saveExpense()" id="save-exp-btn">💾 שמור הוצאה</button>
-                <div class="msg" id="exp-msg"></div>
+              <div class="form-row-2">
+                <div class="fg"><label>סכום (₪) *</label><input id="exp-amount" type="number" placeholder="500" oninput="calcVat()" /></div>
+                <div class="fg"><label>תאריך *</label><input id="exp-date" type="date" /></div>
               </div>
+              <div class="form-row-2">
+                <div class="fg"><label>ספק</label><input id="exp-vendor" placeholder="שרברב דוד" /></div>
+                <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
+                  <input type="checkbox" id="exp-vat" checked style="width:16px;height:16px;" onchange="calcVat()" />
+                  <label for="exp-vat" style="font-size:12px;cursor:pointer;">כולל מע"מ (18%)</label>
+                </div>
+              </div>
+              <div id="vat-calc" style="font-size:11px;color:#185FA5;background:#E6F1FB;padding:6px 10px;border-radius:6px;margin-bottom:10px;"></div>
+              <button class="btn-main" style="width:auto;padding:9px 20px;" onclick="saveExpense()" id="save-exp-btn">💾 שמור הוצאה</button>
+              <div class="msg" id="exp-msg"></div>
             </div>
 
             <!-- רשימת הוצאות -->
@@ -4137,7 +4144,7 @@ function toggleExpForm() {
   const btn=document.getElementById('exp-toggle-btn');
   const shown=f.style.display!=='none';
   f.style.display=shown?'none':'block';
-  btn.textContent=shown?'הצג':'הסתר';
+  btn.textContent=shown?'+ הוסף הוצאה':'✕ סגור';
   if(!shown) document.getElementById('exp-date').valueAsDate=new Date();
 }
 
