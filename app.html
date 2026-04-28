@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.3.5 | timeme.co.il -->
+<!-- TIME.ME v1.3.6 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -4446,7 +4446,61 @@ async function saveInsurance() {
 
   if(error){showMsg('ins-msg','error','שגיאה: '+error.message);return;}
   showMsg('ins-msg','success','✓ הביטוח נשמר בהצלחה!');
+  
+  // צור הוצאות מחזוריות אוטומטיות לפי הפרמיה
+  if(premium && start && expiry) {
+    await createInsuranceExpenses(currentProp.id, premium, payFreq, start, expiry);
+  }
+  
   setTimeout(()=>loadInsurance(currentProp.id),1000);
+}
+
+async function createInsuranceExpenses(propId, premium, freq, startDate, expiryDate) {
+  // מחק הוצאות ביטוח קיימות אוטומטיות לנכס זה
+  await sb.from('expenses')
+    .delete()
+    .eq('property_id', propId)
+    .eq('category', 'ביטוח')
+    .eq('is_recurring', true);
+
+  const start = new Date(startDate);
+  const expiry = new Date(expiryDate);
+  const rows = [];
+
+  if(freq === 'חודשי') {
+    // תשלום חודשי
+    const monthly = premium / 12;
+    let d = new Date(start);
+    while(d <= expiry) {
+      rows.push({
+        property_id: propId,
+        description: 'ביטוח — תשלום חודשי',
+        category: 'ביטוח',
+        amount: Math.round(monthly),
+        expense_date: d.toISOString().split('T')[0],
+        is_recurring: true,
+        recurring_status: d < new Date() ? 'שולם' : 'ממתין',
+        includes_vat: false
+      });
+      d.setMonth(d.getMonth() + 1);
+    }
+  } else {
+    // תשלום שנתי או חד פעמי — הוצאה אחת
+    rows.push({
+      property_id: propId,
+      description: 'ביטוח — פרמיה ' + (freq === 'שנתי' ? 'שנתית' : 'חד פעמית'),
+      category: 'ביטוח',
+      amount: premium,
+      expense_date: startDate,
+      is_recurring: freq === 'שנתי',
+      recurring_status: new Date(startDate) < new Date() ? 'שולם' : 'ממתין',
+      includes_vat: false
+    });
+  }
+
+  if(rows.length > 0) {
+    await sb.from('expenses').insert(rows);
+  }
 }
 
 // ── FILE UPLOAD ──────────────────────────────────
