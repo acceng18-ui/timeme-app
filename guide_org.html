@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מדריך ארגון — TIME.ME</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--navy:#042C53;--blue:#185FA5;--green:#1D9E75;--orange:#FF8F00;--purple:#534AB7;--red:#E24B4A;--bg:#F5F4FF;}
+body{font-family:'Heebo',sans-serif;background:var(--bg);direction:rtl;min-height:100vh;overflow-x:hidden;}
+.header{background:var(--purple);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-size:22px;font-weight:900;color:white;letter-spacing:2px;}
+.logo em{color:#C5C2F0;font-style:normal;}
+.back-btn{background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);padding:7px 16px;border-radius:8px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:13px;text-decoration:none;}
+.progress-bar{background:white;border-bottom:1.5px solid #B5D4F4;padding:12px 24px;display:flex;align-items:center;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.progress-bar::-webkit-scrollbar{display:none;}
+.step-dot{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;min-width:55px;}
+.dot{width:32px;height:32px;border-radius:50%;border:2px solid #B5D4F4;background:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#888;transition:all 0.3s;flex-shrink:0;}
+.dot.done{background:var(--purple);border-color:var(--purple);color:white;}
+.dot.active{background:var(--purple);border-color:var(--purple);color:white;transform:scale(1.15);}
+.dot-label{font-size:9px;color:#888;text-align:center;white-space:nowrap;}
+.progress-line{height:2px;background:#E6F1FB;flex:1;min-width:14px;border-radius:2px;margin-bottom:20px;}
+.progress-line.done{background:var(--purple);}
+.main{max-width:880px;margin:0 auto;padding:24px 16px;}
+.slide{display:none;}
+.slide.active{display:block;animation:fadeIn 0.4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.step-header{background:linear-gradient(135deg,#3A2F8F 0%,#534AB7 100%);border-radius:20px;padding:28px;color:white;margin-bottom:20px;position:relative;overflow:hidden;}
+.step-header::before{content:'';position:absolute;top:-30px;left:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.05);}
+.step-num{font-size:11px;color:#C5C2F0;font-weight:700;margin-bottom:8px;letter-spacing:2px;}
+.step-title{font-size:24px;font-weight:800;margin-bottom:8px;}
+.step-desc{font-size:14px;color:#C5C2F0;line-height:1.6;}
+.step-icon{font-size:48px;position:absolute;top:20px;left:24px;opacity:0.3;}
+.mockup-container{background:white;border:1.5px solid #B5D4F4;border-radius:16px;overflow:hidden;margin-bottom:20px;box-shadow:0 4px 20px rgba(4,44,83,0.1);}
+.mockup-topbar{background:#042C53;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
+.mockup-logo{font-size:13px;font-weight:700;color:white;letter-spacing:2px;}
+.mockup-logo em{color:#85B7EB;font-style:normal;}
+.mockup-body{padding:16px;background:#F5F9FF;min-height:180px;}
+.annotation{display:flex;gap:12px;align-items:flex-start;background:white;border:1.5px solid #E6F1FB;border-radius:12px;padding:14px;margin-bottom:10px;}
+.annotation.highlight{border-color:var(--purple);background:#F5F4FF;}
+.annotation.success{border-color:var(--green);background:#F0FBF7;}
+.annotation.warning{border-color:var(--orange);background:#FFF8EE;}
+.ann-num{width:28px;height:28px;border-radius:50%;background:var(--purple);color:white;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.annotation.success .ann-num{background:var(--green);}
+.annotation.warning .ann-num{background:var(--orange);}
+.ann-text{font-size:13px;color:#333;line-height:1.6;}
+.ann-text strong{color:var(--navy);}
+.pointer{display:inline-flex;align-items:center;gap:4px;background:#FFE082;border:1.5px solid #FFB300;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;color:#5D4037;margin-right:4px;}
+.tip-box{background:linear-gradient(135deg,#EDE7F6,#F5F4FF);border:1.5px solid #B39DDB;border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start;}
+.tip-icon{font-size:20px;flex-shrink:0;}
+.tip-text{font-size:12px;color:#4527A0;line-height:1.7;}
+.field-mock{margin-bottom:10px;}
+.field-label{font-size:10px;color:#555;margin-bottom:4px;}
+.field-input{background:#F5F9FF;border:1.5px solid #B5D4F4;border-radius:8px;padding:8px 12px;font-size:12px;color:#042C53;width:100%;display:flex;align-items:center;}
+.field-input.filled{border-color:#B39DDB;background:#F5F4FF;color:#4527A0;font-weight:600;}
+.field-input.highlighted{border-color:#534AB7;background:#EDE7F6;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.badge-mock{font-size:10px;padding:3px 10px;border-radius:20px;font-weight:700;}
+.badge-green{background:#E1F5EE;color:#0F6E56;}
+.badge-purple{background:#EDE7F6;color:#4527A0;}
+.badge-orange{background:#FFF3E0;color:#8A6000;}
+.badge-blue{background:#E6F1FB;color:#185FA5;}
+.badge-red{background:#FCE4EC;color:#880E4F;}
+.btn-mock{display:inline-flex;align-items:center;gap:4px;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:default;}
+.btn-purple{background:#534AB7;color:white;}
+.btn-green{background:#1D9E75;color:white;}
+.btn-primary{background:#185FA5;color:white;}
+.nav-actions{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:16px;border-top:1.5px solid #E6F1FB;}
+.nav-btn{padding:12px 28px;border-radius:10px;font-family:'Heebo',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all 0.2s;}
+.nav-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-prev{background:white;color:var(--purple);border:1.5px solid #B39DDB;}
+.btn-next{background:linear-gradient(135deg,#3A2F8F,#534AB7);color:white;}
+.step-counter{font-size:12px;color:#888;}
+.welcome-card{background:linear-gradient(135deg,#3A2F8F 0%,#534AB7 60%,#7B77D4 100%);border-radius:24px;padding:40px 32px;text-align:center;color:white;margin-bottom:20px;}
+.steps-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:20px;}
+.step-preview-item{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:12px 8px;text-align:center;}
+.spi-num{font-size:20px;font-weight:900;color:#C5C2F0;}
+.spi-label{font-size:11px;color:rgba(255,255,255,0.8);margin-top:4px;}
+.final-card{background:linear-gradient(135deg,#3A2F8F,#534AB7);border-radius:24px;padding:40px 32px;text-align:center;color:white;margin-bottom:20px;}
+.checklist{list-style:none;}
+.checklist li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:0.5px solid #F0F6FF;font-size:13px;color:#333;line-height:1.5;}
+.checklist li::before{content:'✅';flex-shrink:0;}
+
+/* TYPE CARDS - הדגש המרכזי */
+.type-card{border-radius:16px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;}
+.type-card::before{content:'';position:absolute;top:-20px;left:-20px;width:80px;height:80px;border-radius:50%;opacity:0.1;}
+.type-a{background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border:2px solid #4CAF50;}
+.type-a::before{background:#4CAF50;}
+.type-b{background:linear-gradient(135deg,#E3F2FD,#E1F5FE);border:2px solid #2196F3;}
+.type-b::before{background:#2196F3;}
+.type-c{background:linear-gradient(135deg,#FFF3E0,#FFF8E1);border:2px solid #FF9800;}
+.type-c::before{background:#FF9800;}
+.type-title{font-size:16px;font-weight:800;margin-bottom:6px;}
+.type-a .type-title{color:#1B5E20;}
+.type-b .type-title{color:#0D47A1;}
+.type-c .type-title{color:#E65100;}
+.type-desc{font-size:12px;line-height:1.6;margin-bottom:10px;}
+.type-a .type-desc{color:#2E7D32;}
+.type-b .type-desc{color:#1565C0;}
+.type-c .type-desc{color:#BF360C;}
+.type-features{display:flex;flex-wrap:wrap;gap:6px;}
+.type-feature{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;}
+.type-a .type-feature{background:#C8E6C9;color:#1B5E20;}
+.type-b .type-feature{background:#BBDEFB;color:#0D47A1;}
+.type-c .type-feature{background:#FFE0B2;color:#E65100;}
+.type-icon{font-size:32px;margin-bottom:10px;}
+.vs-divider{text-align:center;font-size:12px;color:#888;margin:8px 0;font-weight:700;}
+
+@media(max-width:600px){.step-title{font-size:18px}.main{padding:16px 10px}.step-header{padding:20px}.field-row{grid-template-columns:1fr}.type-card{padding:14px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">TIME<em>.</em>ME</div>
+  <a href="app.html" class="back-btn">← לאפליקציה</a>
+</div>
+
+<div class="progress-bar" id="progress-bar">
+  <div class="step-dot" onclick="goTo(0)"><div class="dot">🏢</div><div class="dot-label">ברוכים</div></div>
+  <div class="progress-line" id="line-0"></div>
+  <div class="step-dot" onclick="goTo(1)"><div class="dot">1</div><div class="dot-label">הרשמה</div></div>
+  <div class="progress-line" id="line-1"></div>
+  <div class="step-dot" onclick="goTo(2)"><div class="dot">2</div><div class="dot-label">3 סוגי נכסים</div></div>
+  <div class="progress-line" id="line-2"></div>
+  <div class="step-dot" onclick="goTo(3)"><div class="dot">3</div><div class="dot-label">נכס א׳</div></div>
+  <div class="progress-line" id="line-3"></div>
+  <div class="step-dot" onclick="goTo(4)"><div class="dot">4</div><div class="dot-label">נכס ב׳</div></div>
+  <div class="progress-line" id="line-4"></div>
+  <div class="step-dot" onclick="goTo(5)"><div class="dot">5</div><div class="dot-label">נכס ג׳</div></div>
+  <div class="progress-line" id="line-5"></div>
+  <div class="step-dot" onclick="goTo(6)"><div class="dot">6</div><div class="dot-label">נציגים</div></div>
+  <div class="progress-line" id="line-6"></div>
+  <div class="step-dot" onclick="goTo(7)"><div class="dot">7</div><div class="dot-label">הוצאות</div></div>
+  <div class="progress-line" id="line-7"></div>
+  <div class="step-dot" onclick="goTo(8)"><div class="dot">✓</div><div class="dot-label">סיום</div></div>
+</div>
+
+<div class="main">
+
+  <!-- SLIDE 0: ברוכים -->
+  <div class="slide active" id="slide-0">
+    <div class="welcome-card">
+      <div style="font-size:64px;margin-bottom:16px;">🏢</div>
+      <div style="font-size:28px;font-weight:900;margin-bottom:10px;">מדריך ארגון / חברה</div>
+      <div style="font-size:15px;color:rgba(255,255,255,0.85);margin-bottom:24px;line-height:1.6;">ברוכים הבאים! המדריך ילמד אתכם לנהל את כלל נכסי הארגון — בכל 3 סוגי היחסים עם נכסים</div>
+      <div class="steps-preview">
+        <div class="step-preview-item"><div class="spi-num">01</div><div class="spi-label">הרשמה</div></div>
+        <div class="step-preview-item"><div class="spi-num">02</div><div class="spi-label">3 סוגי נכסים</div></div>
+        <div class="step-preview-item"><div class="spi-num">03</div><div class="spi-label">בעלות להשכרה</div></div>
+        <div class="step-preview-item"><div class="spi-num">04</div><div class="spi-label">שכירות עצמית</div></div>
+        <div class="step-preview-item"><div class="spi-num">05</div><div class="spi-label">בעלות לשימוש</div></div>
+        <div class="step-preview-item"><div class="spi-num">06</div><div class="spi-label">ניהול נציגים</div></div>
+        <div class="step-preview-item"><div class="spi-num">07</div><div class="spi-label">הוצאות כוללות</div></div>
+      </div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">⏱️</div>
+      <div class="tip-text"><strong>זמן קריאה: כ-5 דקות</strong><br>לחצו "הבא" להתחלה. שלב 2 הוא הכי חשוב — 3 סוגי נכסים לארגון</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 1: הרשמה -->
+  <div class="slide" id="slide-1">
+    <div class="step-header">
+      <div class="step-icon">👤</div>
+      <div class="step-num">שלב 01 מתוך 07</div>
+      <div class="step-title">הרשמת הארגון</div>
+      <div class="step-desc">הירשמו כ"ארגון/חברה" ומלאו את פרטי החברה</div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body" style="display:flex;justify-content:center;">
+        <div style="width:100%;max-width:300px;">
+          <div style="display:flex;border:1.5px solid #534AB7;border-radius:10px;overflow:hidden;margin-bottom:12px;">
+            <div style="flex:1;padding:8px;text-align:center;font-size:11px;color:#888;">🏠 בעל נכס</div>
+            <div style="flex:1;padding:8px;text-align:center;font-size:11px;color:#888;">🔑 שוכר</div>
+            <div style="flex:1;padding:8px;text-align:center;font-size:11px;background:#534AB7;color:white;font-weight:700;">🏢 ארגון ✓</div>
+          </div>
+          <div style="background:#EDE7F6;border:1px solid #B39DDB;border-radius:8px;padding:10px;margin-bottom:12px;font-size:11px;color:#4527A0;">ניהול נכסים ארגוניים עם מספר נציגים</div>
+          <div class="field-mock"><div class="field-label">שם החברה/ארגון *</div><div class="field-input highlighted">ABC בע"מ</div></div>
+          <div class="field-mock"><div class="field-label">ח.פ / מספר עמותה</div><div class="field-input filled">516244274</div></div>
+          <div class="field-mock"><div class="field-label">שם איש קשר *</div><div class="field-input filled">ישראל ישראלי</div></div>
+          <div class="field-mock"><div class="field-label">מייל</div><div class="field-input filled">ceo@company.com</div></div>
+          <div class="btn-mock btn-purple" style="width:100%;justify-content:center;margin-top:8px;">הרשמה למערכת</div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">בחרו <span class="pointer">🏢 ארגון/חברה</span> — ייפתחו שדות ייעודיים לארגון</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">מלאו <strong>שם חברה, ח.פ ושם איש קשר</strong> — פרטים אלו יופיעו בחוזים</div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">👥</div>
+      <div class="tip-text"><strong>לאחר ההרשמה:</strong> תוכלו להוסיף נציגים נוספים לארגון — כל אחד עם הרשאות משלו</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: 3 סוגי נכסים - הדגש המרכזי -->
+  <div class="slide" id="slide-2">
+    <div class="step-header">
+      <div class="step-icon">🗂️</div>
+      <div class="step-num">שלב 02 מתוך 07 — ⭐ הכי חשוב!</div>
+      <div class="step-title">3 סוגי יחסים עם נכסים</div>
+      <div class="step-desc">לארגון יש 3 דרכים שונות לנהל נכסים — חשוב לדעת את ההבדל!</div>
+    </div>
+
+    <!-- TYPE A: בעלות להשכרה -->
+    <div class="type-card type-c">
+      <div class="type-icon">💰</div>
+      <div class="type-title">סוג א׳ — משכיר לרווח</div>
+      <div class="type-desc"><strong>הארגון בעלים של הנכס ומשכיר אותו</strong> לגורם חיצוני — שוכר, חברה אחרת, או פרטי.<br>מטרה: <strong>הכנסה שוטפת מדמי שכירות</strong></div>
+      <div class="type-features">
+        <span class="type-feature">💰 הכנסות שכירות</span>
+        <span class="type-feature">📄 ניהול חוזים</span>
+        <span class="type-feature">💳 מעקב שיקים</span>
+        <span class="type-feature">🔐 אימות בעלות</span>
+        <span class="type-feature">🏷️ פרסום למכירה</span>
+      </div>
+    </div>
+
+    <div class="vs-divider">— — —</div>
+
+    <!-- TYPE B: שכירות לשימוש עצמי -->
+    <div class="type-card type-b">
+      <div class="type-icon">🔑</div>
+      <div class="type-title">סוג ב׳ — שוכר לשימוש עצמי</div>
+      <div class="type-desc"><strong>הארגון שוכר נכס מגורם חיצוני</strong> ומשתמש בו לפעילותו — משרד, מחסן, סניף.<br>מטרה: <strong>מעקב הוצאות שכירות והתחייבויות</strong></div>
+      <div class="type-features">
+        <span class="type-feature">💸 מעקב תשלומי שכירות</span>
+        <span class="type-feature">📅 תאריכי חוזה</span>
+        <span class="type-feature">📊 הוצאות תפעול</span>
+        <span class="type-feature">🔔 התראות חידוש</span>
+      </div>
+    </div>
+
+    <div class="vs-divider">— — —</div>
+
+    <!-- TYPE C: בעלות לשימוש עצמי -->
+    <div class="type-card type-a">
+      <div class="type-icon">🏗️</div>
+      <div class="type-title">סוג ג׳ — בעלות לשימוש אישי</div>
+      <div class="type-desc"><strong>הארגון בעלים של הנכס ומשתמש בו</strong> לפעילותו — מפעל, מטה, מחסן בבעלות.<br>מטרה: <strong>ניהול הוצאות תחזוקה ושיפורים</strong></div>
+      <div class="type-features">
+        <span class="type-feature">🔧 הוצאות אחזקה</span>
+        <span class="type-feature">🏗️ שיפוצים</span>
+        <span class="type-feature">🛡️ ביטוח מבנה</span>
+        <span class="type-feature">📈 ניתוח עלויות</span>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">💡</div>
+      <div class="tip-text"><strong>חשוב:</strong> כשמוסיפים נכס — בוחרים את סוג היחס. ניתן לנהל נכסים משלושת הסוגים <strong>במקביל</strong> באותו ארגון!</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: סוג א - משכיר לרווח -->
+  <div class="slide" id="slide-3">
+    <div class="step-header" style="background:linear-gradient(135deg,#E65100,#FF8F00);">
+      <div class="step-icon">💰</div>
+      <div class="step-num">שלב 03 מתוך 07</div>
+      <div class="step-title">ניהול נכס — משכיר לרווח</div>
+      <div class="step-desc">הארגון בעלים ומשכיר לאחרים — כניסה לכסף, חוזים, שיקים</div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div style="background:white;border:1.5px solid #FFB74D;border-radius:10px;padding:12px;margin-bottom:10px;">
+          <div style="font-size:12px;font-weight:700;color:#E65100;margin-bottom:8px;">💰 סוג יחס לנכס</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:100px;background:#FFF3E0;border:2px solid #FF9800;border-radius:10px;padding:10px;text-align:center;">
+              <div style="font-size:20px;">💰</div>
+              <div style="font-size:11px;font-weight:700;color:#E65100;">הארגון בעלים</div>
+              <div style="font-size:10px;color:#BF360C;margin-top:2px;">ומשכיר לאחרים</div>
+            </div>
+            <div style="flex:1;min-width:100px;background:#F5F4FF;border:1.5px solid #B39DDB;border-radius:10px;padding:10px;text-align:center;opacity:0.5;">
+              <div style="font-size:20px;">🔑</div>
+              <div style="font-size:11px;color:#888;">הארגון שוכר</div>
+            </div>
+            <div style="flex:1;min-width:100px;background:#F5F4FF;border:1.5px solid #B39DDB;border-radius:10px;padding:10px;text-align:center;opacity:0.5;">
+              <div style="font-size:20px;">🏗️</div>
+              <div style="font-size:11px;color:#888;">בעלות עצמית</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:white;border:1px solid #E6F1FB;border-radius:10px;padding:10px;">
+            <div style="font-size:10px;color:#0F6E56;">💰 הכנסות שנגבו</div>
+            <div style="font-size:16px;font-weight:700;color:#0F6E56;">₪128,000</div>
+          </div>
+          <div style="background:white;border:1px solid #E6F1FB;border-radius:10px;padding:10px;">
+            <div style="font-size:10px;color:#185FA5;">🔵 הכנסות עתידיות</div>
+            <div style="font-size:16px;font-weight:700;color:#185FA5;">₪34,000</div>
+          </div>
+          <div style="background:white;border:1px solid #E6F1FB;border-radius:10px;padding:10px;">
+            <div style="font-size:10px;color:#880E4F;">🔴 הוצאות</div>
+            <div style="font-size:16px;font-weight:700;color:#880E4F;">₪24,000</div>
+          </div>
+          <div style="background:#EDE7F6;border:1px solid #B39DDB;border-radius:10px;padding:10px;">
+            <div style="font-size:10px;color:#4527A0;">⚫ רווח נקי</div>
+            <div style="font-size:16px;font-weight:700;color:#4527A0;">₪104,000</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">בהוספת נכס — בחרו <span class="pointer">💰 הארגון בעלים ומשכיר לאחרים</span></div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">ניהול מלא: <strong>חוזה, שיקים, הכנסות, הוצאות, ביטוח</strong> — בדיוק כמו בעל נכס פרטי</div>
+    </div>
+    <div class="annotation success">
+      <div class="ann-num">3</div>
+      <div class="ann-text">המערכת מציגה <strong>רווח נקי</strong> לכל נכס — ידעו אילו נכסים משתלמים!</div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">📊</div>
+      <div class="tip-text"><strong>בטאב "כל הנכסים"</strong> — תקבלו סיכום כספי מרוכז של כל נכסי הארגון</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: סוג ב - שוכר לשימוש עצמי -->
+  <div class="slide" id="slide-4">
+    <div class="step-header" style="background:linear-gradient(135deg,#0D47A1,#1976D2);">
+      <div class="step-icon">🔑</div>
+      <div class="step-num">שלב 04 מתוך 07</div>
+      <div class="step-title">ניהול נכס — שוכר לשימוש עצמי</div>
+      <div class="step-desc">הארגון שוכר נכס מגורם חיצוני — משרד, סניף, מחסן</div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div style="background:white;border:1.5px solid #90CAF9;border-radius:10px;padding:12px;margin-bottom:10px;">
+          <div style="font-size:12px;font-weight:700;color:#0D47A1;margin-bottom:8px;">🔑 סוג יחס לנכס</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:100px;background:#F5F4FF;border:1.5px solid #B39DDB;border-radius:10px;padding:10px;text-align:center;opacity:0.5;">
+              <div style="font-size:20px;">💰</div>
+              <div style="font-size:11px;color:#888;">בעלים ומשכיר</div>
+            </div>
+            <div style="flex:1;min-width:100px;background:#E3F2FD;border:2px solid #2196F3;border-radius:10px;padding:10px;text-align:center;">
+              <div style="font-size:20px;">🔑</div>
+              <div style="font-size:11px;font-weight:700;color:#0D47A1;">הארגון שוכר</div>
+              <div style="font-size:10px;color:#1565C0;margin-top:2px;">לשימוש עצמי</div>
+            </div>
+            <div style="flex:1;min-width:100px;background:#F5F4FF;border:1.5px solid #B39DDB;border-radius:10px;padding:10px;text-align:center;opacity:0.5;">
+              <div style="font-size:20px;">🏗️</div>
+              <div style="font-size:11px;color:#888;">בעלות עצמית</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:white;border:1.5px solid #B5D4F4;border-radius:10px;padding:12px;">
+          <div style="font-size:11px;font-weight:700;color:#042C53;margin-bottom:10px;">📄 פרטי השכירות</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
+            <div style="background:#F5F9FF;border:0.5px solid #E6F1FB;border-radius:8px;padding:8px;">
+              <div style="font-size:9px;color:#185FA5;">🏢 נכס</div>
+              <div style="font-size:11px;font-weight:700;color:#042C53;">משרד רוטשילד 22</div>
+            </div>
+            <div style="background:#F5F9FF;border:0.5px solid #E6F1FB;border-radius:8px;padding:8px;">
+              <div style="font-size:9px;color:#185FA5;">💸 שכ"ד חודשי</div>
+              <div style="font-size:11px;font-weight:700;color:#E24B4A;">₪25,000</div>
+            </div>
+            <div style="background:#F5F9FF;border:0.5px solid #E6F1FB;border-radius:8px;padding:8px;">
+              <div style="font-size:9px;color:#185FA5;">📅 תחילה</div>
+              <div style="font-size:11px;font-weight:700;color:#0F6E56;">01/01/2024</div>
+            </div>
+            <div style="background:#FFF3E0;border:0.5px solid #FFB74D;border-radius:8px;padding:8px;">
+              <div style="font-size:9px;color:#8A6000;">⏰ נותרו</div>
+              <div style="font-size:11px;font-weight:700;color:#8A6000;">180 ימים</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">בהוספת נכס — בחרו <span class="pointer">🔑 הארגון שוכר נכס לשימושו</span></div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">המערכת תנהל: <strong>חוזה שכירות, תשלומים חודשיים, הוצאות תפעול</strong></div>
+    </div>
+    <div class="annotation success">
+      <div class="ann-num">3</div>
+      <div class="ann-text"><strong>60 יום לפני סיום חוזה</strong> — התראה אוטומטית לחידוש או עזיבה!</div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">📋</div>
+      <div class="tip-text"><strong>שימושי לארגונים עם:</strong> משרד שכור, סניפים, מחסנים, חנויות — כל מקום שהארגון משלם שכירות עליו</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: סוג ג - בעלות לשימוש עצמי -->
+  <div class="slide" id="slide-5">
+    <div class="step-header" style="background:linear-gradient(135deg,#1B5E20,#388E3C);">
+      <div class="step-icon">🏗️</div>
+      <div class="step-num">שלב 05 מתוך 07</div>
+      <div class="step-title">ניהול נכס — בעלות לשימוש עצמי</div>
+      <div class="step-desc">הארגון בעלים ומשתמש בנכס — מפעל, מטה, נכס תפעולי</div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div style="background:white;border:1.5px solid #A5D6A7;border-radius:10px;padding:12px;margin-bottom:10px;">
+          <div style="font-size:12px;font-weight:700;color:#1B5E20;margin-bottom:8px;">🏗️ סוג יחס לנכס</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:100px;background:#F5F4FF;border:1.5px solid #B39DDB;border-radius:10px;padding:10px;text-align:center;opacity:0.5;">
+              <div style="font-size:20px;">💰</div><div style="font-size:11px;color:#888;">בעלים ומשכיר</div>
+            </div>
+            <div style="flex:1;min-width:100px;background:#F5F4FF;border:1.5px solid #B39DDB;border-radius:10px;padding:10px;text-align:center;opacity:0.5;">
+              <div style="font-size:20px;">🔑</div><div style="font-size:11px;color:#888;">הארגון שוכר</div>
+            </div>
+            <div style="flex:1;min-width:100px;background:#E8F5E9;border:2px solid #4CAF50;border-radius:10px;padding:10px;text-align:center;">
+              <div style="font-size:20px;">🏗️</div>
+              <div style="font-size:11px;font-weight:700;color:#1B5E20;">בעלות עצמית</div>
+              <div style="font-size:10px;color:#2E7D32;margin-top:2px;">לשימוש הארגון</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:#FCE4EC;border:1px solid #F48FB1;border-radius:10px;padding:10px;">
+            <div style="font-size:10px;color:#880E4F;">🔴 הוצאות שבוצעו</div>
+            <div style="font-size:16px;font-weight:700;color:#880E4F;">₪45,000</div>
+          </div>
+          <div style="background:#FFF8E1;border:1px solid #FFD54F;border-radius:10px;padding:10px;">
+            <div style="font-size:10px;color:#8A6000;">🟡 התחייבויות</div>
+            <div style="font-size:16px;font-weight:700;color:#8A6000;">₪12,000</div>
+          </div>
+        </div>
+        <div style="background:white;border:1.5px solid #A5D6A7;border-radius:10px;padding:10px;margin-top:8px;">
+          <div style="font-size:10px;color:#1B5E20;margin-bottom:6px;">📊 הוצאות עיקריות השנה</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;"><span>🔧 אחזקה שוטפת</span><span style="font-weight:700;color:#880E4F;">₪18,000</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;"><span>🏗️ שיפוץ</span><span style="font-weight:700;color:#880E4F;">₪22,000</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;"><span>🛡️ ביטוח</span><span style="font-weight:700;color:#880E4F;">₪5,000</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">בהוספת נכס — בחרו <span class="pointer">🏗️ הארגון בעלים ומשתמש בנכס</span></div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">אין הכנסות — רק <strong>הוצאות אחזקה, שיפוצים, ביטוח ומסים</strong></div>
+    </div>
+    <div class="annotation success">
+      <div class="ann-num">3</div>
+      <div class="ann-text">המערכת מציגה את <strong>עלות הנכס השנתית</strong> — לניתוח כלכלי והחלטות עסקיות</div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">📈</div>
+      <div class="tip-text"><strong>שימושי לארגונים עם:</strong> מפעלים, מחסנים בבעלות, בניין מטה — כל נכס שהארגון בעלים ומשתמש</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: נציגים -->
+  <div class="slide" id="slide-6">
+    <div class="step-header">
+      <div class="step-icon">👥</div>
+      <div class="step-num">שלב 06 מתוך 07</div>
+      <div class="step-title">ניהול נציגי הארגון</div>
+      <div class="step-desc">הוסיפו עובדים ונציגים שיוכלו לנהל נכסים בשם הארגון</div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div style="font-size:11px;font-weight:700;color:#042C53;margin-bottom:10px;">👥 נציגי הארגון</div>
+        <div style="background:white;border:1px solid #B5D4F4;border-radius:8px;padding:8px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#042C53;">ישראל ישראלי</div>
+            <div style="font-size:10px;color:#888;">ceo@company.com</div>
+          </div>
+          <span class="badge-mock" style="background:#FFF3E0;color:#8A6000;">מנהל</span>
+        </div>
+        <div style="background:white;border:1px solid #B5D4F4;border-radius:8px;padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#042C53;">שרה כהן</div>
+            <div style="font-size:10px;color:#888;">sarah@company.com</div>
+          </div>
+          <span class="badge-mock badge-blue">נציג</span>
+        </div>
+        <div style="background:#F5F4FF;border:1.5px dashed #B39DDB;border-radius:10px;padding:12px;">
+          <div style="font-size:11px;font-weight:700;color:#4527A0;margin-bottom:8px;">+ הוסף נציג</div>
+          <div class="field-row">
+            <div class="field-mock"><div class="field-label">מייל הנציג</div><div class="field-input highlighted">employee@company.com</div></div>
+            <div class="field-mock"><div class="field-label">תפקיד</div><div class="field-input filled">נציג</div></div>
+          </div>
+          <div class="btn-mock btn-purple" style="width:100%;justify-content:center;">+ הוסף נציג</div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">לכו לדשבורד הארגון ← <span class="pointer">👥 נציגים</span> ← לחצו "+ הוסף נציג"</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">הזינו מייל הנציג ובחרו תפקיד: <strong>מנהל</strong> (גישה מלאה) או <strong>נציג</strong> (גישה מוגבלת)</div>
+    </div>
+    <div class="annotation success">
+      <div class="ann-num">3</div>
+      <div class="ann-text">הנציג יירשם לאתר ויוכל <strong>לנהל נכסים בשם הארגון</strong> — עם הרשאות שהגדרתם</div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">🔐</div>
+      <div class="tip-text"><strong>טיפ:</strong> מנהל = יכול להוסיף/למחוק נכסים ונציגים | נציג = יכול לנהל נכסים קיימים בלבד</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: הוצאות כוללות -->
+  <div class="slide" id="slide-7">
+    <div class="step-header">
+      <div class="step-icon">📊</div>
+      <div class="step-num">שלב 07 מתוך 07</div>
+      <div class="step-title">תמונה כלכלית כוללת</div>
+      <div class="step-desc">ראו את כל הכנסות והוצאות הארגון — לכל הנכסים יחד</div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div style="font-size:12px;font-weight:700;color:#042C53;margin-bottom:12px;">📊 סיכום כלל נכסי הארגון</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+          <div style="background:white;border:1.5px solid #B5D4F4;border-radius:10px;padding:10px;text-align:center;">
+            <div style="font-size:9px;color:#888;">סה"כ נכסים</div>
+            <div style="font-size:20px;font-weight:700;color:#042C53;">12</div>
+          </div>
+          <div style="background:white;border:1.5px solid #B5D4F4;border-radius:10px;padding:10px;text-align:center;">
+            <div style="font-size:9px;color:#E65100;">משכירים</div>
+            <div style="font-size:20px;font-weight:700;color:#E65100;">5</div>
+          </div>
+          <div style="background:white;border:1.5px solid #B5D4F4;border-radius:10px;padding:10px;text-align:center;">
+            <div style="font-size:9px;color:#1B5E20;">בבעלות</div>
+            <div style="font-size:20px;font-weight:700;color:#1B5E20;">7</div>
+          </div>
+        </div>
+        <div style="background:white;border:1.5px solid #B5D4F4;border-radius:10px;padding:12px;">
+          <div style="font-size:11px;font-weight:700;color:#042C53;margin-bottom:8px;">💼 תמונה כלכלית שנתית</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#E1F5EE;border-radius:6px;">
+              <span style="font-size:11px;color:#0F6E56;">🟢 הכנסות ממשכירים</span>
+              <span style="font-size:13px;font-weight:700;color:#0F6E56;">₪1,280,000</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#FCE4EC;border-radius:6px;">
+              <span style="font-size:11px;color:#880E4F;">🔴 הוצאות כלל הנכסים</span>
+              <span style="font-size:13px;font-weight:700;color:#880E4F;">₪485,000</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#EDE7F6;border-radius:6px;">
+              <span style="font-size:11px;color:#4527A0;">⚫ רווח נקי</span>
+              <span style="font-size:13px;font-weight:700;color:#4527A0;">₪795,000</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <div class="btn-mock btn-purple" style="flex:1;justify-content:center;font-size:11px;">📥 ייצא CSV</div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">בטאב <span class="pointer">📊 כל הנכסים</span> — תמונה מרוכזת של כל נכסי הארגון עם סטטיסטיקות</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">ראו <strong>הכנסות vs הוצאות</strong> לכל סוג נכס — מה מרוויח ומה עולה כסף</div>
+    </div>
+    <div class="annotation success">
+      <div class="ann-num">3</div>
+      <div class="ann-text">לחצו <span class="pointer">📥 ייצא CSV</span> לפתיחה באקסל — לדיווחים ולהנהלת חשבונות</div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">📈</div>
+      <div class="tip-text"><strong>פעם בחודש:</strong> הפיקו דוח ועברו על כל הנכסים — תדעו בדיוק אילו נכסים משתלמים ואילו לא</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: סיום -->
+  <div class="slide" id="slide-8">
+    <div class="final-card">
+      <div style="font-size:56px;margin-bottom:16px;">🎉</div>
+      <div style="font-size:26px;font-weight:900;margin-bottom:10px;">כל הכבוד!</div>
+      <div style="font-size:15px;color:rgba(255,255,255,0.85);margin-bottom:24px;line-height:1.7;">סיימתם את מדריך הארגון.<br>אתם מוכנים לנהל את כל נכסי הארגון בצורה מקצועית!</div>
+    </div>
+
+    <!-- סיכום 3 סוגים -->
+    <div style="background:white;border:1.5px solid #B5D4F4;border-radius:16px;padding:20px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:#042C53;margin-bottom:14px;">🗂️ סיכום — 3 סוגי נכסים לארגון</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="background:#FFF3E0;border:1.5px solid #FFB74D;border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px;">
+          <div style="font-size:28px;">💰</div>
+          <div><div style="font-size:13px;font-weight:700;color:#E65100;">משכיר לרווח</div><div style="font-size:11px;color:#8A6000;">הארגון בעלים ומשכיר — חוזים, הכנסות, שיקים</div></div>
+        </div>
+        <div style="background:#E3F2FD;border:1.5px solid #90CAF9;border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px;">
+          <div style="font-size:28px;">🔑</div>
+          <div><div style="font-size:13px;font-weight:700;color:#0D47A1;">שוכר לשימוש עצמי</div><div style="font-size:11px;color:#1565C0;">הארגון שוכר — מעקב תשלומים והתחייבויות</div></div>
+        </div>
+        <div style="background:#E8F5E9;border:1.5px solid #A5D6A7;border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px;">
+          <div style="font-size:28px;">🏗️</div>
+          <div><div style="font-size:13px;font-weight:700;color:#1B5E20;">בעלות לשימוש עצמי</div><div style="font-size:11px;color:#2E7D32;">הארגון בעלים ומשתמש — אחזקה, שיפוצים, עלויות</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:white;border:1.5px solid #B5D4F4;border-radius:16px;padding:20px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:#042C53;margin-bottom:14px;">✅ מה עוד למדנו:</div>
+      <ul class="checklist">
+        <li>הרשמת ארגון עם פרטי חברה וח.פ</li>
+        <li>הבדל בין 3 סוגי יחסים עם נכסים</li>
+        <li>ניהול הכנסות מנכסים מושכרים</li>
+        <li>מעקב תשלומי שכירות לנכסים שכורים</li>
+        <li>ניהול הוצאות נכסים בבעלות עצמית</li>
+        <li>הוספת נציגים עם הרשאות</li>
+        <li>תמונה כלכלית כוללת וייצוא CSV</li>
+      </ul>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button onclick="window.location.href='app.html'" class="nav-btn btn-next" style="flex:1;min-width:160px;">🚀 כנס לניהול הארגון</button>
+      <button onclick="goTo(0)" class="nav-btn btn-prev" style="flex:1;min-width:160px;">🔄 צפה שוב</button>
+    </div>
+  </div>
+
+  <div class="nav-actions" id="nav-actions">
+    <button class="nav-btn btn-prev" id="btn-prev" onclick="prevSlide()" disabled>→ הקודם</button>
+    <div class="step-counter" id="step-counter">מבוא</div>
+    <button class="nav-btn btn-next" id="btn-next" onclick="nextSlide()">הבא ←</button>
+  </div>
+</div>
+
+<script>
+let current=0;const total=9;
+function goTo(n){
+  document.getElementById('slide-'+current).classList.remove('active');
+  const dots=document.querySelectorAll('.step-dot');
+  const lines=document.querySelectorAll('.progress-line');
+  dots[current].querySelector('.dot').classList.remove('active');
+  if(n>current)dots[current].querySelector('.dot').classList.add('done');
+  current=n;
+  dots[current].querySelector('.dot').classList.remove('done');
+  dots[current].querySelector('.dot').classList.add('active');
+  lines.forEach((l,i)=>l.classList.toggle('done',i<current));
+  document.getElementById('slide-'+current).classList.add('active');
+  document.getElementById('btn-prev').disabled=current===0;
+  document.getElementById('btn-next').disabled=current===total-1;
+  document.getElementById('step-counter').textContent=current===0?'מבוא':'שלב '+current+' מתוך '+(total-2);
+  document.getElementById('nav-actions').style.display=current===total-1?'none':'flex';
+  window.scrollTo({top:0,behavior:'smooth'});
+  dots[current].scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
+function nextSlide(){if(current<total-1)goTo(current+1);}
+function prevSlide(){if(current>0)goTo(current-1);}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')nextSlide();if(e.key==='ArrowRight')prevSlide();});
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50){if(d>0)nextSlide();else prevSlide();}});
+goTo(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מדריך בעל נכס — TIME.ME</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #042C53;
+  --blue: #185FA5;
+  --light: #378ADD;
+  --green: #1D9E75;
+  --orange: #FF8F00;
+  --red: #E24B4A;
+  --bg: #F0F6FF;
+  --white: #FFFFFF;
+}
+
+body {
+  font-family: 'Heebo', sans-serif;
+  background: var(--bg);
+  direction: rtl;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+.header {
+  background: var(--navy);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo { font-size: 22px; font-weight: 900; color: white; letter-spacing: 2px; }
+.logo em { color: #85B7EB; font-style: normal; }
+.back-btn {
+  background: rgba(255,255,255,0.1);
+  color: #85B7EB;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 7px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Heebo', sans-serif;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+/* PROGRESS */
+.progress-bar {
+  background: white;
+  border-bottom: 1.5px solid #B5D4F4;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.progress-bar::-webkit-scrollbar { display: none; }
+
+.step-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  min-width: 60px;
+}
+.dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #B5D4F4;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #888;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+.dot.done { background: var(--green); border-color: var(--green); color: white; }
+.dot.active { background: var(--blue); border-color: var(--blue); color: white; transform: scale(1.15); }
+.dot-label { font-size: 9px; color: #888; text-align: center; white-space: nowrap; }
+.dot.active + .dot-label, .step-dot.active .dot-label { color: var(--blue); font-weight: 700; }
+
+.progress-line {
+  height: 2px;
+  background: #E6F1FB;
+  flex: 1;
+  min-width: 20px;
+  border-radius: 2px;
+  margin-bottom: 20px;
+}
+.progress-line.done { background: var(--green); }
+
+/* MAIN */
+.main { max-width: 860px; margin: 0 auto; padding: 24px 16px; }
+
+/* SLIDE */
+.slide { display: none; }
+.slide.active { display: block; animation: fadeIn 0.4s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* STEP HEADER */
+.step-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  border-radius: 20px;
+  padding: 28px;
+  color: white;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.step-header::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  left: -30px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+.step-num {
+  font-size: 11px;
+  color: #85B7EB;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+}
+.step-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+.step-desc { font-size: 14px; color: #B5D4F4; line-height: 1.6; }
+.step-icon { font-size: 48px; position: absolute; top: 20px; left: 24px; opacity: 0.3; }
+
+/* MOCKUP */
+.mockup-container {
+  background: white;
+  border: 1.5px solid #B5D4F4;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(4,44,83,0.1);
+}
+
+.mockup-topbar {
+  background: #042C53;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mockup-logo { font-size: 13px; font-weight: 700; color: white; letter-spacing: 2px; }
+.mockup-logo em { color: #85B7EB; font-style: normal; }
+.mockup-nav {
+  background: white;
+  border-bottom: 1.5px solid #B5D4F4;
+  padding: 0 16px;
+  display: flex;
+  gap: 0;
+}
+.mockup-tab {
+  padding: 9px 14px;
+  font-size: 11px;
+  color: #888;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+.mockup-tab.active { color: #042C53; border-bottom-color: #185FA5; font-weight: 700; }
+.mockup-body { padding: 16px; background: #F5F9FF; min-height: 200px; }
+
+/* ANNOTATION */
+.annotation {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: white;
+  border: 1.5px solid #E6F1FB;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.annotation.highlight { border-color: var(--blue); background: #F0F6FF; }
+.annotation.success { border-color: var(--green); background: #F0FBF7; }
+.annotation.warning { border-color: var(--orange); background: #FFF8EE; }
+
+.ann-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.annotation.success .ann-num { background: var(--green); }
+.annotation.warning .ann-num { background: var(--orange); }
+
+.ann-text { font-size: 13px; color: #333; line-height: 1.6; }
+.ann-text strong { color: var(--navy); }
+
+/* ARROW POINTER */
+.pointer {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #FFE082;
+  border: 1.5px solid #FFB300;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #5D4037;
+  margin-right: 6px;
+}
+
+/* TIP BOX */
+.tip-box {
+  background: linear-gradient(135deg, #E1F5EE, #F0FBF7);
+  border: 1.5px solid #5DCAA5;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.tip-icon { font-size: 20px; flex-shrink: 0; }
+.tip-text { font-size: 12px; color: #0F6E56; line-height: 1.7; }
+
+/* FORM MOCKUP */
+.form-mock {
+  background: white;
+  border: 1.5px solid #B5D4F4;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.field-mock {
+  margin-bottom: 10px;
+}
+.field-label { font-size: 10px; color: #555; margin-bottom: 4px; }
+.field-input {
+  background: #F5F9FF;
+  border: 1.5px solid #B5D4F4;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #042C53;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.field-input.filled { border-color: #5DCAA5; background: #F0FBF7; color: #0F6E56; font-weight: 600; }
+.field-input.highlighted { border-color: #185FA5; background: #E6F1FB; animation: pulse 1.5s infinite; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+@keyframes pulse {
+  0%, 100% { border-color: #185FA5; box-shadow: 0 0 0 0 rgba(24,95,165,0.2); }
+  50% { border-color: #378ADD; box-shadow: 0 0 0 4px rgba(24,95,165,0.1); }
+}
+
+/* PROPERTY CARD MOCKUP */
+.prop-mock {
+  background: white;
+  border: 1.5px solid #B5D4F4;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(4,44,83,0.06);
+}
+.prop-icon-mock { width: 40px; height: 40px; background: #E6F1FB; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.prop-info-mock { flex: 1; }
+.prop-name-mock { font-size: 13px; font-weight: 700; color: #042C53; }
+.prop-sub-mock { font-size: 10px; color: #888; margin-top: 2px; }
+.badge-mock { font-size: 10px; padding: 3px 10px; border-radius: 20px; font-weight: 700; }
+.badge-green { background: #E1F5EE; color: #0F6E56; }
+.badge-yellow { background: #FFF8E1; color: #8A6000; }
+.badge-blue { background: #E6F1FB; color: #185FA5; }
+.badge-red { background: #FCE4EC; color: #880E4F; }
+
+/* HIGHLIGHT BOX */
+.highlight-box {
+  border: 2px dashed #185FA5;
+  border-radius: 8px;
+  position: relative;
+  padding: 2px;
+}
+.highlight-label {
+  position: absolute;
+  top: -12px;
+  right: 10px;
+  background: #185FA5;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* BUTTONS MOCKUP */
+.btn-mock {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: default;
+}
+.btn-primary { background: #185FA5; color: white; }
+.btn-green { background: #1D9E75; color: white; }
+.btn-orange { background: #FFF3E0; color: #8A6000; border: 1px solid #FFB74D; }
+
+/* NAVIGATION */
+.nav-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1.5px solid #E6F1FB;
+}
+.nav-btn {
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-family: 'Heebo', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+.nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-prev { background: white; color: var(--blue); border: 1.5px solid #B5D4F4; }
+.btn-prev:hover:not(:disabled) { background: #E6F1FB; }
+.btn-next { background: linear-gradient(135deg, var(--blue), var(--light)); color: white; }
+.btn-next:hover:not(:disabled) { opacity: 0.9; transform: translateX(-2px); }
+
+.step-counter { font-size: 12px; color: #888; }
+
+/* CHECKLIST */
+.checklist { list-style: none; }
+.checklist li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 0.5px solid #F0F6FF;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.5;
+}
+.checklist li::before { content: '✅'; flex-shrink: 0; }
+
+/* TABS MOCKUP */
+.tabs-mock {
+  display: flex;
+  gap: 0;
+  border-bottom: 1.5px solid #B5D4F4;
+  margin-bottom: 12px;
+  overflow-x: auto;
+}
+.tab-mock {
+  padding: 8px 12px;
+  font-size: 11px;
+  color: #888;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+.tab-mock.active { color: #042C53; border-bottom-color: #185FA5; font-weight: 700; }
+.tab-mock.highlighted { color: #185FA5; border-bottom-color: #185FA5; font-weight: 700; animation: tabPulse 1.5s infinite; }
+
+@keyframes tabPulse {
+  0%,100% { background: transparent; }
+  50% { background: #E6F1FB; }
+}
+
+/* WELCOME SLIDE */
+.welcome-card {
+  background: linear-gradient(135deg, #042C53 0%, #185FA5 60%, #378ADD 100%);
+  border-radius: 24px;
+  padding: 40px 32px;
+  text-align: center;
+  color: white;
+  margin-bottom: 20px;
+}
+.welcome-icon { font-size: 64px; margin-bottom: 16px; }
+.welcome-title { font-size: 28px; font-weight: 900; margin-bottom: 10px; }
+.welcome-sub { font-size: 15px; color: #B5D4F4; margin-bottom: 24px; line-height: 1.6; }
+.steps-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+.step-preview-item {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 12px 8px;
+  text-align: center;
+}
+.spi-num { font-size: 20px; font-weight: 900; color: #85B7EB; }
+.spi-label { font-size: 11px; color: #B5D4F4; margin-top: 4px; }
+
+/* FINAL SLIDE */
+.final-card {
+  background: linear-gradient(135deg, #0F6E56, #1D9E75);
+  border-radius: 24px;
+  padding: 40px 32px;
+  text-align: center;
+  color: white;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .step-title { font-size: 18px; }
+  .welcome-title { font-size: 22px; }
+  .main { padding: 16px 10px; }
+  .step-header { padding: 20px; }
+  .field-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">TIME<em>.</em>ME</div>
+  <a href="app.html" class="back-btn">← לאפליקציה</a>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar" id="progress-bar">
+  <div class="step-dot active" onclick="goTo(0)">
+    <div class="dot active">🏠</div>
+    <div class="dot-label">ברוכים</div>
+  </div>
+  <div class="progress-line" id="line-0"></div>
+  <div class="step-dot" onclick="goTo(1)">
+    <div class="dot">1</div>
+    <div class="dot-label">הרשמה</div>
+  </div>
+  <div class="progress-line" id="line-1"></div>
+  <div class="step-dot" onclick="goTo(2)">
+    <div class="dot">2</div>
+    <div class="dot-label">הוסף נכס</div>
+  </div>
+  <div class="progress-line" id="line-2"></div>
+  <div class="step-dot" onclick="goTo(3)">
+    <div class="dot">3</div>
+    <div class="dot-label">אימות</div>
+  </div>
+  <div class="progress-line" id="line-3"></div>
+  <div class="step-dot" onclick="goTo(4)">
+    <div class="dot">4</div>
+    <div class="dot-label">חוזה</div>
+  </div>
+  <div class="progress-line" id="line-4"></div>
+  <div class="step-dot" onclick="goTo(5)">
+    <div class="dot">5</div>
+    <div class="dot-label">הכנסות</div>
+  </div>
+  <div class="progress-line" id="line-5"></div>
+  <div class="step-dot" onclick="goTo(6)">
+    <div class="dot">6</div>
+    <div class="dot-label">הוצאות</div>
+  </div>
+  <div class="progress-line" id="line-6"></div>
+  <div class="step-dot" onclick="goTo(7)">
+    <div class="dot">7</div>
+    <div class="dot-label">ביטוח</div>
+  </div>
+  <div class="progress-line" id="line-7"></div>
+  <div class="step-dot" onclick="goTo(8)">
+    <div class="dot">8</div>
+    <div class="dot-label">שוכר</div>
+  </div>
+  <div class="progress-line" id="line-8"></div>
+  <div class="step-dot" onclick="goTo(9)">
+    <div class="dot">✓</div>
+    <div class="dot-label">סיום</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- SLIDE 0: ברוכים הבאים -->
+  <div class="slide active" id="slide-0">
+    <div class="welcome-card">
+      <div class="welcome-icon">🏠</div>
+      <div class="welcome-title">מדריך בעל נכס</div>
+      <div class="welcome-sub">ברוכים הבאים למערכת TIME.ME!<br>המדריך הזה ילמד אתכם לנהל את הנכסים שלכם בצורה חכמה ופשוטה</div>
+      <div class="steps-preview">
+        <div class="step-preview-item"><div class="spi-num">01</div><div class="spi-label">הרשמה לאתר</div></div>
+        <div class="step-preview-item"><div class="spi-num">02</div><div class="spi-label">הוספת נכס</div></div>
+        <div class="step-preview-item"><div class="spi-num">03</div><div class="spi-label">אימות בעלות</div></div>
+        <div class="step-preview-item"><div class="spi-num">04</div><div class="spi-label">הכנסת חוזה</div></div>
+        <div class="step-preview-item"><div class="spi-num">05</div><div class="spi-label">מעקב הכנסות</div></div>
+        <div class="step-preview-item"><div class="spi-num">06</div><div class="spi-label">רישום הוצאות</div></div>
+        <div class="step-preview-item"><div class="spi-num">07</div><div class="spi-label">ניהול ביטוח</div></div>
+        <div class="step-preview-item"><div class="spi-num">08</div><div class="spi-label">הזמנת שוכר</div></div>
+      </div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">⏱️</div>
+      <div class="tip-text"><strong>זמן קריאה: כ-5 דקות</strong><br>לחצו על "הבא" כדי להתחיל, או לחצו על כל שלב בסרגל למעלה כדי לקפוץ ישירות</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 1: הרשמה -->
+  <div class="slide" id="slide-1">
+    <div class="step-header">
+      <div class="step-icon">👤</div>
+      <div class="step-num">שלב 01 מתוך 08</div>
+      <div class="step-title">הרשמה למערכת</div>
+      <div class="step-desc">צור חשבון חינמי כבעל נכס ותתחיל לנהל את הנכסים שלך</div>
+    </div>
+
+    <div class="mockup-container">
+      <div class="mockup-topbar">
+        <div class="mockup-logo">TIME<em>.</em>ME</div>
+        <span style="font-size:11px;color:#85B7EB;">מערכת ניהול נכסים</span>
+      </div>
+      <div class="mockup-body" style="display:flex;justify-content:center;">
+        <div style="width:100%;max-width:320px;">
+          <div style="text-align:center;margin-bottom:16px;">
+            <div style="font-size:28px;margin-bottom:6px;">🏠</div>
+            <div style="font-size:18px;font-weight:700;color:#042C53;">TIME.ME</div>
+          </div>
+          <div style="display:flex;border:1.5px solid #B5D4F4;border-radius:10px;overflow:hidden;margin-bottom:12px;">
+            <div style="flex:1;padding:8px;text-align:center;font-size:12px;background:#E6F1FB;color:#888;">כניסה</div>
+            <div class="highlight-box" style="flex:1;position:relative;">
+              <div class="highlight-label">לחצו כאן</div>
+              <div style="padding:8px;text-align:center;font-size:12px;background:#185FA5;color:white;font-weight:700;">הרשמה</div>
+            </div>
+          </div>
+          <div style="display:flex;border:1.5px solid #B5D4F4;border-radius:10px;overflow:hidden;margin-bottom:12px;">
+            <div class="highlight-box" style="flex:1;position:relative;">
+              <div class="highlight-label">בחרו</div>
+              <div style="padding:8px;text-align:center;font-size:11px;background:#185FA5;color:white;font-weight:700;">🏠 בעל נכס</div>
+            </div>
+            <div style="flex:1;padding:8px;text-align:center;font-size:11px;color:#888;">🔑 שוכר</div>
+            <div style="flex:1;padding:8px;text-align:center;font-size:11px;color:#888;">🏢 ארגון</div>
+          </div>
+          <div class="field-mock">
+            <div class="field-label">שם מלא</div>
+            <div class="field-input filled">ישראל ישראלי</div>
+          </div>
+          <div class="field-mock">
+            <div class="field-label">כתובת מייל</div>
+            <div class="field-input filled">israel@email.com</div>
+          </div>
+          <div class="field-mock">
+            <div class="field-label">סיסמה</div>
+            <div class="field-input">••••••••</div>
+          </div>
+          <div class="btn-mock btn-primary" style="width:100%;justify-content:center;margin-top:8px;">הרשמה למערכת</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">לחצו על <span class="pointer">הרשמה</span> בלשונית העליונה</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">בחרו תפקיד <span class="pointer">🏠 בעל נכס</span> — חשוב לבחור נכון!</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">3</div>
+      <div class="ann-text">מלאו <strong>שם מלא, מייל וסיסמה</strong> ולחצו "הרשמה למערכת"</div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">💡</div>
+      <div class="tip-text"><strong>טיפ:</strong> השתמשו במייל שאתם בודקים בקביעות — התראות חשובות ישלחו לשם</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: הוספת נכס -->
+  <div class="slide" id="slide-2">
+    <div class="step-header">
+      <div class="step-icon">🏠</div>
+      <div class="step-num">שלב 02 מתוך 08</div>
+      <div class="step-title">הוספת נכס חדש</div>
+      <div class="step-desc">הוסיפו את הנכס שלכם עם כל הפרטים — הכתובת היא "תעודת הזהות" של הנכס</div>
+    </div>
+
+    <div class="mockup-container">
+      <div class="mockup-topbar">
+        <div class="mockup-logo">TIME<em>.</em>ME</div>
+      </div>
+      <div class="mockup-nav">
+        <div class="mockup-tab active">🏠 הנכסים שלי</div>
+        <div class="mockup-tab" style="color:#185FA5;font-weight:700;">➕ הוסף נכס</div>
+        <div class="mockup-tab">📋 חוזה</div>
+      </div>
+      <div class="mockup-body">
+        <div style="font-size:13px;font-weight:700;color:#042C53;margin-bottom:12px;">הוספת נכס חדש</div>
+        <div class="form-mock">
+          <div class="field-row">
+            <div class="field-mock">
+              <div class="field-label">עיר / ישוב *</div>
+              <div class="field-input highlighted">הרצליה</div>
+            </div>
+            <div class="field-mock">
+              <div class="field-label">רחוב *</div>
+              <div class="field-input highlighted">סוקולוב</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-mock">
+              <div class="field-label">מספר בית *</div>
+              <div class="field-input filled">77</div>
+            </div>
+            <div class="field-mock">
+              <div class="field-label">מספר יחידה</div>
+              <div class="field-input filled">17</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-mock">
+              <div class="field-label">סוג נכס *</div>
+              <div class="field-input filled">🏠 דירה</div>
+            </div>
+            <div class="field-mock">
+              <div class="field-label">סטטוס *</div>
+              <div class="field-input filled">מושכר</div>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-mock">
+              <div class="field-label">מחיר שכירות (₪/חודש)</div>
+              <div class="field-input filled">8,500</div>
+            </div>
+            <div class="field-mock">
+              <div class="field-label">מחיר מכירה (₪)</div>
+              <div class="field-input">2,500,000</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">לחצו על <span class="pointer">➕ הוסף נכס</span> בסרגל הניווט העליון</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">הקלידו <strong>עיר</strong> — המערכת תציע אוטומטית. לאחר בחירת עיר, הרחובות ייטענו אוטומטית!</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">3</div>
+      <div class="ann-text">בחרו <strong>סוג נכס</strong> (דירה, משרד, חנות וכו') ו<strong>סטטוס</strong> (פנוי / מושכר / שימוש אישי)</div>
+    </div>
+    <div class="annotation success">
+      <div class="ann-num">4</div>
+      <div class="ann-text">הזינו <strong>מחיר שכירות מבוקש</strong> — יופיע בלוח הנכסים הפומבי</div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">⚠️</div>
+      <div class="tip-text"><strong>חשוב:</strong> הכתובת היא תעודת הזהות של הנכס — הזינו אותה בדיוק רב. שגיאות כתיב יוצרות כפילויות!</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: אימות בעלות -->
+  <div class="slide" id="slide-3">
+    <div class="step-header">
+      <div class="step-icon">🔐</div>
+      <div class="step-num">שלב 03 מתוך 08</div>
+      <div class="step-title">אימות בעלות על הנכס</div>
+      <div class="step-desc">אמתו את הבעלות כדי לפרסם למכירה ולקבל אמינות מרבית בלוח</div>
+    </div>
+
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div class="prop-mock">
+          <div class="prop-icon-mock">🏠</div>
+          <div class="prop-info-mock">
+            <div class="prop-name-mock">סוקולוב 77, דירה 17 — הרצליה</div>
+            <div class="prop-sub-mock">דירה | קומה 4</div>
+            <div style="margin-top:4px;">
+              <span class="badge-mock badge-yellow">🟡 ממתין לאימות</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <span class="badge-mock badge-blue">מושכר</span>
+            <div class="highlight-box" style="position:relative;">
+              <div class="highlight-label">לחצו</div>
+              <div class="btn-mock btn-green" style="font-size:11px;padding:6px 12px;">✅ אמת</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#FFF3E0;border:1.5px solid #FFB74D;border-radius:12px;padding:14px;margin-top:12px;">
+          <div style="font-size:12px;font-weight:700;color:#8A6000;margin-bottom:10px;">🔐 אימות בעלות</div>
+          <div class="field-mock">
+            <div class="field-label">📄 מסמך בעלות (שטר מכר / נסח טאבו)</div>
+            <div class="field-input highlighted">בחר קובץ PDF...</div>
+          </div>
+          <div class="field-mock">
+            <div class="field-label">🪪 צילום ת.ז של הבעלים</div>
+            <div class="field-input">בחר תמונה...</div>
+          </div>
+          <div class="btn-mock btn-orange" style="width:100%;justify-content:center;">📤 העלה מסמכים לאימות</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation warning">
+      <div class="ann-num">1</div>
+      <div class="ann-text">לחצו על כפתור <span class="pointer">✅ אמת</span> ליד הנכס ברשימה — או פתחו את הנכס ועברו לטאב "חוזה"</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">העלו <strong>נסח טאבו</strong> או <strong>שטר מכר</strong> בפורמט PDF / תמונה</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">3</div>
+      <div class="ann-text">העלו <strong>צילום ת.ז</strong> — המנהל יאשר תוך 24 שעות</div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <div style="flex:1;text-align:center;background:#FCE4EC;border-radius:10px;padding:12px;">
+        <div style="font-size:22px;">🔴</div>
+        <div style="font-size:11px;font-weight:700;color:#880E4F;margin-top:4px;">לא הוגש</div>
+      </div>
+      <div style="flex:1;text-align:center;background:#FFF3E0;border-radius:10px;padding:12px;">
+        <div style="font-size:22px;">🟡</div>
+        <div style="font-size:11px;font-weight:700;color:#8A6000;margin-top:4px;">ממתין לאישור</div>
+      </div>
+      <div style="flex:1;text-align:center;background:#E1F5EE;border-radius:10px;padding:12px;">
+        <div style="font-size:22px;">🟢</div>
+        <div style="font-size:11px;font-weight:700;color:#0F6E56;margin-top:4px;">מאומת!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: חוזה -->
+  <div class="slide" id="slide-4">
+    <div class="step-header">
+      <div class="step-icon">📄</div>
+      <div class="step-num">שלב 04 מתוך 08</div>
+      <div class="step-title">הכנסת פרטי שכירות</div>
+      <div class="step-desc">הזינו פרטי שכירות קיימת או צרו חוזה חדש — הכל במקום אחד</div>
+    </div>
+
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div class="tabs-mock">
+          <div class="tab-mock">📋 פרטים</div>
+          <div class="tab-mock">📣 שיווק</div>
+          <div class="tab-mock highlighted">📄 חוזה</div>
+          <div class="tab-mock">💰 הכנסות</div>
+          <div class="tab-mock">📊 הוצאות</div>
+          <div class="tab-mock">🛡️ ביטוח</div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+          <div class="btn-mock btn-primary" style="font-size:11px;">+ צור חוזה PDF</div>
+          <div class="highlight-box" style="position:relative;">
+            <div class="highlight-label">לשכירות קיימת</div>
+            <div class="btn-mock" style="background:#E1F5EE;color:#0F6E56;border:1px solid #5DCAA5;font-size:11px;">📋 הכנס פרטי שכירות קיימת</div>
+          </div>
+        </div>
+
+        <div style="background:#F0FBF7;border:1.5px solid #5DCAA5;border-radius:10px;padding:12px;">
+          <div style="font-size:11px;font-weight:700;color:#0F6E56;margin-bottom:10px;">📋 פרטי שכירות קיימת</div>
+          <div class="field-row">
+            <div class="field-mock"><div class="field-label">תאריך התחלה</div><div class="field-input filled">01/01/2024</div></div>
+            <div class="field-mock"><div class="field-label">תאריך סיום</div><div class="field-input filled">31/12/2024</div></div>
+          </div>
+          <div class="field-row">
+            <div class="field-mock"><div class="field-label">שכ"ד חודשי (₪)</div><div class="field-input filled">8,500</div></div>
+            <div class="field-mock"><div class="field-label">יש אופציה?</div><div class="field-input filled">כן</div></div>
+          </div>
+          <div class="field-row">
+            <div class="field-mock"><div class="field-label">שם שוכר</div><div class="field-input filled">ישראל ישראלי</div></div>
+            <div class="field-mock"><div class="field-label">טלפון שוכר</div><div class="field-input filled">050-1234567</div></div>
+          </div>
+          <div class="btn-mock btn-green" style="width:100%;justify-content:center;margin-top:6px;">💾 שמור פרטים</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">לחצו על הנכס ברשימה לפתיחת הפרטים, ועברו לטאב <span class="pointer">📄 חוזה</span></div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">יש לכם שכירות קיימת? לחצו <span class="pointer">📋 הכנס פרטי שכירות קיימת</span> — טופס קצר וקל!</div>
+    </div>
+    <div class="annotation success">
+      <div class="ann-num">3</div>
+      <div class="ann-text">רוצים לייצר <strong>חוזה PDF מקצועי</strong> חדש? לחצו "+ צור חוזה PDF" ומלאו את כל הפרטים</div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">📎</div>
+      <div class="tip-text"><strong>טיפ:</strong> ניתן גם להעלות קובץ חוזה קיים (PDF/Word) — הוא יישמר במערכת לצפייה בכל עת</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: הכנסות -->
+  <div class="slide" id="slide-5">
+    <div class="step-header">
+      <div class="step-icon">💰</div>
+      <div class="step-num">שלב 05 מתוך 08</div>
+      <div class="step-title">מעקב הכנסות</div>
+      <div class="step-desc">עקבו אחרי כל תשלום — מי שילם, מתי, וכמה נשאר</div>
+    </div>
+
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div class="tabs-mock">
+          <div class="tab-mock">📋 פרטים</div>
+          <div class="tab-mock">📄 חוזה</div>
+          <div class="tab-mock highlighted">💰 הכנסות</div>
+          <div class="tab-mock">📊 הוצאות</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;">
+          <div style="background:#E1F5EE;border-radius:8px;padding:8px;text-align:center;">
+            <div style="font-size:9px;color:#0F6E56;">שולם</div>
+            <div style="font-size:18px;font-weight:700;color:#0F6E56;">8</div>
+          </div>
+          <div style="background:#FFF8E1;border-radius:8px;padding:8px;text-align:center;">
+            <div style="font-size:9px;color:#8A6000;">ממתין</div>
+            <div style="font-size:18px;font-weight:700;color:#8A6000;">3</div>
+          </div>
+          <div style="background:#FCE4EC;border-radius:8px;padding:8px;text-align:center;">
+            <div style="font-size:9px;color:#880E4F;">פיגור</div>
+            <div style="font-size:18px;font-weight:700;color:#880E4F;">1</div>
+          </div>
+          <div style="background:#E6F1FB;border-radius:8px;padding:8px;text-align:center;">
+            <div style="font-size:9px;color:#185FA5;">סה"כ</div>
+            <div style="font-size:12px;font-weight:700;color:#185FA5;">68,000₪</div>
+          </div>
+        </div>
+
+        <div style="background:white;border:1px solid #E6F1FB;border-radius:8px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:30px 1fr 1fr 1fr auto;gap:6px;padding:6px 8px;background:#E6F1FB;font-size:10px;color:#185FA5;font-weight:700;">
+            <div>#</div><div>תאריך</div><div>סכום</div><div>סטטוס</div><div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:30px 1fr 1fr 1fr auto;gap:6px;padding:8px;font-size:11px;border-bottom:0.5px solid #F0F6FF;align-items:center;">
+            <div>1</div><div>01/01/24</div><div>8,500₪</div>
+            <div><span class="badge-mock badge-green" style="font-size:9px;padding:2px 6px;">✅ שולם</span></div>
+            <div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:30px 1fr 1fr 1fr auto;gap:6px;padding:8px;font-size:11px;border-bottom:0.5px solid #F0F6FF;align-items:center;">
+            <div>2</div><div>01/02/24</div><div>8,500₪</div>
+            <div><span class="badge-mock badge-green" style="font-size:9px;padding:2px 6px;">✅ שולם</span></div>
+            <div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:30px 1fr 1fr 1fr auto;gap:6px;padding:8px;font-size:11px;align-items:center;background:#FFF8E1;">
+            <div>3</div><div>01/03/24</div><div>8,500₪</div>
+            <div><span class="badge-mock badge-yellow" style="font-size:9px;padding:2px 6px;">⏳ ממתין</span></div>
+            <div class="btn-mock btn-green" style="font-size:9px;padding:4px 8px;">✅</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">עברו לטאב <span class="pointer">💰 הכנסות</span> בתוך הנכס לראות את כל התשלומים</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">לחצו <span class="pointer">🔄 הכנסה חוזרת</span> ליצירת 12 שיקים אוטומטית לפי החוזה</div>
+    </div>
+    <div class="annotation success">
+      <div class="ann-num">3</div>
+      <div class="ann-text">כשתשלום התקבל — לחצו <span class="pointer">✅</span> לסימון כ"שולם" — נכנס להכנסות אוטומטית</div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">🔔</div>
+      <div class="tip-text"><strong>התראה אוטומטית:</strong> אם שיק לא סומן כ"שולם" עד התאריך — תקבלו התראה בפעמון 🔔</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: הוצאות -->
+  <div class="slide" id="slide-6">
+    <div class="step-header">
+      <div class="step-icon">📊</div>
+      <div class="step-num">שלב 06 מתוך 08</div>
+      <div class="step-title">רישום הוצאות</div>
+      <div class="step-desc">רשמו כל הוצאה — אחזקה, משכנתא, ארנונה ועוד — וראו את הרווח הנקי</div>
+    </div>
+
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div class="tabs-mock">
+          <div class="tab-mock highlighted">📊 הוצאות</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+          <div style="background:#E1F5EE;border:1.5px solid #5DCAA5;border-radius:10px;padding:10px;">
+            <div style="font-size:9px;color:#0F6E56;font-weight:700;">🟢 הכנסה קיימת</div>
+            <div style="font-size:16px;font-weight:700;color:#0F6E56;">₪68,000</div>
+          </div>
+          <div style="background:#E3F2FD;border:1.5px solid #90CAF9;border-radius:10px;padding:10px;">
+            <div style="font-size:9px;color:#1565C0;font-weight:700;">🔵 הכנסה עתידית</div>
+            <div style="font-size:16px;font-weight:700;color:#1565C0;">₪25,500</div>
+          </div>
+          <div style="background:#FCE4EC;border:1.5px solid #F48FB1;border-radius:10px;padding:10px;">
+            <div style="font-size:9px;color:#880E4F;font-weight:700;">🔴 הוצאה שבוצעה</div>
+            <div style="font-size:16px;font-weight:700;color:#880E4F;">₪12,400</div>
+          </div>
+          <div style="background:#FFF8E1;border:1.5px solid #FFD54F;border-radius:10px;padding:10px;">
+            <div style="font-size:9px;color:#8A6000;font-weight:700;">🟡 התחייבות</div>
+            <div style="font-size:16px;font-weight:700;color:#8A6000;">₪3,200</div>
+          </div>
+          <div style="background:#EDE7F6;border:1.5px solid #B39DDB;border-radius:10px;padding:10px;grid-column:1/-1;">
+            <div style="font-size:9px;color:#4527A0;font-weight:700;">⚫ רווח נקי</div>
+            <div style="font-size:20px;font-weight:700;color:#4527A0;">₪55,600</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+          <div class="btn-mock btn-primary" style="justify-content:center;font-size:11px;">+ הוסף הוצאה</div>
+          <div class="btn-mock" style="background:#FCE4EC;color:#880E4F;border:1px solid #F48FB1;justify-content:center;font-size:11px;">🔄 הוצאה חוזרת</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text"><strong>5 קופסאות</strong> מציגות תמונה כלכלית מלאה — הכנסות, הוצאות ורווח נקי בפועל</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">לחצו <span class="pointer">+ הוסף הוצאה</span> לרישום: אחזקה, שיפוץ, משכנתא, ארנונה ועוד</div>
+    </div>
+    <div class="annotation success">
+      <div class="ann-num">3</div>
+      <div class="ann-text">לחצו <span class="pointer">🔄 הוצאה חוזרת</span> למשכנתא/ועד בית — נוצרים 12 תשלומים אוטומטי!</div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">📋</div>
+      <div class="tip-text"><strong>קטגוריות הוצאה:</strong> 🔧 אחזקה | 🏗️ שיפוץ | 🏦 משכנתא | 💳 הלוואה | 🛡️ ביטוח | 🏛️ ארנונה | 🏢 ועד בית | ⚖️ עו"ד</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: ביטוח -->
+  <div class="slide" id="slide-7">
+    <div class="step-header">
+      <div class="step-icon">🛡️</div>
+      <div class="step-num">שלב 07 מתוך 08</div>
+      <div class="step-title">ניהול ביטוח</div>
+      <div class="step-desc">הוסיפו פוליסת ביטוח — המערכת תתריע שבוע לפני שתפוג</div>
+    </div>
+
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div class="tabs-mock">
+          <div class="tab-mock highlighted">🛡️ ביטוח</div>
+        </div>
+        <div style="background:#E1F5EE;border:1px solid #5DCAA5;border-radius:10px;padding:10px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#0F6E56;">✅ הביטוח תקף</div>
+            <div style="font-size:10px;color:#1D9E75;">נותרו 180 ימים לתוקף</div>
+          </div>
+          <div style="font-size:22px;">🛡️</div>
+        </div>
+        <div style="background:white;border:1.5px solid #B5D4F4;border-radius:10px;padding:12px;margin-bottom:10px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div class="info-row-pd" style="background:#F5F9FF;border:0.5px solid #E6F1FB;border-radius:8px;padding:8px;">
+              <div style="font-size:9px;color:#185FA5;">חברת ביטוח</div>
+              <div style="font-size:12px;font-weight:700;color:#042C53;">מנורה מבטחים</div>
+            </div>
+            <div style="background:#F5F9FF;border:0.5px solid #E6F1FB;border-radius:8px;padding:8px;">
+              <div style="font-size:9px;color:#185FA5;">סוג ביטוח</div>
+              <div style="font-size:12px;font-weight:700;color:#042C53;">🏗️ ביטוח מבנה</div>
+            </div>
+            <div style="background:#F5F9FF;border:0.5px solid #E6F1FB;border-radius:8px;padding:8px;">
+              <div style="font-size:9px;color:#185FA5;">פרמיה שנתית</div>
+              <div style="font-size:12px;font-weight:700;color:#042C53;">₪2,400</div>
+            </div>
+            <div style="background:#F5F9FF;border:0.5px solid #E6F1FB;border-radius:8px;padding:8px;">
+              <div style="font-size:9px;color:#185FA5;">תוקף עד</div>
+              <div style="font-size:12px;font-weight:700;color:#042C53;">31/12/2024</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">עברו לטאב <span class="pointer">🛡️ ביטוח</span> — אם אין ביטוח תראו אזהרה כתומה</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">הוסיפו: <strong>חברת ביטוח, סוג פוליסה, תאריכים ופרמיה שנתית</strong></div>
+    </div>
+    <div class="annotation success">
+      <div class="ann-num">3</div>
+      <div class="ann-text">הפרמיה נכנסת <strong>אוטומטית להוצאות</strong> — לא צריך להזין פעמיים! 🎉</div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">🔔</div>
+      <div class="tip-text"><strong>התראה אוטומטית:</strong> 30 ימים לפני פקיעת הפוליסה — תקבלו התראה בפעמון 🔔 ובמייל</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: הזמנת שוכר -->
+  <div class="slide" id="slide-8">
+    <div class="step-header">
+      <div class="step-icon">🔑</div>
+      <div class="step-num">שלב 08 מתוך 08</div>
+      <div class="step-title">הזמנת שוכר למערכת</div>
+      <div class="step-desc">הזמינו את השוכר שלכם — הוא יוכל לראות את פרטי החוזה, התשלומים ולשלוח פניות</div>
+    </div>
+
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div class="tabs-mock">
+          <div class="tab-mock highlighted">📋 פרטים</div>
+        </div>
+        <div style="background:#E8F5E9;border:1.5px solid #1D9E75;border-radius:10px;padding:12px;margin-bottom:10px;">
+          <div style="font-size:11px;font-weight:700;color:#0F6E56;margin-bottom:10px;">🔑 הזמנת שוכר</div>
+          <div class="field-row">
+            <div class="field-mock">
+              <div class="field-label">שם השוכר *</div>
+              <div class="field-input highlighted">ישראל ישראלי</div>
+            </div>
+            <div class="field-mock">
+              <div class="field-label">מייל *</div>
+              <div class="field-input highlighted">tenant@email.com</div>
+            </div>
+          </div>
+          <div class="field-mock">
+            <div class="field-label">טלפון</div>
+            <div class="field-input">050-1234567</div>
+          </div>
+          <div class="btn-mock btn-green" style="width:100%;justify-content:center;">📨 שלח הזמנה</div>
+        </div>
+
+        <div style="background:white;border:1.5px solid #5DCAA5;border-radius:10px;padding:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:#042C53;">🟢 ישראל ישראלי</div>
+              <div style="font-size:10px;color:#888;">tenant@email.com | סטטוס: פעיל</div>
+            </div>
+            <span class="badge-mock badge-green">מקושר</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">פתחו את הנכס ← טאב <span class="pointer">📋 פרטים</span> ← גללו למטה ל"הזמנת שוכר"</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">הזינו <strong>שם, מייל וטלפון</strong> של השוכר ולחצו "📨 שלח הזמנה"</div>
+    </div>
+    <div class="annotation success">
+      <div class="ann-num">3</div>
+      <div class="ann-text">השוכר יקבל קישור, יירשם ויהיה <strong>מקושר לנכס שלכם</strong> — יוכל לראות חוזה ותשלומים</div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">📱</div>
+      <div class="tip-text"><strong>לאחר קישור:</strong> השוכר יוכל לשלוח פניות, לראות תשלומים ולנהל הוצאות דירה — הכל בצד שלו!</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: סיום -->
+  <div class="slide" id="slide-9">
+    <div class="final-card">
+      <div style="font-size:56px;margin-bottom:16px;">🎉</div>
+      <div style="font-size:26px;font-weight:900;margin-bottom:10px;">כל הכבוד!</div>
+      <div style="font-size:15px;color:rgba(255,255,255,0.85);margin-bottom:24px;line-height:1.7;">סיימתם את מדריך בעל הנכס.<br>אתם מוכנים לנהל את הנכסים שלכם בצורה מקצועית!</div>
+    </div>
+
+    <div style="background:white;border:1.5px solid #B5D4F4;border-radius:16px;padding:20px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:#042C53;margin-bottom:14px;">✅ סיכום — מה למדנו:</div>
+      <ul class="checklist">
+        <li>הרשמה כבעל נכס ובחירת תפקיד נכון</li>
+        <li>הוספת נכס עם כתובת מדויקת</li>
+        <li>אימות בעלות להגדלת אמינות</li>
+        <li>הכנסת פרטי שכירות קיימת או יצירת חוזה PDF</li>
+        <li>מעקב הכנסות וסימון תשלומים</li>
+        <li>רישום הוצאות ומחזוריות</li>
+        <li>ניהול ביטוח עם פרמיה אוטומטית</li>
+        <li>הזמנת שוכר לקישור</li>
+      </ul>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button onclick="window.location.href='app.html'" class="nav-btn btn-next" style="flex:1;min-width:160px;">🚀 התחל לנהל נכסים</button>
+      <button onclick="goTo(0)" class="nav-btn btn-prev" style="flex:1;min-width:160px;">🔄 צפה שוב במדריך</button>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <div class="nav-actions" id="nav-actions">
+    <button class="nav-btn btn-prev" id="btn-prev" onclick="prevSlide()" disabled>→ הקודם</button>
+    <div class="step-counter" id="step-counter">שלב 1 מתוך 10</div>
+    <button class="nav-btn btn-next" id="btn-next" onclick="nextSlide()">הבא ←</button>
+  </div>
+
+</div>
+
+<script>
+let current = 0;
+const total = 10;
+
+function goTo(n) {
+  document.getElementById('slide-'+current).classList.remove('active');
+  
+  // Update progress dots
+  const dots = document.querySelectorAll('.step-dot');
+  const lines = document.querySelectorAll('.progress-line');
+  
+  dots[current].querySelector('.dot').classList.remove('active');
+  if(n > current) dots[current].querySelector('.dot').classList.add('done');
+  
+  current = n;
+  
+  dots[current].querySelector('.dot').classList.remove('done');
+  dots[current].querySelector('.dot').classList.add('active');
+  
+  // Update lines
+  lines.forEach((line, i) => {
+    line.classList.toggle('done', i < current);
+  });
+  
+  document.getElementById('slide-'+current).classList.add('active');
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').disabled = current === total - 1;
+  document.getElementById('step-counter').textContent = current === 0 ? 'מבוא' : 'שלב '+current+' מתוך '+(total-2);
+  
+  // Hide nav on last slide
+  document.getElementById('nav-actions').style.display = current === total-1 ? 'none' : 'flex';
+  
+  // Scroll to top
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  
+  // Scroll dot into view
+  dots[current].scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'center'});
+}
+
+function nextSlide() { if(current < total-1) goTo(current+1); }
+function prevSlide() { if(current > 0) goTo(current-1); }
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if(e.key === 'ArrowLeft') nextSlide();
+  if(e.key === 'ArrowRight') prevSlide();
+});
+
+// Touch swipe
+let touchStartX = 0;
+document.addEventListener('touchstart', e => touchStartX = e.touches[0].clientX);
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if(Math.abs(diff) > 50) {
+    if(diff > 0) nextSlide();
+    else prevSlide();
+  }
+});
+
+// Init
+goTo(0);
+</script>
+</body>
+</html>

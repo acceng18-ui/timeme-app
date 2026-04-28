@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מדריך שוכר — TIME.ME</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --navy:#042C53; --blue:#185FA5; --light:#378ADD; --green:#1D9E75; --orange:#FF8F00; --red:#E24B4A; --purple:#534AB7; --bg:#F0F6FF; }
+body { font-family:'Heebo',sans-serif; background:var(--bg); direction:rtl; min-height:100vh; overflow-x:hidden; }
+.header { background:var(--green); padding:14px 24px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+.logo { font-size:22px; font-weight:900; color:white; letter-spacing:2px; }
+.logo em { color:#A8EDCF; font-style:normal; }
+.back-btn { background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.3); padding:7px 16px; border-radius:8px; cursor:pointer; font-family:'Heebo',sans-serif; font-size:13px; text-decoration:none; }
+.progress-bar { background:white; border-bottom:1.5px solid #B5D4F4; padding:12px 24px; display:flex; align-items:center; gap:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.progress-bar::-webkit-scrollbar { display:none; }
+.step-dot { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; min-width:55px; }
+.dot { width:32px; height:32px; border-radius:50%; border:2px solid #B5D4F4; background:white; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#888; transition:all 0.3s; flex-shrink:0; }
+.dot.done { background:var(--green); border-color:var(--green); color:white; }
+.dot.active { background:var(--green); border-color:var(--green); color:white; transform:scale(1.15); }
+.dot-label { font-size:9px; color:#888; text-align:center; white-space:nowrap; }
+.progress-line { height:2px; background:#E6F1FB; flex:1; min-width:16px; border-radius:2px; margin-bottom:20px; }
+.progress-line.done { background:var(--green); }
+.main { max-width:860px; margin:0 auto; padding:24px 16px; }
+.slide { display:none; }
+.slide.active { display:block; animation:fadeIn 0.4s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.step-header { background:linear-gradient(135deg,#0F6E56 0%,#1D9E75 100%); border-radius:20px; padding:28px; color:white; margin-bottom:20px; position:relative; overflow:hidden; }
+.step-header::before { content:''; position:absolute; top:-30px; left:-30px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,0.05); }
+.step-num { font-size:11px; color:#A8EDCF; font-weight:700; margin-bottom:8px; letter-spacing:2px; }
+.step-title { font-size:24px; font-weight:800; margin-bottom:8px; }
+.step-desc { font-size:14px; color:#A8EDCF; line-height:1.6; }
+.step-icon { font-size:48px; position:absolute; top:20px; left:24px; opacity:0.3; }
+.mockup-container { background:white; border:1.5px solid #B5D4F4; border-radius:16px; overflow:hidden; margin-bottom:20px; box-shadow:0 4px 20px rgba(4,44,83,0.1); }
+.mockup-topbar { background:#042C53; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; }
+.mockup-logo { font-size:13px; font-weight:700; color:white; letter-spacing:2px; }
+.mockup-logo em { color:#85B7EB; font-style:normal; }
+.mockup-nav { background:white; border-bottom:1.5px solid #B5D4F4; padding:0 16px; display:flex; gap:0; }
+.mockup-tab { padding:9px 14px; font-size:11px; color:#888; border-bottom:2px solid transparent; white-space:nowrap; }
+.mockup-tab.active { color:#042C53; border-bottom-color:#185FA5; font-weight:700; }
+.mockup-body { padding:16px; background:#F5F9FF; min-height:180px; }
+.annotation { display:flex; gap:12px; align-items:flex-start; background:white; border:1.5px solid #E6F1FB; border-radius:12px; padding:14px; margin-bottom:10px; }
+.annotation.highlight { border-color:var(--green); background:#F0FBF7; }
+.annotation.warning { border-color:var(--orange); background:#FFF8EE; }
+.ann-num { width:28px; height:28px; border-radius:50%; background:var(--green); color:white; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.annotation.warning .ann-num { background:var(--orange); }
+.ann-text { font-size:13px; color:#333; line-height:1.6; }
+.ann-text strong { color:var(--navy); }
+.pointer { display:inline-flex; align-items:center; gap:4px; background:#FFE082; border:1.5px solid #FFB300; border-radius:6px; padding:2px 8px; font-size:11px; font-weight:700; color:#5D4037; margin-right:4px; }
+.tip-box { background:linear-gradient(135deg,#E1F5EE,#F0FBF7); border:1.5px solid #5DCAA5; border-radius:12px; padding:14px 16px; margin-bottom:16px; display:flex; gap:10px; align-items:flex-start; }
+.tip-icon { font-size:20px; flex-shrink:0; }
+.tip-text { font-size:12px; color:#0F6E56; line-height:1.7; }
+.field-mock { margin-bottom:10px; }
+.field-label { font-size:10px; color:#555; margin-bottom:4px; }
+.field-input { background:#F5F9FF; border:1.5px solid #B5D4F4; border-radius:8px; padding:8px 12px; font-size:12px; color:#042C53; width:100%; display:flex; align-items:center; }
+.field-input.filled { border-color:#5DCAA5; background:#F0FBF7; color:#0F6E56; font-weight:600; }
+.field-input.highlighted { border-color:#1D9E75; background:#E1F5EE; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.badge-mock { font-size:10px; padding:3px 10px; border-radius:20px; font-weight:700; }
+.badge-green { background:#E1F5EE; color:#0F6E56; }
+.badge-yellow { background:#FFF8E1; color:#8A6000; }
+.badge-orange { background:#FFF3E0; color:#8A6000; }
+.badge-blue { background:#E6F1FB; color:#185FA5; }
+.btn-mock { display:inline-flex; align-items:center; gap:4px; padding:8px 16px; border-radius:8px; font-size:12px; font-weight:700; cursor:default; }
+.btn-green { background:#1D9E75; color:white; }
+.btn-primary { background:#185FA5; color:white; }
+.btn-orange { background:#FF8F00; color:white; }
+.nav-actions { display:flex; justify-content:space-between; align-items:center; margin-top:24px; padding-top:16px; border-top:1.5px solid #E6F1FB; }
+.nav-btn { padding:12px 28px; border-radius:10px; font-family:'Heebo',sans-serif; font-size:14px; font-weight:700; cursor:pointer; border:none; transition:all 0.2s; }
+.nav-btn:disabled { opacity:0.4; cursor:not-allowed; }
+.btn-prev { background:white; color:var(--green); border:1.5px solid #5DCAA5; }
+.btn-next { background:linear-gradient(135deg,#0F6E56,#1D9E75); color:white; }
+.step-counter { font-size:12px; color:#888; }
+.welcome-card { background:linear-gradient(135deg,#0F6E56 0%,#1D9E75 60%,#5DCAA5 100%); border-radius:24px; padding:40px 32px; text-align:center; color:white; margin-bottom:20px; }
+.steps-preview { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; margin-top:20px; }
+.step-preview-item { background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.2); border-radius:12px; padding:12px 8px; text-align:center; }
+.spi-num { font-size:20px; font-weight:900; color:#A8EDCF; }
+.spi-label { font-size:11px; color:rgba(255,255,255,0.8); margin-top:4px; }
+.final-card { background:linear-gradient(135deg,#0F6E56,#1D9E75); border-radius:24px; padding:40px 32px; text-align:center; color:white; margin-bottom:20px; }
+.checklist { list-style:none; }
+.checklist li { display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:0.5px solid #F0F6FF; font-size:13px; color:#333; line-height:1.5; }
+.checklist li::before { content:'✅'; flex-shrink:0; }
+.status-row { display:flex; gap:10px; margin-top:8px; }
+.status-item { flex:1; text-align:center; border-radius:10px; padding:12px 8px; }
+@media(max-width:600px){ .step-title{font-size:18px} .main{padding:16px 10px} .step-header{padding:20px} .field-row{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">TIME<em>.</em>ME</div>
+  <a href="app.html" class="back-btn">← לאפליקציה</a>
+</div>
+
+<div class="progress-bar" id="progress-bar">
+  <div class="step-dot" onclick="goTo(0)"><div class="dot">🔑</div><div class="dot-label">ברוכים</div></div>
+  <div class="progress-line" id="line-0"></div>
+  <div class="step-dot" onclick="goTo(1)"><div class="dot">1</div><div class="dot-label">הרשמה</div></div>
+  <div class="progress-line" id="line-1"></div>
+  <div class="step-dot" onclick="goTo(2)"><div class="dot">2</div><div class="dot-label">הכרטיס שלי</div></div>
+  <div class="progress-line" id="line-2"></div>
+  <div class="step-dot" onclick="goTo(3)"><div class="dot">3</div><div class="dot-label">החוזה שלי</div></div>
+  <div class="progress-line" id="line-3"></div>
+  <div class="step-dot" onclick="goTo(4)"><div class="dot">4</div><div class="dot-label">תשלומים</div></div>
+  <div class="progress-line" id="line-4"></div>
+  <div class="step-dot" onclick="goTo(5)"><div class="dot">5</div><div class="dot-label">הוצאות</div></div>
+  <div class="progress-line" id="line-5"></div>
+  <div class="step-dot" onclick="goTo(6)"><div class="dot">6</div><div class="dot-label">פרסום נכס</div></div>
+  <div class="progress-line" id="line-6"></div>
+  <div class="step-dot" onclick="goTo(7)"><div class="dot">✓</div><div class="dot-label">סיום</div></div>
+</div>
+
+<div class="main">
+
+  <!-- SLIDE 0 -->
+  <div class="slide active" id="slide-0">
+    <div class="welcome-card">
+      <div style="font-size:64px;margin-bottom:16px;">🔑</div>
+      <div style="font-size:28px;font-weight:900;margin-bottom:10px;">מדריך שוכר</div>
+      <div style="font-size:15px;color:rgba(255,255,255,0.85);margin-bottom:24px;line-height:1.6;">ברוכים הבאים! המדריך ילמד אתכם לנהל את השכירות שלכם בצורה חכמה ונוחה</div>
+      <div class="steps-preview">
+        <div class="step-preview-item"><div class="spi-num">01</div><div class="spi-label">הרשמה</div></div>
+        <div class="step-preview-item"><div class="spi-num">02</div><div class="spi-label">הכרטיס שלי</div></div>
+        <div class="step-preview-item"><div class="spi-num">03</div><div class="spi-label">החוזה שלי</div></div>
+        <div class="step-preview-item"><div class="spi-num">04</div><div class="spi-label">תשלומים</div></div>
+        <div class="step-preview-item"><div class="spi-num">05</div><div class="spi-label">הוצאות</div></div>
+        <div class="step-preview-item"><div class="spi-num">06</div><div class="spi-label">פרסום נכס</div></div>
+      </div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">⏱️</div>
+      <div class="tip-text"><strong>זמן קריאה: כ-4 דקות</strong><br>לחצו "הבא" להתחלה, או לחצו על כל שלב בסרגל למעלה לקפיצה ישירה</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 1: הרשמה -->
+  <div class="slide" id="slide-1">
+    <div class="step-header">
+      <div class="step-icon">👤</div>
+      <div class="step-num">שלב 01 מתוך 06</div>
+      <div class="step-title">הרשמה כשוכר</div>
+      <div class="step-desc">הירשמו בחינם — בחרו את התפקיד "שוכר" בהרשמה</div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body" style="display:flex;justify-content:center;">
+        <div style="width:100%;max-width:300px;">
+          <div style="display:flex;border:1.5px solid #B5D4F4;border-radius:10px;overflow:hidden;margin-bottom:12px;">
+            <div style="flex:1;padding:8px;text-align:center;font-size:12px;background:#E6F1FB;color:#888;">כניסה</div>
+            <div style="flex:1;padding:8px;text-align:center;font-size:12px;background:#1D9E75;color:white;font-weight:700;">הרשמה ✓</div>
+          </div>
+          <div style="display:flex;border:1.5px solid #5DCAA5;border-radius:10px;overflow:hidden;margin-bottom:12px;">
+            <div style="flex:1;padding:8px;text-align:center;font-size:11px;color:#888;">🏠 בעל נכס</div>
+            <div style="flex:1;padding:8px;text-align:center;font-size:11px;background:#1D9E75;color:white;font-weight:700;">🔑 שוכר ✓</div>
+            <div style="flex:1;padding:8px;text-align:center;font-size:11px;color:#888;">🏢 ארגון</div>
+          </div>
+          <div style="background:#E1F5EE;border:1px solid #5DCAA5;border-radius:8px;padding:10px;margin-bottom:12px;font-size:11px;color:#0F6E56;">פרטי שכירות, תשלומים ומסמכים</div>
+          <div class="field-mock"><div class="field-label">שם מלא</div><div class="field-input filled">ישראל ישראלי</div></div>
+          <div class="field-mock"><div class="field-label">מייל</div><div class="field-input filled">tenant@email.com</div></div>
+          <div class="field-mock"><div class="field-label">סיסמה</div><div class="field-input">••••••••</div></div>
+          <div class="btn-mock btn-green" style="width:100%;justify-content:center;margin-top:8px;">הרשמה למערכת</div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">לחצו <span class="pointer">הרשמה</span> ובחרו <span class="pointer">🔑 שוכר</span> — חשוב מאוד לבחור נכון!</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">אם קיבלתם <strong>קישור הזמנה מבעל הנכס</strong> — הירשמו דרך הקישור, ותהיו מקושרים אוטומטית!</div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">📧</div>
+      <div class="tip-text"><strong>טיפ:</strong> השתמשו באותו מייל שמסרתם לבעל הנכס — כך הקישור יעבוד אוטומטית</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: הכרטיס שלי -->
+  <div class="slide" id="slide-2">
+    <div class="step-header">
+      <div class="step-icon">👤</div>
+      <div class="step-num">שלב 02 מתוך 06</div>
+      <div class="step-title">הכרטיס האישי שלי</div>
+      <div class="step-desc">מלאו את הפרטים שלכם — בעל הנכס יראה אותם כשתגישו הצעה</div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div style="font-size:12px;font-weight:700;color:#042C53;margin-bottom:10px;">👤 הכרטיס שלי</div>
+        <div style="background:white;border:1.5px solid #5DCAA5;border-radius:10px;padding:12px;">
+          <div class="field-row">
+            <div class="field-mock"><div class="field-label">שם מלא</div><div class="field-input filled">ישראל ישראלי</div></div>
+            <div class="field-mock"><div class="field-label">גיל</div><div class="field-input filled">32</div></div>
+          </div>
+          <div class="field-row">
+            <div class="field-mock"><div class="field-label">מקצוע</div><div class="field-input filled">מהנדס תוכנה</div></div>
+            <div class="field-mock"><div class="field-label">מספר דיירים</div><div class="field-input filled">2</div></div>
+          </div>
+          <div style="display:flex;gap:16px;margin-bottom:10px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;">
+              <input type="checkbox" style="width:14px;height:14px;"> 🐾 חיות מחמד
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;">
+              <input type="checkbox" style="width:14px;height:14px;"> 🚬 מעשן
+            </label>
+          </div>
+          <div class="field-mock"><div class="field-label">הכנסה חודשית משוערת</div><div class="field-input filled">15,000 ₪</div></div>
+          <div class="field-mock"><div class="field-label">קצת עלי</div><div class="field-input filled" style="height:50px;">זוג צעיר, שקטים, שומרים על הנכס...</div></div>
+          <div class="btn-mock btn-green" style="width:100%;justify-content:center;">💾 שמור כרטיס</div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">מלאו את כל הפרטים — זה יעזור לכם <strong>להשיג דירה מהר יותר</strong> כשתגישו הצעה</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">כתבו <strong>"קצת עלי"</strong> בצורה חיובית — בעל הנכס יקרא זאת לפני שיחליט</div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">⭐</div>
+      <div class="tip-text"><strong>טיפ:</strong> כרטיס מלא ומקצועי מגדיל משמעותית את הסיכויים שבעל הנכס יבחר בכם!</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: החוזה שלי -->
+  <div class="slide" id="slide-3">
+    <div class="step-header">
+      <div class="step-icon">📄</div>
+      <div class="step-num">שלב 03 מתוך 06</div>
+      <div class="step-title">החוזה שלי</div>
+      <div class="step-desc">ראו את פרטי החוזה, תאריכים וסטטוס השכירות שלכם</div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-nav">
+        <div class="mockup-tab active">🔑 הנכס שלי</div>
+      </div>
+      <div class="mockup-body">
+        <div style="background:#E1F5EE;border:1.5px solid #5DCAA5;border-radius:10px;padding:10px;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+          <div style="font-size:22px;">🟢</div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#0F6E56;">שוכר מקושר לנכס</div>
+            <div style="font-size:10px;color:#1D9E75;">סוקולוב 77, דירה 17 — הרצליה</div>
+          </div>
+        </div>
+        <div style="background:white;border:1.5px solid #B5D4F4;border-radius:10px;padding:12px;margin-bottom:10px;">
+          <div style="font-size:11px;font-weight:700;color:#042C53;margin-bottom:8px;">📄 החוזה שלי</div>
+          <div style="background:#E1F5EE;border:1px solid #5DCAA5;border-radius:8px;padding:8px;text-align:center;margin-bottom:8px;">
+            <div style="font-size:13px;font-weight:700;color:#0F6E56;">✅ החוזה פעיל</div>
+            <div style="font-size:10px;color:#1D9E75;">נותרו 180 ימים עד סיום השכירות</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div style="background:#F5F9FF;border:0.5px solid #E6F1FB;border-radius:8px;padding:8px;">
+              <div style="font-size:9px;color:#185FA5;">📅 תחילת שכירות</div>
+              <div style="font-size:11px;font-weight:700;color:#0F6E56;">01/01/2024</div>
+            </div>
+            <div style="background:#F5F9FF;border:0.5px solid #E6F1FB;border-radius:8px;padding:8px;">
+              <div style="font-size:9px;color:#185FA5;">📅 סיום שכירות</div>
+              <div style="font-size:11px;font-weight:700;color:#E24B4A;">31/12/2024</div>
+            </div>
+            <div style="background:#F5F9FF;border:0.5px solid #E6F1FB;border-radius:8px;padding:8px;">
+              <div style="font-size:9px;color:#185FA5;">💰 שכ"ד חודשי</div>
+              <div style="font-size:11px;font-weight:700;color:#185FA5;">₪8,500</div>
+            </div>
+            <div style="background:#F5F9FF;border:0.5px solid #E6F1FB;border-radius:8px;padding:8px;">
+              <div style="font-size:9px;color:#185FA5;">🔄 אופציה עד</div>
+              <div style="font-size:11px;font-weight:700;color:#8A6000;">31/12/2025</div>
+            </div>
+          </div>
+          <div class="btn-mock btn-primary" style="margin-top:8px;font-size:11px;">📄 צפה בחוזה</div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">לאחר הקישור לנכס — תראו <span class="pointer">🟢 שוכר מקושר</span> עם כל פרטי הנכס ובעל הנכס</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">בטאב <span class="pointer">📄 החוזה שלי</span> — תאריכים, שכ"ד, אופציה וסטטוס</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">3</div>
+      <div class="ann-text">לחצו <span class="pointer">📄 צפה בחוזה</span> לצפייה בקובץ החוזה המלא בכל עת</div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">🔔</div>
+      <div class="tip-text"><strong>התראה אוטומטית:</strong> 60 יום לפני סיום החוזה תקבלו התראה — זמן מספיק להחליט על חידוש!</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: תשלומים -->
+  <div class="slide" id="slide-4">
+    <div class="step-header">
+      <div class="step-icon">💳</div>
+      <div class="step-num">שלב 04 מתוך 06</div>
+      <div class="step-title">מעקב תשלומים</div>
+      <div class="step-desc">ראו את כל השיקים שלכם — מה שולם ומה עוד צפוי</div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div style="font-size:11px;font-weight:700;color:#042C53;margin-bottom:10px;">💳 התשלומים שלי</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;">
+          <div style="background:#E1F5EE;border:1px solid #5DCAA5;border-radius:8px;padding:8px;text-align:center;">
+            <div style="font-size:9px;color:#0F6E56;">שולם</div>
+            <div style="font-size:18px;font-weight:700;color:#0F6E56;">8</div>
+          </div>
+          <div style="background:#FFF8E1;border:1px solid #FFD54F;border-radius:8px;padding:8px;text-align:center;">
+            <div style="font-size:9px;color:#8A6000;">ממתין</div>
+            <div style="font-size:18px;font-weight:700;color:#8A6000;">3</div>
+          </div>
+          <div style="background:#FCE4EC;border:1px solid #F48FB1;border-radius:8px;padding:8px;text-align:center;">
+            <div style="font-size:9px;color:#880E4F;">פיגור</div>
+            <div style="font-size:18px;font-weight:700;color:#880E4F;">0</div>
+          </div>
+        </div>
+        <div style="background:white;border:1px solid #E6F1FB;border-radius:8px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:30px 1fr 1fr 1fr;gap:6px;padding:6px 8px;background:#E6F1FB;font-size:10px;color:#185FA5;font-weight:700;">
+            <div>#</div><div>תאריך</div><div>סכום</div><div>סטטוס</div>
+          </div>
+          <div style="display:grid;grid-template-columns:30px 1fr 1fr 1fr;gap:6px;padding:8px;font-size:11px;border-bottom:0.5px solid #F0F6FF;align-items:center;">
+            <div>1</div><div>01/01</div><div>8,500₪</div><div><span class="badge-mock badge-green" style="font-size:9px;padding:2px 6px;">✅ שולם</span></div>
+          </div>
+          <div style="display:grid;grid-template-columns:30px 1fr 1fr 1fr;gap:6px;padding:8px;font-size:11px;background:#FFF8E1;align-items:center;">
+            <div>9</div><div>01/09</div><div>8,500₪</div><div><span class="badge-mock badge-yellow" style="font-size:9px;padding:2px 6px;">⏳ ממתין</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">ראו את <strong>כל השיקים</strong> שלכם — שולם, ממתין, פיגור</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">תשלום <strong>ממתין</strong> = השיק טרם הופקד. <strong>שולם</strong> = בעל הנכס אישר קבלה</div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">💡</div>
+      <div class="tip-text"><strong>טיפ:</strong> אם אתם רואים "פיגור" — פנו לבעל הנכס דרך כפתור "📨 שלח פנייה" לפני שזה מסתבך</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: הוצאות -->
+  <div class="slide" id="slide-5">
+    <div class="step-header">
+      <div class="step-icon">💰</div>
+      <div class="step-num">שלב 05 מתוך 06</div>
+      <div class="step-title">הוצאות הדירה שלי</div>
+      <div class="step-desc">תעדו כל הוצאה — ארנונה, חשמל, תיקונים — וראו סיכום חודשי ושנתי</div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div style="font-size:11px;font-weight:700;color:#042C53;margin-bottom:10px;">💰 הוצאות הדירה שלי</div>
+        <div style="background:white;border:1.5px solid #F48FB1;border-radius:10px;padding:12px;margin-bottom:10px;">
+          <div class="field-row">
+            <div class="field-mock"><div class="field-label">תיאור</div><div class="field-input highlighted">תיקון ברז</div></div>
+            <div class="field-mock"><div class="field-label">קטגוריה</div><div class="field-input filled">🔧 תיקונים</div></div>
+          </div>
+          <div class="field-row">
+            <div class="field-mock"><div class="field-label">סכום (₪)</div><div class="field-input filled">350</div></div>
+            <div class="field-mock"><div class="field-label">תאריך</div><div class="field-input filled">15/03/2024</div></div>
+          </div>
+          <div class="btn-mock" style="background:#E24B4A;color:white;width:100%;justify-content:center;">💾 שמור הוצאה</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:#F8FAFF;border:1px solid #E6F1FB;border-radius:8px;padding:10px;">
+          <div>
+            <div style="font-size:10px;color:#555;">סה"כ החודש:</div>
+            <div style="font-size:14px;font-weight:700;color:#E24B4A;">₪1,250</div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:#555;">סה"כ שנתי:</div>
+            <div style="font-size:14px;font-weight:700;color:#185FA5;">₪9,800</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">הזינו כל הוצאה: תיקונים, ארנונה, ועד בית, חשמל, מים, גז, אינטרנט</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">המערכת מחשבת <strong>סיכום חודשי ושנתי</strong> אוטומטית</div>
+    </div>
+    <div class="annotation warning">
+      <div class="ann-num">3</div>
+      <div class="ann-text"><strong>לפני כל תיקון גדול</strong> — קבלו אישור בכתב מבעל הנכס ושמרו את הקבלה!</div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">📸</div>
+      <div class="tip-text"><strong>חשוב:</strong> שמרו כל קבלה! במחלוקת עם בעל הנכס — הקבלות הן הראיה שלכם</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: פרסום נכס -->
+  <div class="slide" id="slide-6">
+    <div class="step-header">
+      <div class="step-icon">📢</div>
+      <div class="step-num">שלב 06 מתוך 06</div>
+      <div class="step-title">פרסום נכס לעזיבה</div>
+      <div class="step-desc">רוצים לעזוב? פרסמו את הנכס ומצאו שוכר שיחליף אתכם</div>
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-topbar"><div class="mockup-logo">TIME<em>.</em>ME</div></div>
+      <div class="mockup-body">
+        <div style="background:#FFF3E0;border:1.5px solid #FFB74D;border-radius:10px;padding:10px;margin-bottom:10px;">
+          <div style="font-size:11px;font-weight:700;color:#8A6000;margin-bottom:6px;">🟠 שוכר עצמאי</div>
+          <div style="font-size:10px;color:#FF8F00;">מלאו את הכרטיס האישי ופרסמו את הנכס</div>
+        </div>
+        <div style="background:white;border:1.5px solid #B5D4F4;border-radius:10px;padding:12px;">
+          <div style="font-size:11px;font-weight:700;color:#042C53;margin-bottom:10px;">📢 פרסם את הנכס שלי</div>
+          <div class="field-mock"><div class="field-label">כתובת הנכס *</div><div class="field-input highlighted">סוקולוב 77, דירה 17, הרצליה</div></div>
+          <div style="background:#E1F5EE;border:1px solid #5DCAA5;border-radius:8px;padding:8px;margin-bottom:8px;font-size:11px;color:#0F6E56;">✓ נכס נמצא במערכת — פרטים מולאו אוטומטית</div>
+          <div class="field-row">
+            <div class="field-mock"><div class="field-label">תאריך פינוי</div><div class="field-input filled">31/03/2024</div></div>
+            <div class="field-mock"><div class="field-label">שכ"ד (₪/חודש)</div><div class="field-input filled">8,500</div></div>
+          </div>
+          <div class="btn-mock btn-orange" style="width:100%;justify-content:center;">📢 פרסם נכס</div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">1</div>
+      <div class="ann-text">הזינו את <strong>כתובת הנכס</strong> — אם הנכס רשום במערכת, הפרטים יימולאו אוטומטית!</div>
+    </div>
+    <div class="annotation highlight">
+      <div class="ann-num">2</div>
+      <div class="ann-text">הגדירו <strong>תאריך פינוי</strong> ושכ"ד — יוצג בלוח הנכסים הפומבי</div>
+    </div>
+    <div class="annotation warning">
+      <div class="ann-num">3</div>
+      <div class="ann-text">אם יש <strong>בעל נכס רשום</strong> — הפרסום ישלח לאישורו קודם</div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-icon">🔔</div>
+      <div class="tip-text"><strong>לוח הנכסים:</strong> הפרסום שלכם יופיע ב-<strong>timeme.co.il</strong> ושוכרים פוטנציאלים יוכלו לפנות אליכם!</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: סיום -->
+  <div class="slide" id="slide-7">
+    <div class="final-card">
+      <div style="font-size:56px;margin-bottom:16px;">🎉</div>
+      <div style="font-size:26px;font-weight:900;margin-bottom:10px;">כל הכבוד!</div>
+      <div style="font-size:15px;color:rgba(255,255,255,0.85);margin-bottom:24px;line-height:1.7;">סיימתם את מדריך השוכר.<br>עכשיו אתם מוכנים לנהל את השכירות בצורה חכמה!</div>
+    </div>
+    <div style="background:white;border:1.5px solid #B5D4F4;border-radius:16px;padding:20px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:#042C53;margin-bottom:14px;">✅ סיכום — מה למדנו:</div>
+      <ul class="checklist">
+        <li>הרשמה כשוכר ובחירת תפקיד נכון</li>
+        <li>מילוי כרטיס אישי מקצועי</li>
+        <li>צפייה בפרטי החוזה ותאריכים</li>
+        <li>מעקב תשלומים ושיקים</li>
+        <li>רישום הוצאות הדירה</li>
+        <li>פרסום נכס לעזיבה בלוח</li>
+      </ul>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button onclick="window.location.href='app.html'" class="nav-btn btn-next" style="flex:1;min-width:160px;">🚀 כנס לאפליקציה</button>
+      <button onclick="goTo(0)" class="nav-btn btn-prev" style="flex:1;min-width:160px;">🔄 צפה שוב</button>
+    </div>
+  </div>
+
+  <div class="nav-actions" id="nav-actions">
+    <button class="nav-btn btn-prev" id="btn-prev" onclick="prevSlide()" disabled>→ הקודם</button>
+    <div class="step-counter" id="step-counter">מבוא</div>
+    <button class="nav-btn btn-next" id="btn-next" onclick="nextSlide()">הבא ←</button>
+  </div>
+</div>
+
+<script>
+let current=0; const total=8;
+function goTo(n){
+  document.getElementById('slide-'+current).classList.remove('active');
+  const dots=document.querySelectorAll('.step-dot');
+  const lines=document.querySelectorAll('.progress-line');
+  dots[current].querySelector('.dot').classList.remove('active');
+  if(n>current) dots[current].querySelector('.dot').classList.add('done');
+  current=n;
+  dots[current].querySelector('.dot').classList.remove('done');
+  dots[current].querySelector('.dot').classList.add('active');
+  lines.forEach((l,i)=>l.classList.toggle('done',i<current));
+  document.getElementById('slide-'+current).classList.add('active');
+  document.getElementById('btn-prev').disabled=current===0;
+  document.getElementById('btn-next').disabled=current===total-1;
+  document.getElementById('step-counter').textContent=current===0?'מבוא':'שלב '+current+' מתוך '+(total-2);
+  document.getElementById('nav-actions').style.display=current===total-1?'none':'flex';
+  window.scrollTo({top:0,behavior:'smooth'});
+  dots[current].scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
+function nextSlide(){if(current<total-1)goTo(current+1);}
+function prevSlide(){if(current>0)goTo(current-1);}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')nextSlide();if(e.key==='ArrowRight')prevSlide();});
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50){if(d>0)nextSlide();else prevSlide();}});
+goTo(0);
+</script>
+</body>
+</html>
