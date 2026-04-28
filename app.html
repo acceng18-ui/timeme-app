@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.3.2 | timeme.co.il -->
+<!-- TIME.ME v1.3.5 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -377,7 +377,7 @@ body {
             <button class="pd-tab active" onclick="showPdTab('info',this)">📋 פרטים</button>
             <button class="pd-tab" onclick="showPdTab('marketing',this)">📣 שיווק</button>
             <button class="pd-tab" onclick="showPdTab('contract',this)">📄 חוזה</button>
-            <button class="pd-tab" onclick="showPdTab('checks',this)">💳 שיקים</button>
+            <button class="pd-tab" onclick="showPdTab('checks',this)">💰 הכנסות</button>
             <button class="pd-tab" onclick="showPdTab('expenses',this)">📊 הוצאות</button>
             <button class="pd-tab" onclick="showPdTab('insurance',this)">🛡️ ביטוח</button>
           </div>
@@ -622,7 +622,7 @@ body {
           <!-- TAB: תשלומים -->
           <div class="pd-content" id="pdt-checks" style="display:none;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
-              <div class="form-section-title" style="margin:0;">💳 מעקב תשלומים</div>
+              <div class="form-section-title" style="margin:0;">💰 הכנסות</div>
               <div style="display:flex;gap:8px;">
                 <button onclick="openRecurringForm('income')" style="padding:7px 14px;font-size:12px;background:#E1F5EE;color:#0F6E56;border:1.5px solid #5DCAA5;border-radius:8px;cursor:pointer;font-weight:700;">🔄 הכנסה חוזרת</button>
                 <button class="btn-add" onclick="openAddPayment()" style="padding:7px 16px;font-size:12px;">+ הוסף תשלום</button>
@@ -702,19 +702,32 @@ body {
               <div id="exp-year-btns" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
             </div>
 
-            <!-- סיכום -->
-            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px;">
-              <div style="background:#E1F5EE;border:1px solid #5DCAA5;border-radius:10px;padding:11px;text-align:right;">
-                <div style="font-size:10px;color:#0F6E56;">הכנסות שכ״ד</div>
-                <div style="font-size:16px;font-weight:700;color:#0F6E56;" id="exp-income">0 ₪</div>
+            <!-- סיכום 5 קופסאות -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:16px;">
+              <div style="background:#E1F5EE;border:1.5px solid #5DCAA5;border-radius:12px;padding:12px;text-align:right;">
+                <div style="font-size:10px;color:#0F6E56;font-weight:700;">🟢 הכנסה קיימת</div>
+                <div style="font-size:17px;font-weight:700;color:#0F6E56;" id="exp-income">₪0</div>
+                <div style="font-size:9px;color:#1D9E75;">תשלומים שנגבו</div>
               </div>
-              <div style="background:#FCE4EC;border:1px solid #F48FB1;border-radius:10px;padding:11px;text-align:right;">
-                <div style="font-size:10px;color:#880E4F;">סה"כ הוצאות</div>
-                <div style="font-size:16px;font-weight:700;color:#880E4F;" id="exp-total">0 ₪</div>
+              <div style="background:#E3F2FD;border:1.5px solid #90CAF9;border-radius:12px;padding:12px;text-align:right;">
+                <div style="font-size:10px;color:#1565C0;font-weight:700;">🔵 הכנסה עתידית</div>
+                <div style="font-size:17px;font-weight:700;color:#1565C0;" id="exp-income-future">₪0</div>
+                <div style="font-size:9px;color:#1976D2;">תשלומים ממתינים</div>
               </div>
-              <div style="background:#E6F1FB;border:1px solid #B5D4F4;border-radius:10px;padding:11px;text-align:right;">
-                <div style="font-size:10px;color:#185FA5;">רווח נקי</div>
-                <div style="font-size:16px;font-weight:700;color:#185FA5;" id="exp-net">0 ₪</div>
+              <div style="background:#FCE4EC;border:1.5px solid #F48FB1;border-radius:12px;padding:12px;text-align:right;">
+                <div style="font-size:10px;color:#880E4F;font-weight:700;">🔴 הוצאה שבוצעה</div>
+                <div style="font-size:17px;font-weight:700;color:#880E4F;" id="exp-total">₪0</div>
+                <div style="font-size:9px;color:#C62828;">הוצאות שעברו</div>
+              </div>
+              <div style="background:#FFF8E1;border:1.5px solid #FFD54F;border-radius:12px;padding:12px;text-align:right;">
+                <div style="font-size:10px;color:#8A6000;font-weight:700;">🟡 התחייבות</div>
+                <div style="font-size:17px;font-weight:700;color:#8A6000;" id="exp-commitment">₪0</div>
+                <div style="font-size:9px;color:#F9A825;">הוצאות עתידיות</div>
+              </div>
+              <div style="background:#EDE7F6;border:1.5px solid #B39DDB;border-radius:12px;padding:12px;text-align:right;">
+                <div style="font-size:10px;color:#4527A0;font-weight:700;">⚫ רווח נקי</div>
+                <div style="font-size:17px;font-weight:700;" id="exp-net" style="color:#4527A0;">₪0</div>
+                <div style="font-size:9px;color:#6A1B9A;">הכנסה פחות הוצאה</div>
               </div>
             </div>
 
@@ -803,6 +816,7 @@ body {
                 <div class="info-row-pd"><span class="info-lbl">חברת ביטוח</span><span id="ins-company" class="info-val-pd"></span></div>
                 <div class="info-row-pd"><span class="info-lbl">מספר פוליסה</span><span id="ins-policy" class="info-val-pd"></span></div>
                 <div class="info-row-pd"><span class="info-lbl">סוג ביטוח</span><span id="ins-type" class="info-val-pd"></span></div>
+                <div class="info-row-pd"><span class="info-lbl">פרמיה שנתית</span><span id="ins-premium" class="info-val-pd"></span></div>
                 <div class="info-row-pd"><span class="info-lbl">התחלה</span><span id="ins-start" class="info-val-pd"></span></div>
                 <div class="info-row-pd"><span class="info-lbl">תוקף עד</span><span id="ins-expiry" class="info-val-pd"></span></div>
                 <div class="info-row-pd"><span class="info-lbl">התראה לפני (ימים)</span><span id="ins-alert" class="info-val-pd"></span></div>
@@ -845,6 +859,16 @@ body {
               <div class="form-row-2">
                 <div class="fg"><label>תאריך תחילה *</label><input id="ins-f-start" type="date" /></div>
                 <div class="fg"><label>תאריך תוקף *</label><input id="ins-f-expiry" type="date" /></div>
+              </div>
+              <div class="form-row-2">
+                <div class="fg"><label>פרמיה שנתית (₪)</label><input id="ins-f-premium" type="number" placeholder="2400" /></div>
+                <div class="fg"><label>תשלום</label>
+                  <select id="ins-f-payment-freq">
+                    <option value="שנתי">שנתי</option>
+                    <option value="חודשי">חודשי</option>
+                    <option value="חד פעמי">חד פעמי</option>
+                  </select>
+                </div>
               </div>
               <div class="fg">
                 <label>התראה לפני פקיעה (ימים)</label>
@@ -4139,8 +4163,8 @@ async function loadExpenses(propId) {
   document.getElementById('exp-list').innerHTML='';
   document.getElementById('exp-empty').style.display='none';
 
-  // Build year buttons
   const curYear=new Date().getFullYear();
+  const today=new Date().toISOString().split('T')[0];
   const yearsDiv=document.getElementById('exp-year-btns');
   yearsDiv.innerHTML='';
   for(let y=curYear-1;y<=curYear+1;y++){
@@ -4151,65 +4175,113 @@ async function loadExpenses(propId) {
     yearsDiv.appendChild(btn);
   }
 
-  // Load expenses
   const startDate=currentExpYear+'-01-01';
   const endDate=currentExpYear+'-12-31';
-  const{data,error}=await sb.from('expenses').select('*')
+
+  // טען הוצאות
+  const{data:expenses}=await sb.from('expenses').select('*')
     .eq('property_id',propId)
-    .gte('expense_date',startDate)
-    .lte('expense_date',endDate)
+    .gte('expense_date',startDate).lte('expense_date',endDate)
     .order('expense_date',{ascending:false});
+
+  // טען הכנסות — שולם + ממתין
+  const{data:payments}=await sb.from('payments')
+    .select('*').eq('property_id',propId)
+    .gte('due_date',startDate).lte('due_date',endDate)
+    .order('due_date',{ascending:true});
 
   document.getElementById('exp-loading').style.display='none';
 
-  // הכנסה = תשלומים שהתקבלו בפועל (סטטוס "שולם") בשנה זו
-  const{data:payments}=await sb.from('payments')
-    .select('amount,paid_date,status,due_date')
-    .eq('property_id',propId)
-    .eq('status','שולם');
-  let yearIncome=0;
-  if(payments) payments.forEach(p=>{
-    const payDate=new Date(p.paid_date||p.due_date);
-    if(payDate.getFullYear()===currentExpYear){
-      yearIncome+=parseFloat(p.amount)||0;
+  // חשב 5 קופסאות
+  let incomeExisting=0, incomeFuture=0, expDone=0, expCommitment=0;
+
+  // הכנסות
+  (payments||[]).forEach(p=>{
+    const amt=parseFloat(p.amount)||0;
+    if(p.status==='שולם') incomeExisting+=amt;
+    else if(p.status==='ממתין') incomeFuture+=amt;
+  });
+
+  // הוצאות
+  (expenses||[]).forEach(e=>{
+    const amt=e.includes_vat?e.amount:e.amount*1.18;
+    if(e.is_recurring && e.recurring_status==='ממתין' && e.expense_date>today){
+      expCommitment+=amt; // הוצאה עתידית
+    } else {
+      expDone+=amt; // הוצאה שבוצעה
     }
   });
 
-  let totalExp=0;
-  if(!data||data.length===0){
+  const net=incomeExisting-expDone;
+
+  // עדכן קופסאות
+  document.getElementById('exp-income').textContent='₪'+Number(incomeExisting.toFixed(0)).toLocaleString('he-IL');
+  document.getElementById('exp-income-future').textContent='₪'+Number(incomeFuture.toFixed(0)).toLocaleString('he-IL');
+  document.getElementById('exp-total').textContent='₪'+Number(expDone.toFixed(0)).toLocaleString('he-IL');
+  document.getElementById('exp-commitment').textContent='₪'+Number(expCommitment.toFixed(0)).toLocaleString('he-IL');
+  document.getElementById('exp-net').textContent='₪'+Number(net.toFixed(0)).toLocaleString('he-IL');
+  document.getElementById('exp-net').style.color=net>=0?'#4527A0':'#E24B4A';
+
+  // הצג הוצאות — עיצוב קומפקטי
+  if(!expenses||expenses.length===0){
     document.getElementById('exp-empty').style.display='block';
-  } else {
-    const CATS={'תיקונים':'🔧','ביטוח':'🛡️','מסים':'🏛️','ניהול':'📋','שיפוץ':'🔨','אחר':'📦'};
-    const COLORS={'תיקונים':'#FFF3E0','ביטוח':'#E8EAF6','מסים':'#FCE4EC','ניהול':'#E1F5EE','שיפוץ':'#FFF8E1','אחר':'#F1EFE8'};
-    
-    const list=document.getElementById('exp-list');
-    list.innerHTML=data.map(e=>{
-      const inclAmt=e.includes_vat?e.amount:e.amount*1.18;
-      const preAmt=e.includes_vat?e.amount/1.18:e.amount;
-      const vatAmt=inclAmt-preAmt;
-      totalExp+=inclAmt;
-      const bg=COLORS[e.category]||'#F5F9FF';
-      return `<div style="background:${bg};border:0.5px solid #E6F1FB;border-radius:10px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">
-        <div style="font-size:20px;">${CATS[e.category]||'📦'}</div>
-        <div style="flex:1;text-align:right;">
-          <div style="font-size:12px;font-weight:700;color:#042C53;">${e.description}</div>
-          <div style="font-size:10px;color:#888;margin-top:2px;">${e.vendor?e.vendor+' | ':''} ${e.expense_date?fmtDate(e.expense_date):''}</div>
-        </div>
-        <div style="text-align:left;">
-          <div style="font-size:13px;font-weight:700;color:#880E4F;">${Number(inclAmt.toFixed(0)).toLocaleString('he-IL')} ₪</div>
-          <div style="font-size:10px;color:#888;">מע"מ: ${Number(vatAmt.toFixed(0)).toLocaleString('he-IL')} ₪</div>
-        </div>
-        <button onclick="deleteExpense('${e.id}')" style="background:none;border:none;color:#E24B4A;cursor:pointer;font-size:16px;padding:2px 6px;">🗑️</button>
-      </div>`;
-    }).join('');
+    return;
   }
 
-  // Update summary
-  const net=yearIncome-totalExp;
-  document.getElementById('exp-income').textContent=Number(yearIncome.toFixed(0)).toLocaleString('he-IL')+' ₪';
-  document.getElementById('exp-total').textContent=Number(totalExp.toFixed(0)).toLocaleString('he-IL')+' ₪';
-  document.getElementById('exp-net').textContent=Number(net.toFixed(0)).toLocaleString('he-IL')+' ₪';
-  document.getElementById('exp-net').style.color=net>=0?'#185FA5':'#E24B4A';
+  const CAT_ICONS={'אחזקה':'🔧','שיפוץ':'🏗️','משכנתא':'🏦','הלוואה':'💳','ביטוח':'🛡️','ארנונה':'🏛️','ועד בית':'🏢','עו״ד / רו״ח':'⚖️','מסים':'📊','ניהול':'📋','כללי':'📦'};
+
+  const list=document.getElementById('exp-list');
+
+  // הפרד לשתי קבוצות
+  const done=expenses.filter(e=>!(e.is_recurring&&e.recurring_status==='ממתין'&&e.expense_date>today));
+  const future=expenses.filter(e=>e.is_recurring&&e.recurring_status==='ממתין'&&e.expense_date>today);
+
+  let html='';
+
+  if(done.length>0){
+    html+=`<div style="font-size:11px;font-weight:700;color:#880E4F;margin-bottom:8px;padding-right:4px;">🔴 הוצאות שבוצעו</div>`;
+    html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">`;
+    html+=done.map(e=>{
+      const amt=e.includes_vat?e.amount:e.amount*1.18;
+      const icon=CAT_ICONS[e.category]||'📦';
+      return `<div style="background:white;border:1.5px solid #F0F6FF;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;">
+        <div style="font-size:18px;">${icon}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:11px;font-weight:700;color:#042C53;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.description}</div>
+          <div style="font-size:10px;color:#888;">${e.expense_date?fmtDate(e.expense_date):''}</div>
+          <div style="font-size:12px;font-weight:700;color:#880E4F;">₪${Number(amt.toFixed(0)).toLocaleString('he-IL')}</div>
+        </div>
+        <button onclick="deleteExpense('${e.id}')" style="background:none;border:none;color:#E24B4A;cursor:pointer;font-size:14px;padding:2px;">🗑️</button>
+      </div>`;
+    }).join('');
+    html+=`</div>`;
+  }
+
+  if(future.length>0){
+    html+=`<div style="font-size:11px;font-weight:700;color:#8A6000;margin-bottom:8px;padding-right:4px;">🟡 התחייבויות עתידיות</div>`;
+    html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">`;
+    html+=future.map(e=>{
+      const amt=e.includes_vat?e.amount:e.amount*1.18;
+      const icon=CAT_ICONS[e.category]||'📦';
+      return `<div style="background:#FFFDE7;border:1.5px solid #FFD54F;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;">
+        <div style="font-size:18px;">${icon}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:11px;font-weight:700;color:#042C53;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.description}</div>
+          <div style="font-size:10px;color:#888;">${e.expense_date?fmtDate(e.expense_date):''}</div>
+          <div style="font-size:12px;font-weight:700;color:#8A6000;">₪${Number(amt.toFixed(0)).toLocaleString('he-IL')}</div>
+        </div>
+        <button onclick="markExpensePaid('${e.id}')" style="background:#E1F5EE;border:none;color:#0F6E56;cursor:pointer;font-size:11px;padding:4px 8px;border-radius:6px;font-weight:700;">✅ שולם</button>
+      </div>`;
+    }).join('');
+    html+=`</div>`;
+  }
+
+  list.innerHTML=html;
+}
+
+async function markExpensePaid(id) {
+  await sb.from('expenses').update({recurring_status:'שולם'}).eq('id',id);
+  loadExpenses(currentProp.id);
 }
 
 async function saveExpense() {
@@ -4269,6 +4341,9 @@ async function loadInsurance(propId) {
     document.getElementById('ins-start').textContent=ins.start_date?fmtDate(ins.start_date):'—';
     document.getElementById('ins-expiry').textContent=ins.expiry_date?fmtDate(ins.expiry_date):'—';
     document.getElementById('ins-alert').textContent=(ins.alert_days||30)+' ימים';
+    document.getElementById('ins-premium').textContent=ins.annual_premium?'₪'+Number(ins.annual_premium).toLocaleString('he-IL')+' / שנה':'—';
+    if(ins.annual_premium) document.getElementById('ins-f-premium').value=ins.annual_premium;
+    if(ins.payment_frequency) document.getElementById('ins-f-payment-freq').value=ins.payment_frequency;
     if(ins.notes){
       document.getElementById('ins-notes').textContent=ins.notes;
       document.getElementById('ins-notes-row').style.display='block';
@@ -4348,6 +4423,8 @@ async function saveInsurance() {
   btn.disabled=true;
   btn.innerHTML='<span class="spinner"></span> שומר...';
 
+  const premium=parseFloat(document.getElementById('ins-f-premium').value)||null;
+  const payFreq=document.getElementById('ins-f-payment-freq').value;
   const existingId=document.getElementById('ins-id').value;
   let error;
 
