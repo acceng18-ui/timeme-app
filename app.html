@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.3.9 | timeme.co.il -->
+<!-- TIME.ME v1.4.0 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -1023,6 +1023,46 @@ body {
 
       <!-- שוכר לא מקושר — פרסום נכס -->
       <div id="tenant-unlinked-content" style="display:none;">
+
+        <!-- הוצאות לשוכר לא מקושר -->
+        <div class="form-card" style="margin-bottom:12px;">
+          <div class="form-section-title" style="border-right-color:#E24B4A;">💰 הוצאות הדירה שלי</div>
+          <p style="font-size:12px;color:#555;margin-bottom:12px;">הזן הוצאות הקשורות לדירה — תיקונים, ארנונה, חשמל וכו'</p>
+          <div style="background:#F8FAFF;border:1.5px dashed #B5D4F4;border-radius:10px;padding:14px;margin-bottom:14px;">
+            <div class="form-row-2">
+              <div class="fg"><label>תיאור *</label><input id="texp-desc-u" placeholder="תיקון ברז" /></div>
+              <div class="fg"><label>קטגוריה *</label>
+                <select id="texp-cat-u">
+                  <option value="תיקונים">🔧 תיקונים</option>
+                  <option value="ארנונה">🏛️ ארנונה</option>
+                  <option value="ועד בית">🏢 ועד בית</option>
+                  <option value="חשמל">⚡ חשמל</option>
+                  <option value="מים">💧 מים</option>
+                  <option value="גז">🔥 גז</option>
+                  <option value="אינטרנט">🌐 אינטרנט</option>
+                  <option value="כללי">📋 כללי</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="fg"><label>סכום (₪) *</label><input id="texp-amount-u" type="number" placeholder="200" /></div>
+              <div class="fg"><label>תאריך *</label><input id="texp-date-u" type="date" /></div>
+            </div>
+            <button class="btn-main" style="width:auto;padding:9px 20px;background:#E24B4A;" onclick="saveTenantExpenseUnlinked()">💾 שמור הוצאה</button>
+            <div class="msg" id="texp-msg-u"></div>
+          </div>
+          <div id="texp-list-u"><div style="text-align:center;color:#888;font-size:13px;padding:10px;">אין הוצאות עדיין</div></div>
+          <div id="texp-summary-u" style="background:#F8FAFF;border:1px solid #E6F1FB;border-radius:10px;padding:12px;margin-top:10px;display:none;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;">
+              <span style="color:#555;">סה"כ החודש:</span>
+              <span style="font-weight:700;color:#E24B4A;" id="texp-total-month-u">₪0</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px;">
+              <span style="color:#555;">סה"כ שנתי:</span>
+              <span style="font-weight:700;color:#185FA5;" id="texp-total-year-u">₪0</span>
+            </div>
+          </div>
+        </div>
         <div class="form-card" style="margin-bottom:12px;">
           <div class="form-section-title" style="border-right-color:#FF8F00;">📢 פרסם את הנכס שלך</div>
           <p style="font-size:12px;color:#185FA5;margin-bottom:12px;">גר בנכס שבעל הנכס לא רשום? פרסם ומצא שוכר שיחליף אותך</p>
@@ -3592,6 +3632,7 @@ async function loadTenantDashboard(user) {
     // שוכר לא מקושר — כתום
     document.getElementById('tenant-unlinked-header').style.display='block';
     document.getElementById('tenant-unlinked-content').style.display='block';
+    loadTenantExpensesUnlinked();
     document.getElementById('tenant-linked-header').style.display='none';
     document.getElementById('tenant-content').style.display='none';
     return;
@@ -3868,6 +3909,74 @@ async function publishTenantListing() {
     statusText.textContent='🟢 הנכס פורסם בלוח!';
     showMsg('tl-msg','success','✓ הנכס פורסם בדף הפומבי!');
   }
+}
+
+async function saveTenantExpenseUnlinked() {
+  if(!currentUser) return;
+  const desc = document.getElementById('texp-desc-u').value.trim();
+  const cat = document.getElementById('texp-cat-u').value;
+  const amount = document.getElementById('texp-amount-u').value;
+  const date = document.getElementById('texp-date-u').value;
+
+  if(!desc||!amount||!date){showMsg('texp-msg-u','error','נא למלא תיאור, סכום ותאריך');return;}
+
+  const btn = document.querySelector('#texp-msg-u').previousElementSibling;
+  btn.disabled = true;
+
+  const{error} = await sb.from('expenses').insert({
+    property_id: null,
+    user_id: currentUser.id,
+    description: desc,
+    category: cat,
+    amount: parseFloat(amount),
+    expense_date: date,
+    includes_vat: false
+  });
+
+  btn.disabled = false;
+  if(error){showMsg('texp-msg-u','error','שגיאה: '+error.message);return;}
+  showMsg('texp-msg-u','success','✓ הוצאה נשמרה!');
+  document.getElementById('texp-desc-u').value='';
+  document.getElementById('texp-amount-u').value='';
+  loadTenantExpensesUnlinked();
+}
+
+async function loadTenantExpensesUnlinked() {
+  if(!currentUser) return;
+  
+  const{data:expenses} = await sb.from('expenses')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .is('property_id', null)
+    .order('expense_date',{ascending:false}).limit(20);
+
+  const list = document.getElementById('texp-list-u');
+  if(!list) return;
+
+  if(!expenses||expenses.length===0){
+    list.innerHTML='<div style="text-align:center;color:#888;font-size:13px;padding:10px;">אין הוצאות עדיין</div>';
+    return;
+  }
+
+  const CATS={'תיקונים':'🔧','ארנונה':'🏛️','ועד בית':'🏢','חשמל':'⚡','מים':'💧','גז':'🔥','אינטרנט':'🌐','כללי':'📋'};
+  list.innerHTML = expenses.map(e=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #F0F6FF;">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#042C53;">${CATS[e.category]||'📋'} ${e.description}</div>
+        <div style="font-size:11px;color:#888;">${fmtDate(e.expense_date)} • ${e.category}</div>
+      </div>
+      <div style="font-size:14px;font-weight:700;color:#E24B4A;">₪${Number(e.amount).toLocaleString('he-IL')}</div>
+    </div>
+  `).join('');
+
+  const now = new Date();
+  const thisMonth = expenses.filter(e=>new Date(e.expense_date).getMonth()===now.getMonth());
+  const totalMonth = thisMonth.reduce((s,e)=>s+Number(e.amount),0);
+  const totalYear = expenses.reduce((s,e)=>s+Number(e.amount),0);
+  
+  document.getElementById('texp-total-month-u').textContent='₪'+totalMonth.toLocaleString('he-IL');
+  document.getElementById('texp-total-year-u').textContent='₪'+totalYear.toLocaleString('he-IL');
+  document.getElementById('texp-summary-u').style.display='block';
 }
 
 async function saveTenantExpense() {
