@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.3.8 | timeme.co.il -->
+<!-- TIME.ME v1.3.9 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -1008,11 +1008,11 @@ body {
         <div class="form-row-2">
           <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
             <input type="checkbox" id="tp-pets" style="width:16px;height:16px;" />
-            <label for="tp-pets" style="font-size:12px;cursor:pointer;">🐾 בעל חיות</label>
+            <label for="tp-pets" style="font-size:12px;cursor:pointer;">🐾 האם יש בעלי חיים?</label>
           </div>
           <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
-            <input type="checkbox" id="tp-smoking" style="width:16px;height:16px;" />
-            <label for="tp-smoking" style="font-size:12px;cursor:pointer;">🚬 מעשן</label>
+            <input type="checkbox" id="tp-smoking" style="width:16px;height:16px;display:none;" />
+            <label for="tp-smoking" style="font-size:12px;cursor:pointer;"></label>
           </div>
         </div>
         <div class="fg"><label>הכנסה חודשית משוערת (₪)</label><input id="tp-income" type="number" placeholder="15000" /></div>
@@ -1241,11 +1241,11 @@ body {
           <div class="form-row-2">
             <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
               <input type="checkbox" id="tp-pets" style="width:16px;height:16px;" />
-              <label for="tp-pets" style="font-size:12px;cursor:pointer;">🐾 בעל חיות</label>
+              <label for="tp-pets" style="font-size:12px;cursor:pointer;">🐾 האם יש בעלי חיים?</label>
             </div>
             <div class="fg" style="display:flex;align-items:center;gap:8px;padding-top:22px;">
-              <input type="checkbox" id="tp-smoking" style="width:16px;height:16px;" />
-              <label for="tp-smoking" style="font-size:12px;cursor:pointer;">🚬 מעשן</label>
+              <input type="checkbox" id="tp-smoking" style="width:16px;height:16px;display:none;" />
+              <label for="tp-smoking" style="font-size:12px;cursor:pointer;"></label>
             </div>
           </div>
           <div class="fg"><label>הכנסה חודשית משוערת (₪)</label><input id="tp-income" type="number" placeholder="15000" /></div>
@@ -3889,6 +3889,7 @@ async function saveTenantExpense() {
 
   const{error}=await sb.from('expenses').insert({
     property_id:tp?.property_id||null,
+    user_id:currentUser.id,
     description:desc,
     category:cat,
     amount:parseFloat(amount),
@@ -3911,14 +3912,20 @@ async function saveTenantExpense() {
 async function loadTenantExpenses() {
   if(!currentUser) return;
   
+  // נסה למצוא נכס מקושר
   const{data:tp}=await sb.from('tenant_properties')
     .select('property_id').eq('tenant_id',currentUser.id).eq('status','פעיל').single();
   
-  if(!tp) return;
+  let expQuery = sb.from('expenses').select('*').order('expense_date',{ascending:false}).limit(20);
+  
+  if(tp?.property_id) {
+    expQuery = expQuery.eq('property_id', tp.property_id);
+  } else {
+    // שוכר לא מקושר — הצג הוצאות לפי user_id
+    expQuery = expQuery.eq('user_id', currentUser.id);
+  }
 
-  const{data:expenses}=await sb.from('expenses')
-    .select('*').eq('property_id',tp.property_id)
-    .order('expense_date',{ascending:false}).limit(20);
+  const{data:expenses} = await expQuery;
 
   const list=document.getElementById('texp-list');
   if(!list) return;
