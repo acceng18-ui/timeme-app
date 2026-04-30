@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.4.0 | timeme.co.il -->
+<!-- TIME.ME v1.4.1 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -1799,6 +1799,14 @@ async function handleAuth() {
   btn.innerHTML=(mode==='register'?'נרשם...':'מתחבר...')+'<span class="spinner"></span>';
   try {
     if(mode==='register'){
+      // בדוק אם מייל כבר קיים
+      const{data:existingUser}=await sb.from('users').select('id').eq('email',email).single();
+      if(existingUser){
+        showMsg('auth-msg','error','מייל זה כבר רשום במערכת — נסה להתחבר');
+        btn.disabled=false;
+        btn.textContent='הרשמה למערכת';
+        return;
+      }
       const{data,error}=await sb.auth.signUp({email,password});
       if(error)throw error;
       if(data.user){
