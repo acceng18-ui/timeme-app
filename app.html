@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.4.2 | timeme.co.il -->
+<!-- TIME.ME v1.4.3 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -314,6 +314,35 @@ body {
     </div>
   </div>
   <div class="accent-bar"></div>
+
+<!-- ONBOARDING WIZARD -->
+<div id="wizard-overlay" style="display:none;position:fixed;inset:0;background:rgba(4,44,83,0.75);z-index:9000;"></div>
+<div id="wizard-box" style="display:none;position:fixed;z-index:9001;background:white;border-radius:20px;padding:24px;max-width:340px;width:calc(100% - 32px);box-shadow:0 20px 60px rgba(4,44,83,0.4);">
+  <!-- Progress -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <div style="font-size:11px;color:#888;" id="wiz-step-label">שלב 1 מתוך 7</div>
+    <button onclick="skipWizard()" style="background:none;border:none;color:#888;font-size:12px;cursor:pointer;">דלג ←</button>
+  </div>
+  <div style="background:#E6F1FB;border-radius:20px;height:6px;margin-bottom:18px;">
+    <div id="wiz-progress" style="background:linear-gradient(90deg,#185FA5,#378ADD);height:6px;border-radius:20px;transition:width 0.4s;width:14%;"></div>
+  </div>
+  <!-- Content -->
+  <div style="text-align:center;margin-bottom:16px;">
+    <div id="wiz-icon" style="font-size:44px;margin-bottom:10px;">🏠</div>
+    <div id="wiz-title" style="font-size:17px;font-weight:800;color:#042C53;margin-bottom:8px;"></div>
+    <div id="wiz-desc" style="font-size:13px;color:#555;line-height:1.7;"></div>
+  </div>
+  <!-- Tip -->
+  <div id="wiz-tip" style="display:none;background:#E6F1FB;border-right:3px solid #185FA5;border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:#185FA5;"></div>
+  <!-- Actions -->
+  <div style="display:flex;gap:8px;">
+    <button id="wiz-prev" onclick="wizPrev()" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #B5D4F4;background:white;color:#185FA5;font-family:Arial;font-size:13px;font-weight:700;cursor:pointer;">→ הקודם</button>
+    <button id="wiz-next" onclick="wizNext()" style="flex:2;padding:10px;border-radius:10px;border:none;background:linear-gradient(135deg,#185FA5,#378ADD);color:white;font-family:Arial;font-size:13px;font-weight:700;cursor:pointer;">הבא ←</button>
+  </div>
+</div>
+
+<!-- Spotlight highlight -->
+<div id="wizard-spotlight" style="display:none;position:fixed;z-index:8999;border:3px solid #378ADD;border-radius:12px;box-shadow:0 0 0 4px rgba(55,138,221,0.3);pointer-events:none;transition:all 0.4s;"></div>
 
 <!-- פאנל התראות -->
 <div id="notif-panel" style="display:none;position:fixed;top:60px;left:20px;width:340px;background:white;border:1.5px solid #B5D4F4;border-radius:14px;box-shadow:0 8px 32px rgba(4,44,83,0.15);z-index:1000;max-height:500px;overflow-y:auto;">
@@ -1934,6 +1963,10 @@ async function enterDashboard(user) {
   checkAllNotifications();
   checkOverdueRecurring();
   loadProperties();
+  // הפעל wizard רק לבעלי נכסים בפעם הראשונה
+  if(profile?.role==='owner' || profile?.is_admin) {
+    setTimeout(()=>startWizard(), 800);
+  }
 }
 
 async function handleLogout() {
@@ -3440,6 +3473,223 @@ async function checkAllNotifications() {
   }
 
   loadNotifCount();
+}
+
+// ── ONBOARDING WIZARD ────────────────────────────
+const WIZARD_STEPS = [
+  {
+    icon: '👋',
+    title: 'ברוכים הבאים ל-TIME.ME!',
+    desc: 'המערכת תעזור לך לנהל נכסים, חוזים, הכנסות והוצאות — הכל במקום אחד. בוא נתחיל בסיור קצר!',
+    tip: null,
+    target: null,
+    nextLabel: 'בוא נתחיל ←'
+  },
+  {
+    icon: '🏠',
+    title: 'הוספת נכס',
+    desc: 'לחץ על "➕ הוסף נכס" בסרגל הניווט כדי להוסיף את הנכס הראשון שלך למערכת.',
+    tip: '💡 הנכס הוא הבסיס של המערכת — כל חוזה, תשלום והוצאה מקושרים אליו',
+    target: 'nav-add',
+    nextLabel: 'הבנתי ←'
+  },
+  {
+    icon: '📍',
+    title: 'כתובת הנכס',
+    desc: 'הכתובת היא "תעודת הזהות" של הנכס — הקלד עיר ובחר רחוב מהרשימה. חשוב להיות מדויק!',
+    tip: '💡 המערכת טוענת רחובות אוטומטית לפי עיר שבחרת',
+    target: 'p-city',
+    nextLabel: 'הבנתי ←'
+  },
+  {
+    icon: '👤',
+    title: 'פרטים אישיים',
+    desc: 'מלא את פרטי בעל הנכס — שם, ת.ז, טלפון ומייל. פרטים אלו יופיעו בחוזה.',
+    tip: '💡 ניתן לעדכן את הפרטים בכל עת מתוך הנכס',
+    target: 'o-name',
+    nextLabel: 'הבנתי ←'
+  },
+  {
+    icon: '💰',
+    title: 'מחיר מבוקש',
+    desc: 'ניתן להזין מחיר שכירות מבוקש — הוא יופיע בלוח הנכסים הפומבי. שדה זה אינו חובה בשלב זה.',
+    tip: '💡 לא חובה עכשיו — ניתן לעדכן מחיר בקלות מרשימת הנכסים עם כפתור "💰 מחיר"',
+    target: 'p-rent-price',
+    nextLabel: 'הבנתי ←'
+  },
+  {
+    icon: '📣',
+    title: 'שיווק הנכס',
+    desc: 'בטאב "📣 שיווק" תוכל להוסיף פרטי שיווק — חדרים, קומה, מרפסת ועוד. זה מה שהשוכר רואה בלוח.',
+    tip: '💡 נכס עם פרטי שיווק מלאים מקבל יותר פניות!',
+    target: null,
+    nextLabel: 'הבנתי ←'
+  },
+  {
+    icon: '📄',
+    title: 'חוזה ושכירות',
+    desc: 'בטאב "📄 חוזה" — הכנס פרטי שכירות קיימת או צור חוזה PDF מקצועי חדש.',
+    tip: '💡 לחץ "📋 הכנס פרטי שכירות קיימת" לטופס מהיר עם התאריכים ושכ"ד',
+    target: null,
+    nextLabel: 'הבנתי ←'
+  },
+  {
+    icon: '💳',
+    title: 'הכנסות ותשלומים',
+    desc: 'בטאב "💰 הכנסות" — עקוב אחרי כל שיק. לחץ "🔄 הכנסה חוזרת" ליצירת 12 שיקים אוטומטית!',
+    tip: '💡 כשתשלום התקבל — לחץ ✅ לסימון. עבר תאריך בלי אישור? תקבל התראה 🔔',
+    target: null,
+    nextLabel: 'הבנתי ←'
+  },
+  {
+    icon: '📊',
+    title: 'הוצאות ורווח נקי',
+    desc: 'בטאב "📊 הוצאות" — רשום כל הוצאה. המערכת מחשבת רווח נקי = הכנסות פחות הוצאות.',
+    tip: '💡 לחץ "🔄 הוצאה חוזרת" למשכנתא/ועד בית — נוצרים 12 תשלומים אוטומטי!',
+    target: null,
+    nextLabel: 'סיום! 🎉'
+  }
+];
+
+let wizardStep = 0;
+
+function startWizard() {
+  // בדוק אם כבר ראה את ה-wizard
+  if(localStorage.getItem('timeme_wizard_done')) return;
+  
+  wizardStep = 0;
+  document.getElementById('wizard-overlay').style.display = 'block';
+  document.getElementById('wizard-box').style.display = 'block';
+  renderWizardStep();
+}
+
+function renderWizardStep() {
+  const step = WIZARD_STEPS[wizardStep];
+  const total = WIZARD_STEPS.length;
+  
+  // Update content
+  document.getElementById('wiz-icon').textContent = step.icon;
+  document.getElementById('wiz-title').textContent = step.title;
+  document.getElementById('wiz-desc').textContent = step.desc;
+  document.getElementById('wiz-step-label').textContent = `שלב ${wizardStep + 1} מתוך ${total}`;
+  document.getElementById('wiz-progress').style.width = `${((wizardStep + 1) / total) * 100}%`;
+  document.getElementById('wiz-next').textContent = step.nextLabel || 'הבא ←';
+  document.getElementById('wiz-prev').style.display = wizardStep === 0 ? 'none' : 'block';
+  
+  // Tip
+  const tipEl = document.getElementById('wiz-tip');
+  if(step.tip) {
+    tipEl.style.display = 'block';
+    tipEl.textContent = step.tip;
+  } else {
+    tipEl.style.display = 'none';
+  }
+  
+  // Position wizard box
+  positionWizard(step.target);
+  
+  // Spotlight
+  highlightTarget(step.target);
+}
+
+function positionWizard(targetId) {
+  const box = document.getElementById('wizard-box');
+  
+  if(!targetId) {
+    // Center on screen
+    box.style.top = '50%';
+    box.style.left = '50%';
+    box.style.transform = 'translate(-50%, -50%)';
+    box.style.right = 'auto';
+    box.style.bottom = 'auto';
+    return;
+  }
+  
+  const target = document.getElementById(targetId);
+  if(!target) {
+    box.style.top = '50%';
+    box.style.left = '50%';
+    box.style.transform = 'translate(-50%, -50%)';
+    return;
+  }
+  
+  // Navigate to relevant page first
+  if(targetId === 'nav-add') {
+    showPage('add-property', document.getElementById('nav-add'));
+  }
+  
+  // Scroll target into view
+  target.scrollIntoView({behavior:'smooth', block:'center'});
+  
+  setTimeout(() => {
+    const rect = target.getBoundingClientRect();
+    const boxH = 300;
+    const margin = 16;
+    
+    box.style.transform = 'none';
+    box.style.left = Math.min(Math.max(margin, rect.left), window.innerWidth - 360) + 'px';
+    
+    if(rect.bottom + boxH + margin < window.innerHeight) {
+      box.style.top = (rect.bottom + margin) + 'px';
+      box.style.bottom = 'auto';
+    } else {
+      box.style.bottom = (window.innerHeight - rect.top + margin) + 'px';
+      box.style.top = 'auto';
+    }
+  }, 400);
+}
+
+function highlightTarget(targetId) {
+  const spotlight = document.getElementById('wizard-spotlight');
+  
+  if(!targetId) {
+    spotlight.style.display = 'none';
+    return;
+  }
+  
+  const target = document.getElementById(targetId);
+  if(!target) {
+    spotlight.style.display = 'none';
+    return;
+  }
+  
+  setTimeout(() => {
+    const rect = target.getBoundingClientRect();
+    spotlight.style.display = 'block';
+    spotlight.style.top = (rect.top - 6 + window.scrollY) + 'px';
+    spotlight.style.left = (rect.left - 6) + 'px';
+    spotlight.style.width = (rect.width + 12) + 'px';
+    spotlight.style.height = (rect.height + 12) + 'px';
+  }, 450);
+}
+
+function wizNext() {
+  if(wizardStep < WIZARD_STEPS.length - 1) {
+    wizardStep++;
+    renderWizardStep();
+  } else {
+    finishWizard();
+  }
+}
+
+function wizPrev() {
+  if(wizardStep > 0) {
+    wizardStep--;
+    renderWizardStep();
+  }
+}
+
+function skipWizard() {
+  finishWizard();
+}
+
+function finishWizard() {
+  document.getElementById('wizard-overlay').style.display = 'none';
+  document.getElementById('wizard-box').style.display = 'none';
+  document.getElementById('wizard-spotlight').style.display = 'none';
+  localStorage.setItem('timeme_wizard_done', '1');
+  // חזור לדף הנכסים
+  showPage('properties', document.getElementById('nav-props'));
 }
 
 // ── FOR SALE ─────────────────────────────────────
