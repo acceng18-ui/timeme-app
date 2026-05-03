@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.4.4 | timeme.co.il -->
+<!-- TIME.ME v1.4.5 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -357,6 +357,53 @@ body {
     <div style="text-align:center;padding:20px;color:#888;font-size:13px;">אין התראות חדשות</div>
   </div>
 </div>
+
+  <!-- כפתור פידבק -->
+  <div id="feedback-btn" onclick="openFeedback()" style="display:none;position:fixed;bottom:20px;left:20px;z-index:500;background:linear-gradient(135deg,#185FA5,#378ADD);color:white;border:none;border-radius:50px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(24,95,165,0.4);font-family:Arial;display:flex;align-items:center;gap:6px;">
+    💬 פידבק
+  </div>
+
+  <!-- מודל פידבק -->
+  <div id="feedback-modal" style="display:none;position:fixed;inset:0;background:rgba(4,44,83,0.6);z-index:2000;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:white;border-radius:20px;max-width:440px;width:100%;padding:28px;box-shadow:0 20px 60px rgba(4,44,83,0.3);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div style="font-size:16px;font-weight:700;color:#042C53;">💬 ספר לנו מה דעתך</div>
+        <button onclick="closeFeedback()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#888;">✕</button>
+      </div>
+
+      <!-- דירוג כוכבים -->
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-size:13px;color:#555;margin-bottom:10px;">איך היה החוויה שלך?</div>
+        <div id="stars" style="display:flex;justify-content:center;gap:8px;">
+          <span onclick="setRating(1)" style="font-size:32px;cursor:pointer;opacity:0.3;" data-star="1">⭐</span>
+          <span onclick="setRating(2)" style="font-size:32px;cursor:pointer;opacity:0.3;" data-star="2">⭐</span>
+          <span onclick="setRating(3)" style="font-size:32px;cursor:pointer;opacity:0.3;" data-star="3">⭐</span>
+          <span onclick="setRating(4)" style="font-size:32px;cursor:pointer;opacity:0.3;" data-star="4">⭐</span>
+          <span onclick="setRating(5)" style="font-size:32px;cursor:pointer;opacity:0.3;" data-star="5">⭐</span>
+        </div>
+        <div id="rating-label" style="font-size:12px;color:#888;margin-top:6px;"></div>
+      </div>
+
+      <div class="fg" style="margin-bottom:12px;">
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">😊 מה אהבת?</label>
+        <textarea id="fb-liked" placeholder="הממשק פשוט, ההתראות עוזרות..." rows="2" style="width:100%;padding:10px;border:1.5px solid #B5D4F4;border-radius:8px;font-family:Arial;font-size:13px;resize:none;"></textarea>
+      </div>
+      <div class="fg" style="margin-bottom:12px;">
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">🔧 מה צריך שיפור?</label>
+        <textarea id="fb-improve" placeholder="קצת קשה להבין איך..." rows="2" style="width:100%;padding:10px;border:1.5px solid #B5D4F4;border-radius:8px;font-family:Arial;font-size:13px;resize:none;"></textarea>
+      </div>
+      <div class="fg" style="margin-bottom:12px;">
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">💡 מה חסר לך?</label>
+        <textarea id="fb-missing" placeholder="הייתי רוצה גם..." rows="2" style="width:100%;padding:10px;border:1.5px solid #B5D4F4;border-radius:8px;font-family:Arial;font-size:13px;resize:none;"></textarea>
+      </div>
+      <div class="fg" style="margin-bottom:16px;">
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">📧 מייל (אופציונלי — נחזור אליך)</label>
+        <input id="fb-email" type="email" placeholder="your@email.com" style="width:100%;padding:10px;border:1.5px solid #B5D4F4;border-radius:8px;font-family:Arial;font-size:13px;" />
+      </div>
+      <button onclick="submitFeedback()" id="fb-btn" style="width:100%;padding:12px;background:linear-gradient(135deg,#185FA5,#378ADD);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:Arial;">📨 שלח פידבק</button>
+      <div class="msg" id="fb-msg"></div>
+    </div>
+  </div>
 
   <!-- פס התחזות -->
   <div id="impersonate-bar" style="display:none;background:#FFF3E0;border-bottom:2px solid #FFB74D;padding:8px 20px;display:none;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
@@ -3476,6 +3523,87 @@ async function checkAllNotifications() {
   }
 
   loadNotifCount();
+}
+
+// ── FEEDBACK ─────────────────────────────────────
+let _fbRating = 0;
+const RATING_LABELS = ['','גרוע 😞','לא טוב 😕','סביר 😐','טוב 😊','מצוין! 🤩'];
+
+function openFeedback() {
+  document.getElementById('feedback-modal').style.display='flex';
+  _fbRating=0;
+  updateStars(0);
+  ['fb-liked','fb-improve','fb-missing','fb-email'].forEach(id=>document.getElementById(id).value='');
+  showMsg('fb-msg','','');
+}
+
+function closeFeedback() {
+  document.getElementById('feedback-modal').style.display='none';
+}
+
+function setRating(n) {
+  _fbRating=n;
+  updateStars(n);
+  document.getElementById('rating-label').textContent=RATING_LABELS[n];
+}
+
+function updateStars(n) {
+  document.querySelectorAll('#stars span').forEach((s,i)=>{
+    s.style.opacity=i<n?'1':'0.3';
+    s.style.transform=i<n?'scale(1.1)':'scale(1)';
+  });
+}
+
+async function submitFeedback() {
+  const liked=document.getElementById('fb-liked').value.trim();
+  const improve=document.getElementById('fb-improve').value.trim();
+  const missing=document.getElementById('fb-missing').value.trim();
+  const email=document.getElementById('fb-email').value.trim();
+
+  if(!_fbRating){showMsg('fb-msg','error','נא לבחור דירוג');return;}
+  if(!liked&&!improve&&!missing){showMsg('fb-msg','error','נא למלא לפחות שדה אחד');return;}
+
+  const btn=document.getElementById('fb-btn');
+  btn.disabled=true;
+  btn.textContent='שולח...';
+
+  // שמור ב-Supabase
+  const{error}=await sb.from('feedback').insert({
+    rating:_fbRating,
+    liked:liked||null,
+    improve:improve||null,
+    missing:missing||null,
+    email:email||null,
+    user_id:currentUser?.id||null
+  });
+
+  // שלח מייל דרך mailto (פתרון פשוט)
+  if(!error) {
+    const subject=encodeURIComponent(`פידבק TIME.ME — ${_fbRating}/5 כוכבים`);
+    const body=encodeURIComponent(
+      `דירוג: ${_fbRating}/5 ⭐\n\n` +
+      `מה אהבתי:\n${liked||'—'}\n\n` +
+      `מה צריך שיפור:\n${improve||'—'}\n\n` +
+      `מה חסר:\n${missing||'—'}\n\n` +
+      `מייל לחזרה: ${email||'לא צוין'}\n\n` +
+      `משתמש: ${currentUser?.email||'אנונימי'}`
+    );
+    // פתח mailto בשקט
+    const a=document.createElement('a');
+    a.href=`mailto:info@timeme.co.il?subject=${subject}&body=${body}`;
+    a.style.display='none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  btn.disabled=false;
+  btn.textContent='📨 שלח פידבק';
+
+  if(error){showMsg('fb-msg','error','שגיאה: '+error.message);return;}
+
+  showMsg('fb-msg','success','✅ תודה רבה על הפידבק! זה עוזר לנו מאוד 🙏');
+  setTimeout(()=>closeFeedback(), 2500);
 }
 
 // ── ONBOARDING WIZARD ────────────────────────────
