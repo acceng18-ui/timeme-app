@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.4.6 | timeme.co.il -->
+<!-- TIME.ME v1.4.8 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -422,7 +422,7 @@ body {
 
     <button class="nav-tab" id="nav-tenant" onclick="showPage('tenant',this)" style="display:none;">🔑 הנכס שלי</button>
     <button class="nav-tab" id="nav-org" onclick="showPage('org',this)" style="display:none;">🏢 הארגון שלי</button>
-    <button class="nav-tab" id="nav-equipment" onclick="showPage('equipment',this);loadEquipment();">🚗 ציוד</button>
+    <button class="nav-tab" id="nav-equipment" onclick="showPage('equipment',this);loadEquipment();">🚙 תחבורה וציוד</button>
   </div>
   <div class="dash-body">
 
@@ -1735,12 +1735,12 @@ body {
 
     <!-- ציוד ורכבים -->
     <div class="page" id="page-equipment" style="display:none;">
-      <div class="page-title">🚗 ציוד ורכבים</div>
-      <div class="page-sub">ניהול רכבים, כלי עבודה וציוד</div>
+      <div class="page-title">🚙 ניהול תחבורה וכלי עבודה</div>
+      <div class="page-sub">רכבים, כלי עבודה, טרקטורים, סירות ועוד</div>
 
       <!-- כפתורי פעולה -->
       <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
-        <button class="btn-add" onclick="toggleEquipForm()" id="equip-add-btn">+ הוסף ציוד / רכב</button>
+        <button class="btn-add" onclick="toggleEquipForm()" id="equip-add-btn">+ הוסף פריט</button>
       </div>
 
       <!-- טופס הוספה -->
@@ -1797,8 +1797,8 @@ body {
       <div id="equip-empty" style="display:none;">
         <div class="empty-state">
           <div class="empty-icon">🚗</div>
-          <div class="empty-title">אין ציוד עדיין</div>
-          <div class="empty-sub">לחץ "+ הוסף ציוד / רכב" להתחלה</div>
+          <div class="empty-title">אין פריטים עדיין</div>
+          <div class="empty-sub">לחץ "+ הוסף פריט" להתחלה</div>
         </div>
       </div>
     </div>
@@ -2213,11 +2213,13 @@ async function handleLogout() {
 function showPage(id,el) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
+  const page = document.getElementById('page-'+id);
+  if(page) page.classList.add('active');
   if(el)el.classList.add('active');
   showMsg('prop-msg','','');
   if(id==='properties')loadProperties();
   if(id==='add-contract')loadPropertiesForContract();
+  if(id==='equipment')loadEquipment();
 }
 
 async function loadProperties() {
