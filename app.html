@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- TIME.ME v1.4.5 | timeme.co.il -->
+<!-- TIME.ME v1.4.6 | timeme.co.il -->
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
@@ -422,6 +422,7 @@ body {
 
     <button class="nav-tab" id="nav-tenant" onclick="showPage('tenant',this)" style="display:none;">🔑 הנכס שלי</button>
     <button class="nav-tab" id="nav-org" onclick="showPage('org',this)" style="display:none;">🏢 הארגון שלי</button>
+    <button class="nav-tab" id="nav-equipment" onclick="showPage('equipment',this);loadEquipment();">🚗 ציוד</button>
   </div>
   <div class="dash-body">
 
@@ -1731,6 +1732,186 @@ body {
         <div class="msg" id="contract-msg"></div>
       </div>
     </div>
+
+    <!-- ציוד ורכבים -->
+    <div class="page" id="page-equipment" style="display:none;">
+      <div class="page-title">🚗 ציוד ורכבים</div>
+      <div class="page-sub">ניהול רכבים, כלי עבודה וציוד</div>
+
+      <!-- כפתורי פעולה -->
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="btn-add" onclick="toggleEquipForm()" id="equip-add-btn">+ הוסף ציוד / רכב</button>
+      </div>
+
+      <!-- טופס הוספה -->
+      <div id="equip-form" style="display:none;">
+        <div class="form-card" style="margin-bottom:16px;">
+          <div class="form-section-title">🚗 פרטי הציוד / רכב</div>
+          <div class="form-row-2">
+            <div class="fg"><label>שם *</label><input id="eq-name" placeholder="טרקטור CAT, קדיאלק, מקדחה בוש..." /></div>
+            <div class="fg"><label>קטגוריה *</label>
+              <select id="eq-category">
+                <option value="רכב פרטי">🚗 רכב פרטי</option>
+                <option value="רכב מסחרי">🚐 רכב מסחרי</option>
+                <option value="משאית">🚛 משאית</option>
+                <option value="טרקטור">🚜 טרקטור</option>
+                <option value="מכונה כבדה">🏗️ מכונה כבדה</option>
+                <option value="סירה">⛵ סירה</option>
+                <option value="כלי עבודה">🔧 כלי עבודה</option>
+                <option value="ציוד אלקטרוני">💻 ציוד אלקטרוני</option>
+                <option value="אחר">📦 אחר</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="fg"><label>יצרן</label><input id="eq-manufacturer" placeholder="Toyota, Bosch, CAT..." /></div>
+            <div class="fg"><label>דגם</label><input id="eq-model" placeholder="Hilux, GBH2-28, 320D..." /></div>
+          </div>
+          <div class="form-row-2">
+            <div class="fg"><label>שנת ייצור</label><input id="eq-year" type="number" placeholder="2020" /></div>
+            <div class="fg"><label>מספר רישוי / סריאל</label><input id="eq-serial" placeholder="12-345-67" /></div>
+          </div>
+          <div class="form-row-2">
+            <div class="fg"><label>בעלים / חברה</label><input id="eq-owner-name" placeholder="ישראל ישראלי / ABC בע״מ" /></div>
+            <div class="fg"><label>סטטוס</label>
+              <select id="eq-status">
+                <option value="פעיל">✅ פעיל</option>
+                <option value="בתיקון">🔧 בתיקון</option>
+                <option value="לא פעיל">❌ לא פעיל</option>
+                <option value="נמכר">💰 נמכר</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg"><label>הערות</label><textarea id="eq-notes" rows="2" placeholder="פרטים נוספים..."></textarea></div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn-main" style="width:auto;padding:10px 24px;" onclick="saveEquipment()" id="save-eq-btn">💾 שמור</button>
+            <button onclick="toggleEquipForm()" style="padding:10px 20px;background:white;border:1.5px solid #B5D4F4;border-radius:10px;color:#185FA5;cursor:pointer;font-family:Arial;font-size:13px;">ביטול</button>
+          </div>
+          <div class="msg" id="eq-msg"></div>
+        </div>
+      </div>
+
+      <!-- רשימת ציוד -->
+      <div id="equip-loading" style="display:none;text-align:center;padding:20px;"><span class="spinner"></span></div>
+      <div id="equip-list"></div>
+      <div id="equip-empty" style="display:none;">
+        <div class="empty-state">
+          <div class="empty-icon">🚗</div>
+          <div class="empty-title">אין ציוד עדיין</div>
+          <div class="empty-sub">לחץ "+ הוסף ציוד / רכב" להתחלה</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- פרטי ציוד -->
+    <div class="page" id="page-equipment-detail" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <button onclick="showPage('equipment',document.getElementById('nav-equipment'));loadEquipment();" style="background:#E6F1FB;border:none;border-radius:8px;padding:8px 14px;cursor:pointer;color:#185FA5;font-size:13px;font-family:Arial;">→ חזור</button>
+        <div class="page-title" id="eq-detail-title" style="margin:0;"></div>
+      </div>
+
+      <!-- טאבים -->
+      <div class="pd-tabs">
+        <button class="pd-tab active" onclick="showEqTab('details',this)">📋 פרטים</button>
+        <button class="pd-tab" onclick="showEqTab('insurance',this)">🛡️ ביטוח וטסט</button>
+        <button class="pd-tab" onclick="showEqTab('expenses',this)">💰 הוצאות</button>
+        <button class="pd-tab" onclick="showEqTab('docs',this)">📄 מסמכים</button>
+      </div>
+
+      <!-- TAB: פרטים -->
+      <div class="pd-content active" id="eqt-details">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;" id="eq-info-grid"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="editEquipment()" class="btn-main" style="width:auto;padding:9px 20px;font-size:13px;">✏️ ערוך</button>
+          <button onclick="deleteEquipment()" style="padding:9px 20px;background:#FCE4EC;border:1.5px solid #F48FB1;border-radius:10px;color:#880E4F;cursor:pointer;font-family:Arial;font-size:13px;font-weight:700;">🗑️ מחק</button>
+        </div>
+      </div>
+
+      <!-- TAB: ביטוח וטסט -->
+      <div class="pd-content" id="eqt-insurance" style="display:none;">
+        <div id="eq-ins-list" style="margin-bottom:14px;"></div>
+        <div style="background:#F5F9FF;border:1.5px dashed #B5D4F4;border-radius:12px;padding:14px;">
+          <div class="form-section-title" style="margin-bottom:10px;">+ הוסף ביטוח / טסט</div>
+          <div class="form-row-2">
+            <div class="fg"><label>סוג *</label>
+              <select id="eq-ins-type">
+                <option value="ביטוח חובה">🔴 ביטוח חובה</option>
+                <option value="ביטוח מקיף">🛡️ ביטוח מקיף</option>
+                <option value="טסט">🔧 טסט</option>
+                <option value="רישיון">📄 רישיון</option>
+                <option value="אחר">📋 אחר</option>
+              </select>
+            </div>
+            <div class="fg"><label>חברה / גוף</label><input id="eq-ins-company" placeholder="מנורה, משרד התחבורה..." /></div>
+          </div>
+          <div class="form-row-2">
+            <div class="fg"><label>תחילה</label><input id="eq-ins-start" type="date" /></div>
+            <div class="fg"><label>תוקף עד *</label><input id="eq-ins-expiry" type="date" /></div>
+          </div>
+          <div class="form-row-2">
+            <div class="fg"><label>פרמיה שנתית (₪)</label><input id="eq-ins-premium" type="number" placeholder="2400" /></div>
+            <div class="fg"><label>מספר פוליסה</label><input id="eq-ins-policy" placeholder="12345678" /></div>
+          </div>
+          <button class="btn-main" style="width:auto;padding:9px 20px;" onclick="saveEqInsurance()" id="save-eq-ins-btn">💾 שמור</button>
+          <div class="msg" id="eq-ins-msg"></div>
+        </div>
+      </div>
+
+      <!-- TAB: הוצאות -->
+      <div class="pd-content" id="eqt-expenses" style="display:none;">
+        <!-- סיכום -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+          <div style="background:#FCE4EC;border:1.5px solid #F48FB1;border-radius:12px;padding:10px;">
+            <div style="font-size:10px;color:#880E4F;font-weight:700;">🔴 הוצאות השנה</div>
+            <div style="font-size:18px;font-weight:700;color:#880E4F;" id="eq-exp-total">₪0</div>
+          </div>
+          <div style="background:#FFF8E1;border:1.5px solid #FFD54F;border-radius:12px;padding:10px;">
+            <div style="font-size:10px;color:#8A6000;font-weight:700;">📅 החודש</div>
+            <div style="font-size:18px;font-weight:700;color:#8A6000;" id="eq-exp-month">₪0</div>
+          </div>
+        </div>
+        <!-- טופס -->
+        <div style="background:#F5F9FF;border:1.5px dashed #B5D4F4;border-radius:12px;padding:14px;margin-bottom:14px;">
+          <div class="form-row-2">
+            <div class="fg"><label>תיאור *</label><input id="eq-exp-desc" placeholder="טיפול שמן, דלק, תיקון..." /></div>
+            <div class="fg"><label>קטגוריה *</label>
+              <select id="eq-exp-cat">
+                <option value="דלק">⛽ דלק</option>
+                <option value="טיפול">🔧 טיפול</option>
+                <option value="תיקון">🏭 תיקון</option>
+                <option value="חלפים">⚙️ חלפים</option>
+                <option value="ביטוח">🛡️ ביטוח</option>
+                <option value="טסט">📋 טסט</option>
+                <option value="רישיון">📄 רישיון</option>
+                <option value="כללי">📦 כללי</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="fg"><label>סכום (₪) *</label><input id="eq-exp-amount" type="number" placeholder="500" /></div>
+            <div class="fg"><label>תאריך *</label><input id="eq-exp-date" type="date" /></div>
+          </div>
+          <div class="fg"><label>ספק / הערה</label><input id="eq-exp-vendor" placeholder="מוסך דוד, פזום..." /></div>
+          <button class="btn-main" style="width:auto;padding:9px 20px;" onclick="saveEqExpense()" id="save-eq-exp-btn">💾 שמור הוצאה</button>
+          <div class="msg" id="eq-exp-msg"></div>
+        </div>
+        <!-- רשימה -->
+        <div id="eq-exp-list"></div>
+      </div>
+
+      <!-- TAB: מסמכים -->
+      <div class="pd-content" id="eqt-docs" style="display:none;">
+        <div style="background:#F5F9FF;border:1.5px dashed #B5D4F4;border-radius:12px;padding:20px;text-align:center;">
+          <div style="font-size:32px;margin-bottom:10px;">📄</div>
+          <div style="font-size:13px;color:#555;margin-bottom:12px;">העלה מסמכים — רישיון רכב, פוליסת ביטוח, תעודת טסט</div>
+          <input type="file" id="eq-doc-file" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="uploadEqDoc()" />
+          <button onclick="document.getElementById('eq-doc-file').click()" class="btn-main" style="width:auto;padding:10px 24px;">📤 העלה מסמך</button>
+          <div class="msg" id="eq-doc-msg"></div>
+        </div>
+        <div id="eq-doc-list" style="margin-top:14px;"></div>
+      </div>
+    </div>
+
 
   </div>
 </div>
@@ -3523,6 +3704,303 @@ async function checkAllNotifications() {
   }
 
   loadNotifCount();
+}
+
+
+// ── EQUIPMENT ─────────────────────────────────────
+let currentEquipment = null;
+
+const EQ_CAT_ICONS = {
+  'רכב פרטי':'🚗','רכב מסחרי':'🚐','משאית':'🚛','טרקטור':'🚜',
+  'מכונה כבדה':'🏗️','סירה':'⛵','כלי עבודה':'🔧','ציוד אלקטרוני':'💻','אחר':'📦'
+};
+const EQ_STATUS_COLOR = {
+  'פעיל':'#1D9E75','בתיקון':'#FF8F00','לא פעיל':'#E24B4A','נמכר':'#888'
+};
+
+function toggleEquipForm() {
+  const f = document.getElementById('equip-form');
+  const btn = document.getElementById('equip-add-btn');
+  const shown = f.style.display !== 'none';
+  f.style.display = shown ? 'none' : 'block';
+  btn.textContent = shown ? '+ הוסף ציוד / רכב' : '✕ סגור';
+  if(!shown) document.getElementById('eq-exp-date') && (document.getElementById('eq-exp-date').valueAsDate = new Date());
+}
+
+async function saveEquipment() {
+  if(!currentUser) return;
+  const name = document.getElementById('eq-name').value.trim();
+  const category = document.getElementById('eq-category').value;
+  if(!name){showMsg('eq-msg','error','נא למלא שם');return;}
+
+  const btn = document.getElementById('save-eq-btn');
+  btn.disabled = true; btn.textContent = 'שומר...';
+
+  const data = {
+    owner_id: currentUser.id,
+    name,
+    category,
+    type: category,
+    manufacturer: document.getElementById('eq-manufacturer').value.trim()||null,
+    model: document.getElementById('eq-model').value.trim()||null,
+    year: parseInt(document.getElementById('eq-year').value)||null,
+    serial_number: document.getElementById('eq-serial').value.trim()||null,
+    owner_name: document.getElementById('eq-owner-name').value.trim()||null,
+    status: document.getElementById('eq-status').value,
+    notes: document.getElementById('eq-notes').value.trim()||null
+  };
+
+  const{error} = await sb.from('equipment').insert(data);
+  btn.disabled = false; btn.textContent = '💾 שמור';
+
+  if(error){showMsg('eq-msg','error','שגיאה: '+error.message);return;}
+  showMsg('eq-msg','success','✓ נשמר בהצלחה!');
+  setTimeout(()=>{toggleEquipForm();loadEquipment();}, 1000);
+}
+
+async function loadEquipment() {
+  if(!currentUser) return;
+  document.getElementById('equip-loading').style.display='block';
+  document.getElementById('equip-list').innerHTML='';
+  document.getElementById('equip-empty').style.display='none';
+
+  const{data} = await sb.from('equipment').select('*')
+    .eq('owner_id', currentUser.id).order('created_at',{ascending:false});
+
+  document.getElementById('equip-loading').style.display='none';
+
+  if(!data||data.length===0){
+    document.getElementById('equip-empty').style.display='block';
+    return;
+  }
+
+  const list = document.getElementById('equip-list');
+  list.innerHTML = data.map(e=>`
+    <div onclick="openEquipmentDetail('${e.id}')" style="background:white;border:1.5px solid #E6F1FB;border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(4,44,83,0.06);transition:all 0.2s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(4,44,83,0.12)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(4,44,83,0.06)'">
+      <div style="width:44px;height:44px;background:#E6F1FB;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">${EQ_CAT_ICONS[e.category]||'📦'}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:14px;font-weight:700;color:#042C53;">${e.name}</div>
+        <div style="font-size:11px;color:#888;margin-top:2px;">${e.category}${e.manufacturer?' | '+e.manufacturer:''}${e.model?' '+e.model:''}${e.year?' ('+e.year+')':''}</div>
+        ${e.serial_number?`<div style="font-size:10px;color:#aaa;">מס': ${e.serial_number}</div>`:''}
+      </div>
+      <div>
+        <span style="background:${EQ_STATUS_COLOR[e.status]||'#888'}22;color:${EQ_STATUS_COLOR[e.status]||'#888'};padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;">${e.status}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function openEquipmentDetail(id) {
+  const{data:e} = await sb.from('equipment').select('*').eq('id',id).single();
+  if(!e) return;
+  currentEquipment = e;
+
+  document.getElementById('eq-detail-title').textContent = `${EQ_CAT_ICONS[e.category]||'📦'} ${e.name}`;
+
+  // Info grid
+  const fields = [
+    ['קטגוריה', e.category],
+    ['סטטוס', e.status],
+    ['יצרן', e.manufacturer||'—'],
+    ['דגם', e.model||'—'],
+    ['שנת ייצור', e.year||'—'],
+    ['מספר רישוי/סריאל', e.serial_number||'—'],
+    ['בעלים', e.owner_name||'—'],
+    ['הערות', e.notes||'—']
+  ];
+
+  document.getElementById('eq-info-grid').innerHTML = fields.map(([l,v])=>`
+    <div style="background:#F5F9FF;border:0.5px solid #E6F1FB;border-radius:8px;padding:10px;">
+      <div style="font-size:10px;color:#185FA5;">${l}</div>
+      <div style="font-size:13px;font-weight:600;color:#042C53;">${v}</div>
+    </div>
+  `).join('');
+
+  showPage('equipment-detail', null);
+  showEqTab('details', document.querySelector('.pd-tab.active'));
+  loadEqInsurance();
+  loadEqExpenses();
+}
+
+function showEqTab(tab, btn) {
+  document.querySelectorAll('#page-equipment-detail .pd-content').forEach(c=>c.style.display='none');
+  document.querySelectorAll('#page-equipment-detail .pd-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('eqt-'+tab).style.display='block';
+  if(btn) btn.classList.add('active');
+}
+
+async function saveEqInsurance() {
+  if(!currentEquipment) return;
+  const type = document.getElementById('eq-ins-type').value;
+  const expiry = document.getElementById('eq-ins-expiry').value;
+  if(!expiry){showMsg('eq-ins-msg','error','נא למלא תאריך תוקף');return;}
+
+  const btn = document.getElementById('save-eq-ins-btn');
+  btn.disabled=true;
+
+  const{error} = await sb.from('equipment_insurance').insert({
+    equipment_id: currentEquipment.id,
+    insurance_type: type,
+    company: document.getElementById('eq-ins-company').value.trim()||null,
+    start_date: document.getElementById('eq-ins-start').value||null,
+    expiry_date: expiry,
+    annual_premium: parseFloat(document.getElementById('eq-ins-premium').value)||null,
+    policy_number: document.getElementById('eq-ins-policy').value.trim()||null
+  });
+
+  btn.disabled=false;
+  if(error){showMsg('eq-ins-msg','error','שגיאה');return;}
+  showMsg('eq-ins-msg','success','✓ נשמר!');
+  loadEqInsurance();
+}
+
+async function loadEqInsurance() {
+  if(!currentEquipment) return;
+  const{data} = await sb.from('equipment_insurance').select('*')
+    .eq('equipment_id', currentEquipment.id).order('expiry_date',{ascending:true});
+
+  const today = new Date();
+  const list = document.getElementById('eq-ins-list');
+
+  if(!data||data.length===0){
+    list.innerHTML='<div style="text-align:center;color:#888;padding:10px;font-size:13px;">אין ביטוחים / טסטים עדיין</div>';
+    return;
+  }
+
+  list.innerHTML = data.map(ins=>{
+    const expiry = new Date(ins.expiry_date);
+    const daysLeft = Math.ceil((expiry-today)/(1000*60*60*24));
+    const color = daysLeft<0?'#E24B4A':daysLeft<30?'#FF8F00':'#1D9E75';
+    const label = daysLeft<0?`פג לפני ${Math.abs(daysLeft)} ימים`:daysLeft<30?`נותרו ${daysLeft} ימים`:`תקף עד ${fmtDate(ins.expiry_date)}`;
+    return `
+    <div style="background:white;border:1.5px solid ${color}33;border-radius:12px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#042C53;">${ins.insurance_type}</div>
+          <div style="font-size:11px;color:#888;">${ins.company||''} ${ins.policy_number?'| פוליסה: '+ins.policy_number:''}</div>
+          ${ins.annual_premium?`<div style="font-size:11px;color:#185FA5;">₪${Number(ins.annual_premium).toLocaleString('he-IL')} / שנה</div>`:''}
+        </div>
+        <div style="text-align:left;">
+          <div style="font-size:12px;font-weight:700;color:${color};">${label}</div>
+          <button onclick="deleteEqInsurance('${ins.id}')" style="background:none;border:none;color:#E24B4A;cursor:pointer;font-size:12px;">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function deleteEqInsurance(id) {
+  if(!confirm('למחוק?')) return;
+  await sb.from('equipment_insurance').delete().eq('id',id);
+  loadEqInsurance();
+}
+
+async function saveEqExpense() {
+  if(!currentEquipment) return;
+  const desc = document.getElementById('eq-exp-desc').value.trim();
+  const amount = document.getElementById('eq-exp-amount').value;
+  const date = document.getElementById('eq-exp-date').value;
+  if(!desc||!amount||!date){showMsg('eq-exp-msg','error','נא למלא שדות חובה');return;}
+
+  const btn = document.getElementById('save-eq-exp-btn');
+  btn.disabled=true;
+
+  const{error} = await sb.from('equipment_expenses').insert({
+    equipment_id: currentEquipment.id,
+    description: desc,
+    category: document.getElementById('eq-exp-cat').value,
+    amount: parseFloat(amount),
+    expense_date: date,
+    vendor: document.getElementById('eq-exp-vendor').value.trim()||null
+  });
+
+  btn.disabled=false;
+  if(error){showMsg('eq-exp-msg','error','שגיאה');return;}
+  showMsg('eq-exp-msg','success','✓ נשמר!');
+  document.getElementById('eq-exp-desc').value='';
+  document.getElementById('eq-exp-amount').value='';
+  loadEqExpenses();
+}
+
+async function loadEqExpenses() {
+  if(!currentEquipment) return;
+  const year = new Date().getFullYear();
+  const{data} = await sb.from('equipment_expenses').select('*')
+    .eq('equipment_id', currentEquipment.id)
+    .gte('expense_date', year+'-01-01')
+    .order('expense_date',{ascending:false});
+
+  const CAT_ICONS={'דלק':'⛽','טיפול':'🔧','תיקון':'🏭','חלפים':'⚙️','ביטוח':'🛡️','טסט':'📋','רישיון':'📄','כללי':'📦'};
+  const now = new Date();
+
+  let totalYear=0, totalMonth=0;
+  (data||[]).forEach(e=>{
+    totalYear+=Number(e.amount);
+    const d=new Date(e.expense_date);
+    if(d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()) totalMonth+=Number(e.amount);
+  });
+
+  document.getElementById('eq-exp-total').textContent='₪'+totalYear.toLocaleString('he-IL');
+  document.getElementById('eq-exp-month').textContent='₪'+totalMonth.toLocaleString('he-IL');
+
+  const list = document.getElementById('eq-exp-list');
+  if(!data||data.length===0){
+    list.innerHTML='<div style="text-align:center;color:#888;padding:10px;font-size:13px;">אין הוצאות עדיין</div>';
+    return;
+  }
+
+  list.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">` +
+    data.map(e=>`
+    <div style="background:white;border:1.5px solid #F0F6FF;border-radius:10px;padding:10px;">
+      <div style="font-size:18px;margin-bottom:4px;">${CAT_ICONS[e.category]||'📦'}</div>
+      <div style="font-size:12px;font-weight:700;color:#042C53;">${e.description}</div>
+      <div style="font-size:10px;color:#888;">${fmtDate(e.expense_date)}</div>
+      ${e.vendor?`<div style="font-size:10px;color:#aaa;">${e.vendor}</div>`:''}
+      <div style="font-size:13px;font-weight:700;color:#E24B4A;margin-top:4px;">₪${Number(e.amount).toLocaleString('he-IL')}</div>
+      <button onclick="deleteEqExpense('${e.id}')" style="background:none;border:none;color:#E24B4A;cursor:pointer;font-size:12px;padding:0;margin-top:4px;">🗑️ מחק</button>
+    </div>
+  `).join('') + '</div>';
+}
+
+async function deleteEqExpense(id) {
+  if(!confirm('למחוק?')) return;
+  await sb.from('equipment_expenses').delete().eq('id',id);
+  loadEqExpenses();
+}
+
+async function deleteEquipment() {
+  if(!currentEquipment) return;
+  if(!confirm('למחוק את הציוד לצמיתות?')) return;
+  await sb.from('equipment').delete().eq('id', currentEquipment.id);
+  currentEquipment = null;
+  showPage('equipment', document.getElementById('nav-equipment'));
+  loadEquipment();
+}
+
+async function uploadEqDoc() {
+  if(!currentEquipment) return;
+  const file = document.getElementById('eq-doc-file').files[0];
+  if(!file) return;
+  showMsg('eq-doc-msg','','מעלה...');
+  const path = `equipment/${currentEquipment.id}/${Date.now()}_${file.name}`;
+  const{error} = await sb.storage.from('contracts').upload(path, file);
+  if(error){showMsg('eq-doc-msg','error','שגיאה בהעלאה');return;}
+  showMsg('eq-doc-msg','success','✓ הועלה בהצלחה!');
+  loadEqDocs();
+}
+
+async function loadEqDocs() {
+  if(!currentEquipment) return;
+  const{data} = await sb.storage.from('contracts').list('equipment/'+currentEquipment.id);
+  const list = document.getElementById('eq-doc-list');
+  if(!data||data.length===0){list.innerHTML='';return;}
+  list.innerHTML = data.map(f=>{
+    const url = sb.storage.from('contracts').getPublicUrl('equipment/'+currentEquipment.id+'/'+f.name).data.publicUrl;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:white;border:1px solid #E6F1FB;border-radius:8px;margin-bottom:6px;">
+      <span style="font-size:13px;color:#042C53;">📄 ${f.name}</span>
+      <a href="${url}" target="_blank" style="color:#185FA5;font-size:12px;text-decoration:none;font-weight:700;">📥 פתח</a>
+    </div>`;
+  }).join('');
 }
 
 // ── FEEDBACK ─────────────────────────────────────
